@@ -1,0 +1,168 @@
+<script>
+﻿Ext.Ajax.defaultHeaders = { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') };
+Ext.onReady(function() {
+
+<% if request.original_url.split('?')[0].split('/').count==5 %>
+url='historydata.json';
+<% else %>
+url='student/historydata.json';
+<% end %>
+
+var itemsPerPage=10;
+var historydatastore = Ext.create('Ext.data.Store', {
+    autoLoad: false,
+    fields:['_id','step','calorie','distance','motiontime','user_type', 'user_id'],
+    pageSize: itemsPerPage,
+    proxy: {
+        type: 'ajax',
+        url: url,  
+        reader: {
+            type: 'json',
+            root: 'gridData',
+            totalProperty: 'totalCount'
+        }
+    }  
+});
+
+
+historydatastore.load({
+    params:{
+        start:0,
+        limit: itemsPerPage,
+
+    }
+});
+
+var historydatagrid=Ext.create('Ext.grid.Panel',{
+	title : 'historydata', 
+	frame:true,
+	viewConfig: {
+		forceFit : true,
+		stripeRows: true//在表格中显示斑马线
+		},
+	store:  historydatastore,
+	columns: [//配置表格列
+        {
+            xtype: 'rownumberer',
+            width: 60,
+            sortable: false,
+            header: 'list', 
+            align: 'center'
+        },
+		{
+			header: 'id', 
+			flex: 1, 
+			dataIndex: '_id', 
+			sortable: true, 
+			align: 'center', 
+			hidden: true
+		},
+		{
+			header: 'motiontime', 
+			flex: 1, 
+			dataIndex: 'motiontime', 
+			sortable: true, 
+			align: 'center',
+		},
+		{
+			header: 'step', 
+			flex: 1, 
+			dataIndex: 'step', 
+			sortable: true, 
+			align: 'center',
+		},
+		{
+			header: 'distance', 
+			flex: 1, 
+			dataIndex: 'distance', 
+			sortable: true, 
+			align: 'center',
+		},
+		{
+			header: 'calorie', 
+			flex: 1, 
+			dataIndex: 'calorie', 
+			sortable: true, 
+			align: 'center',
+		},
+		{
+			header: 'intensity', 
+			flex: 1, 
+			dataIndex: 'intensity', 
+			sortable: true, 
+			align: 'center',
+		},
+		{
+			header: 'point', 
+			flex: 1, 
+			dataIndex: 'point', 
+			sortable: true, 
+			align: 'center',
+		}
+		],
+	dockedItems: [{
+        xtype: 'pagingtoolbar',
+        store: historydatastore,   // same store GridPanel is using
+        dock: 'bottom',
+        displayInfo: true,   
+        items:[
+                '-',
+				{ 
+					text: 'add', 
+					iconCls:"silk-user_add", 
+					handler: function() {
+		        		device_action_handler("add")
+				}},
+				{ 
+					text: 'edit', 
+					iconCls:"silk-user_edit", 
+					handler: function() {
+		        		device_action_handler("edit")
+				}},
+				{ 
+					text: 'delete', 
+					iconCls:"silk-user_delete", 
+					handler: function() {
+		        		device_action_handler("delete")
+				}},
+                {
+			    	xtype: 'textfield',
+			    	hideLabel: true,
+			    	width: 70,
+			    	id: "keyname",
+
+	    		}, 
+	   			{ 
+					text: 'search',
+					id:"search_record_button", 
+					iconCls:"silk-zoom", 
+					handler:function(){
+						record_search("search")
+					} 
+				},
+           		{ 
+					text: 'clear', 
+					id:"clear_record_button", 
+					disabled:true, 
+					handler: function(){
+						record_search("clear")
+					} 
+				}
+            ]       
+          }]           
+});
+
+var work_space = Ext.getCmp('center');
+work_space.removeAll();
+work_space.add(historydatagrid);
+work_space.doLayout();
+
+})
+
+</script>
+<script>
+$(function(){
+	$("#historydata-management a").removeClass("selected");
+	$("#historydata-management a:first").addClass("selected");
+})
+</script>

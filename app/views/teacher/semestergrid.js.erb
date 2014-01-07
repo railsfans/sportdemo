@@ -1,0 +1,163 @@
+Ext.Ajax.defaultHeaders = { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') };
+itemsPerPage = 20;  
+
+Ext.define('semestermodel', {
+	extend: 'Ext.data.Model',
+	fields: [
+		{name: 'begintime', type: 'date'},
+ 		{name: 'endtime',  type: 'date'},
+  		{name: 'status',  type: 'string'},
+  		{name: 'name',  type: 'string'}
+     ]
+ });
+
+var semesterstore = Ext.create('Ext.data.Store', {
+	model: 'semestermodel',
+	proxy: {
+		type: 'ajax',
+		url: 'semestergrid.json',
+		reader: {
+    		type: 'json',
+            root: 'gridData',
+            totalProperty: 'totalCount'
+		}
+	},
+	autoLoad: true
+});
+var rowEditing = Ext.create('Ext.grid.plugin.RowEditing', {
+	clicksToMoveEditor: 1,
+    autoCancel: false
+});
+var stateStore = Ext.create('Ext.data.Store', {
+    fields: ['name'],
+    data : [
+        {"name":"active"},
+        {"name":"unactive"}
+    ]
+});
+var semestergrid=Ext.create('Ext.grid.Panel',{
+	title : '<%= t('shclass manage') %>', 
+	frame:true,
+	stateful: true,
+	collapsible: true,
+	multiSelect: true,
+	viewConfig: {
+		forceFit : true,
+    	stripeRows: true,
+		enableTextSelection: true,
+	},
+	store:  semesterstore,
+	columns: [
+    	 {
+            xtype: 'rownumberer',
+            width: 60,
+            sortable: false,
+            header: '<%= t('list') %>', 
+            align: 'center'
+        },
+        {
+			header: '<%= t('id') %>', 
+			flex: 1, 
+			dataIndex: 'id', 
+			sortable: true, 
+			align: 'center', 
+			hidden: true
+		},
+		{
+			header: '<%= t('name') %>', 
+			flex: 1, 
+			dataIndex: 'name', 
+			sortable: true, 
+			align: 'center',
+			editor: {
+                allowBlank: false
+            }
+		},
+		{
+			text: 'begintime',
+            dataIndex: 'begintime',
+            xtype: 'datecolumn',
+            format: 'Y-m-d',
+			editor: {
+                xtype: 'datefield',
+                allowBlank: false,
+                format: 'Y-m-d'
+            }
+		},
+		{
+			text: 'endtime',
+            dataIndex: 'endtime',
+            xtype: 'datecolumn',
+            format: 'Y-m-d',
+			editor: {
+                xtype: 'datefield',
+                allowBlank: false,
+                format: 'Y-m-d'
+            }
+		},
+		 {
+        	header: 'State', 
+			dataIndex: 'status', 
+			flex: 1, 
+			editor: {
+         		xtype: 'combobox', 
+				store: stateStore, 
+				queryMode: 'local', 
+				displayField: 'name', 
+				valueField: 'name',
+       		listeners: {
+          		select: function(combo, recs, opts){
+                    combo.fireEvent('blur');
+                }
+            }
+        	}
+    	}
+	],
+	tbar: [{
+            text: 'Add Employee',
+            iconCls: 'employee-add',
+            handler : function() {
+                 
+            }
+   		}, {
+            itemId: 'removeEmployee',
+            text: 'Remove Employee',
+            iconCls: 'employee-remove',
+            handler: function() {
+                 
+            },
+            disabled: true
+        }],
+	plugins: [rowEditing],
+	listeners: {
+        edit: function(editor, e) {
+            var record = e.record;
+			Ext.Ajax.request({     
+       			url:'updatesemesterdata',  
+       			params:{  
+        			status:record.get('status'),
+					id: record.get('id'),
+					begintime: record.get('begintime'),
+					endtime: record.get('endtime'),
+					name: record.get('name')  
+        		},  
+        		success: function(resp,opts) {   
+                               
+           		},   
+             	failure: function(resp,opts) {   
+                             
+              	}     
+      		});
+        }
+    }
+}); // end classgrid
+var tabpanel=Ext.create('Ext.tab.Panel', {
+    width: 400,
+    height: 400,
+    items: [semestergrid]
+});
+
+var work_space = Ext.getCmp('center');
+work_space.removeAll();
+work_space.add(tabpanel);
+work_space.doLayout();

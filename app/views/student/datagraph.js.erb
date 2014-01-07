@@ -1,0 +1,235 @@
+﻿Ext.Ajax.defaultHeaders = { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') };
+function search(type)
+{
+	if(type=='search')
+	{
+		Ext.getCmp("clear_button").enable();
+		if(Ext.util.Format.date(Ext.getCmp('begintime').getValue(), 'Y-m-d')!='' && Ext.util.Format.date(Ext.getCmp('endtime').getValue(), 'Y-m-d')!='' && Ext.util.Format.date(Ext.getCmp('begintime').getValue(), 'Y-m-d')<=Ext.util.Format.date(Ext.getCmp('endtime').getValue(), 'Y-m-d'))
+		{
+			$.getJSON('search.json', { begintime: Ext.util.Format.date(Ext.getCmp('begintime').getValue(), 'Y-m-d'), endtime: Ext.util.Format.date(Ext.getCmp('endtime').getValue(), 'Y-m-d') }, function(data) {
+	       		beginDate=Date.UTC(parseInt(Ext.util.Format.date(Ext.getCmp('begintime').getValue(), 'Y')),  parseInt(Ext.util.Format.date(Ext.getCmp('begintime').getValue(), 'm'))-1, parseInt(Ext.util.Format.date(Ext.getCmp('begintime').getValue(), 'd')));
+	          	endDate=Date.UTC(parseInt(Ext.util.Format.date(Ext.getCmp('endtime').getValue(), 'Y')),  parseInt(Ext.util.Format.date(Ext.getCmp('endtime').getValue(), 'm'))-1, parseInt(Ext.util.Format.date(Ext.getCmp('endtime').getValue(), 'd')));
+				if (beginDate==endDate)
+	                compare=0;
+	    		else
+	                compare=1
+	    		someData = [];               
+	         	for(var j=0; j<data.totaldata.length; j++)
+	         	{
+			        for(var i = 0; i < data.totaldata[0].length; i++){
+	         		if (compare==1)
+			       		someData.push([beginDate + (3600 * 1000 * 24 * i * parseInt(data.rate)), data.totaldata[j][i]]);
+	              	else
+	                 	someData.push([beginDate + (3600 * 1000 * 1 * i), data.totaldata[j][i]]);
+			        }
+		        	chart.series[j].setData(someData,false);
+	              	someData=[]
+	        	}
+				chart.xAxis[0].update({
+					tickPositioner: function(min,max) {
+            			return this.series[0].xData;
+            		},
+           			labels: {
+	                	formatter: function(){ 
+	                   		if(compare==1)
+	                    		return Highcharts.dateFormat('%b %d', this.value);
+	                   		else
+	                    		return Highcharts.dateFormat('%H:%M', this.value);
+	                	}
+	                },
+	          		dateTimeLabelFormats: {
+	                    day: '%b %e',
+	                    week: '%b %e',
+	                    month: '%y \'%b',
+		           	},
+	             	});
+    			chart.redraw();       
+	 		});
+        }
+        else
+        {
+			Ext.Msg.alert('title', 'begintime and endtime canot nil or format illegal');
+        }
+	}
+	else {
+	        Ext.getCmp("clear_button").disable();
+	        Ext.getCmp("begintime").setValue('');
+	        Ext.getCmp("endtime").setValue('');
+	}
+}
+Ext.apply(Ext.form.field.VTypes, {
+	dateRange : function(val, field) {
+		var beginDate = null,
+		beginDateCmp = null,
+		endDate = null,
+		endDateCmp = null,
+		validStatus = true;
+		if(field.dateRange){
+			if(!Ext.isEmpty(field.dateRange.begin)){
+				beginDateCmp = Ext.getCmp(field.dateRange.begin);
+				beginDate = beginDateCmp.getValue();
+			}
+		if(!Ext.isEmpty(field.dateRange.end)){
+			endDateCmp = Ext.getCmp(field.dateRange.end);
+			endDate = endDateCmp.getValue();
+			}
+		}
+		if(!Ext.isEmpty(beginDate) && !Ext.isEmpty(endDate)){
+			validStatus =  beginDate <= endDate;
+		}		
+			return validStatus;
+	},
+	dateRangeText : '<%= t('begin time great than end time') %>'
+});
+
+var toolbar = new Ext.toolbar.Toolbar({ 
+	dock: 'top',
+	width:300,
+	items: [
+		'<%= t('begintime') %>',
+		{
+			hideLabel: true,
+			width: 120,
+			id: "begintime",					     
+			xtype:'datefield',
+			format:'Y/m/d', 
+			name:'date',
+ 			allowBlank: false,
+			dateRange:{begin:'begintime',end:'endtime'}, 
+			vtype:'dateRange',
+ 			value:new Date() 
+		},
+		'<%= t('endtime') %>',
+		{
+			hideLabel: true,
+			width: 120,
+			id: "endtime",					     
+			xtype:'datefield',
+			format:'Y/m/d', 
+			name:'date',
+			allowBlank: false,
+			dateRange:{begin:'begintime',end:'endtime'}, 
+ 			vtype:'dateRange',
+			value:new Date() 
+		},
+		{ 
+			text: '<%= t('search') %>',
+			id:"search_button", 
+			iconCls:"silk-zoom", 
+			handler:function(){
+				search("search")
+			} },
+		{ 	text: '<%= t('clear') %>', 
+			id:"clear_button", 
+			disabled:true, 
+			handler: function(){
+				search("clear")
+			} },
+		  	]
+		});
+var panel=Ext.create('Ext.panel.Panel', {
+    title: '',
+    autoScroll: true,
+    overflowX: 'auto',
+    html: '<div id="container" style="min-width: 1200px; height: 500px; margin: 0 auto;"></div>',
+    layout: 'fit',
+    tbar:toolbar
+});
+
+var work_space = Ext.getCmp('center');
+work_space.removeAll();
+work_space.add(panel);
+work_space.doLayout(); 
+
+function requestData() 
+{
+	$.ajax({
+		url: 'loaddata.json',
+		datatype: "json",
+		success: function(data) 
+		{
+			beginDate=Date.UTC(<%=(Time.now-6.day).strftime("%Y").to_i %>,<%= (Time.now-6.day).strftime("m").to_i %>-1, <%= (Time.now-6.day).strftime("%d").to_i %>);
+			someData = [];
+            unit=[' step',' km',' kj'];
+		    for( var j=0; j<data.data.length; j++)
+       		{
+		   		for (var i = 0; i < 7; i++){
+		         	someData.push([beginDate + (3600 * 1000 * 24 * i), data.data[j][i]]);
+ 					}
+				chart.addSeries({
+		       		name: data.items[j],
+		            data: someData,
+                    tooltip: {
+            			valueSuffix: unit[j],
+						valueDecimals: 1
+        			},
+		    	}); 
+     			someData=[] 
+			}
+	    }, 
+	});
+} 
+
+var highchartsOptions = Highcharts.setOptions({
+	lang: {
+		loading: 'Aguarde...',
+		months: ['<%= t('January') %>', '<%= t('February') %>', '<%= t('March') %>', '<%= t('April') %>', '<%= t('May') %>', '<%= t('June') %>', '<%= t('July') %>', '<%= t('August') %>', '<%= t('September') %>', '<%= t('October') %>', '<%= t('November') %>', '<%= t('December') %>'],
+		weekdays: ['<%= t('Sunday') %>', '<%= t('Monday') %>', '<%= t('Tuesday') %>', '<%= t('Wednesday') %>', '<%= t('Thursday') %>', '<%= t('Friday') %>', '<%= t('Saturday') %>'],
+		shortMonths: ['<%= t('Jan') %>', '<%= t('Feb') %>', '<%= t('Mar') %>', '<%= t('Apr') %>', '<%= t('May') %>', '<%= t('Jun') %>', '<%= t('Jul') %>', '<%= t('Aug') %>', '<%= t('Sep') %>', '<%= t('Oct') %>', '<%= t('Nov') %>', '<%= t('Dec') %>'],
+        exportButtonTitle: "Exportar",
+        printButtonTitle: "Imprimir",
+        rangeSelectorFrom: "De",
+        rangeSelectorTo: "Até",
+        rangeSelectorZoom: "Periodo",
+        downloadPNG: 'Download imagem PNG',
+        downloadJPEG: 'Download imagem JPEG',
+        downloadPDF: 'Download documento PDF',
+        downloadSVG: 'Download imagem SVG'
+        // resetZoom: "Reset",
+        // resetZoomTitle: "Reset,
+        // thousandsSep: ".",
+        // decimalPoint: ','
+	}
+});
+
+$(function () {
+    chart=new Highcharts.Chart({
+        chart: {
+            renderTo: 'container',
+                type: 'column',
+                events: {
+            		load: requestData
+        		}
+        },
+        title: {
+            text: 'welcome'
+        },
+        xAxis: {
+            type: 'datetime',
+            dateTimeLabelFormats: {
+            	day: '%A',
+        	},
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: ''
+            }
+        },
+        tooltip: {
+    		shared: false,
+			dateTimeLabelFormats: {
+                day: '%Y %b %e %A'
+                },
+    		
+		},
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [] 
+        });
+}); 
+

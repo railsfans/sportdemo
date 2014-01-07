@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  SDK: MyString
+  deviceID: MyString
+  versioncode: MyString
+  model: MyString
+  usertype: MyString
+  login_id: 1
+
+two:
+  SDK: MyString
+  deviceID: MyString
+  versioncode: MyString
+  model: MyString
+  usertype: MyString
+  login_id: 1

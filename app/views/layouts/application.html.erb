@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Header</title>
+  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+
+<%= yield :header %>
+<div id="header">
+<ul><li><%= link_to "first", home_first_path %></li><li><%= link_to "second", home_second_path %></li><li><%= link_to "third", home_third_path %></li></ul>
+</div>
+<div id="main">
+<%= yield %>
+</div>
+<div id="footer">
+<%= render :partial=>'/home/footer' %>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  step: 1
+  calorie: 1.5
+  distance: 1.5
+  user_type: MyString
+  user_id: 1
+
+two:
+  step: 1
+  calorie: 1.5
+  distance: 1.5
+  user_type: MyString
+  user_id: 1

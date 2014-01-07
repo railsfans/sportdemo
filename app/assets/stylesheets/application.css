@@ -1,0 +1,140 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the top of the
+ * compiled file, but it's generally better to create a new file per style scope.
+ *
+ *= require_self
+ *= require_tree .
+ */
+a {
+  	text-decoration:none;
+}
+.left-menu {
+    padding-top: 5px;
+//    background: #DFE8F6;
+}
+.left-menu a:link, .left-menu a:visited {
+    background: url("menu_shortcuts_bg.png") repeat scroll 0 0 transparent;
+    display: block;
+    height: 60px;
+    margin: 0 auto 5px;
+    overflow: hidden;
+    text-align: center;
+    width: 60px;
+}
+.left-menu a:hover, .left-menu a:active {
+    background: url("menu_shortcuts_bg_hover.png") repeat scroll 0 0 transparent;
+    color: #15428B;
+}
+.left-menu a.selected {
+    background: url("menu_shortcuts_bg_hover.png") repeat scroll 0 0 transparent;
+    color: #15428B;
+    cursor: default;
+}
+.left-menu a .menu-icon {
+    margin: 4px 2px 2px;  
+}
+.left-menu  .menu-text {
+    font-size: 12px;
+    color: #000000;   
+}
+
+.first, .second, .three, .four, .five {
+    background-image:url(connect.png);
+}
+.logout {
+    background-image:url(logout.png);
+}
+.hi {
+    width: 50px;
+    height: 72px;
+    background-image: url(sprite.png);
+    
+    -webkit-animation: play .8s steps(10) infinite;
+       -moz-animation: play .8s steps(10) infinite;
+        -ms-animation: play .8s steps(10) infinite;
+         -o-animation: play .8s steps(10) infinite;
+            animation: play .8s steps(10) infinite;
+}
+
+@-webkit-keyframes play {
+   from { background-position:    0px; }
+     to { background-position: -500px; }
+}
+
+@-moz-keyframes play {
+   from { background-position:    0px; }
+     to { background-position: -500px; }
+}
+
+@-ms-keyframes play {
+   from { background-position:    0px; }
+     to { background-position: -500px; }
+}
+
+@-o-keyframes play {
+   from { background-position:    0px; }
+     to { background-position: -500px; }
+}
+
+@keyframes play {
+   from { background-position:    0px; }
+     to { background-position: -500px; }
+}
+#picsection { 
+	text-align: center;
+	margin: 0 auto;
+	width: 900px;
+	border:2px solid #a1a1a1;
+	padding:10px 40px;
+	-moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -khtml-border-radius: 20px;
+    border-radius: 20px;
+}
+.pic {
+	border:2px solid #a1a1a1;
+	padding:10px 40px; 
+	background:#0099CC;
+	width:300px;
+	border-radius:25px;
+    margin: 12px;
+	height: 300px;
+	display: inline-block;
+	vertical-align: top;
+ 	position: relative;
+  	/*Dirty IE Hack*/
+  	zoom: 1;
+  	*display: inline;
+}
+.pic .text {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	font-size: 500%;
+	font-family:Arial;
+	color:#ffffff;
+	margin-top: -15px;
+  	margin-left: -15px;
+	width: 30px;
+	height: 30px;
+	text-align: center;
+	border: 2px solid #333;
+}
+
+#notice {
+	text-align: center;
+	margin: 10px auto;
+	width: 900px;
+	border:2px solid #a1a1a1;
+	padding:10px 40px;
+	-moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -khtml-border-radius: 20px;
+    border-radius: 20px;
+}

@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  versioncode: MyString
+  updatetime: 2014-01-07 14:31:31
+  softinfo: MyText
+
+two:
+  versioncode: MyString
+  updatetime: 2014-01-07 14:31:31
+  softinfo: MyText

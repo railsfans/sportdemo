@@ -1,0 +1,282 @@
+Ext.Ajax.defaultHeaders = { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') };
+itemsPerPage = 20;  
+
+var classstore = Ext.create('Ext.data.Store', {
+	autoLoad: false,
+    fields:['id','classname','count'],
+    pageSize: itemsPerPage, 
+    proxy: {
+        type: 'ajax',
+        url: 'classgrid.json',  
+       	extraParams : {
+			teacher_id : <%= current_user.id %>
+        },
+        reader: {
+            type: 'json',
+            root: 'gridData',
+            totalProperty: 'totalCount'
+        }
+    }  
+});
+
+classstore.load({
+    params:{
+        start:0,
+        limit: itemsPerPage,
+    }
+});
+
+var classgrid=Ext.create('Ext.grid.Panel',{
+	title : '<%= t('shclass manage') %>', 
+	frame:true,
+	viewConfig: {
+		forceFit : true,
+    		stripeRows: true
+		},
+	store:  classstore,
+	columns: [
+    	 {
+            xtype: 'rownumberer',
+            width: 60,
+            sortable: false,
+            header: '<%= t('list') %>', 
+            align: 'center'
+        },
+        {
+			header: '<%= t('id') %>', 
+			flex: 1, 
+			dataIndex: 'id', 
+			sortable: true, 
+			align: 'center', 
+			hidden: true
+		},
+		{
+			header: '<%= t('classname') %>', 
+			flex: 1, 
+			dataIndex: 'classname', 
+			sortable: true, 
+			align: 'center',
+		},
+		{
+			header: '<%= t('classstudentcount') %>', 
+			flex: 1, 
+			dataIndex: 'count', 
+			sortable: true, 
+			align: 'center',
+		}
+	],
+	dockedItems: [{
+	    xtype: 'pagingtoolbar',
+	    store: classstore,    
+	    dock: 'bottom',
+	    displayInfo: true,      
+	}],
+	listeners: {
+  	itemdblclick: function(dataview, index, item, e) {
+		var title=index.data['classname'];
+		var studentstore = Ext.create('Ext.data.Store', {
+	    autoLoad: false,
+	    fields:['id','realname','studentid','height','weight','sex'],
+	    pageSize: itemsPerPage,  
+	    proxy: {
+	        type: 'ajax',
+	        url: 'studentgrid.json',  
+	        reader: {
+	            type: 'json',
+	            root: 'gridData',
+	            totalProperty: 'totalCount'
+	        },
+     		extraParams : {
+             	shclass_id: index.data['id']
+          	}
+		}  
+		});
+
+		studentstore.load({
+		    params:{
+		        start:0,
+		        limit: itemsPerPage,
+		    }
+		});
+                   
+		var studentgrid=Ext.create('Ext.grid.Panel',{
+			title : title,
+			frame:true,
+			viewConfig: {
+				forceFit : true,
+            	stripeRows: true
+        	},
+			store: studentstore,
+			columns: [
+		 		{
+            		xtype: 'rownumberer',
+                	width: 60,
+                	sortable: false,
+                	header: '<%= t('list') %>', 
+                	align: 'center'
+				},
+             	{
+					header: '<%= t('id') %>', 
+					flex: 1, 
+					dataIndex: 'id', 
+					sortable: true, 
+					align: 'center', 
+					hidden: true
+				},
+				{
+					header: '<%= t('studentid') %>', 
+					flex: 1, 
+					dataIndex: 'studentid', 
+					sortable: true, 
+					align: 'center',
+				},
+					{
+					header: '<%= t('sex') %>', 
+					flex: 1, 
+					dataIndex: 'sex', 
+					sortable: true, 
+					align: 'center',
+				},
+                {
+					header: '<%= t('realname') %>', 
+					flex: 1, 
+					dataIndex: 'realname', 
+					sortable: true, 
+					align: 'center',
+				},
+				{
+					header: '<%= t('height') %>', 
+					flex: 1, 
+					dataIndex: 'height', 
+					sortable: true, 
+					align: 'center',
+				},
+                {
+					header: '<%= t('weight') %>', 
+					flex: 1, 
+					dataIndex: 'weight', 
+					sortable: true, 
+					align: 'center',
+				}
+				],
+           		dockedItems: [{
+	        		xtype: 'pagingtoolbar',
+	        		store: studentstore,   
+	        		dock: 'bottom',
+	        		displayInfo: true,      
+	          	}],
+           		listeners: {
+		  			itemdblclick: function(dataview, index, item, e) {
+                    	var title=index.data['realname'];
+                    		var exercisestore = Ext.create('Ext.data.Store', {
+			    			autoLoad: false,
+			    			fields:['id','distance','calorie','motiontime','step'],
+			    			pageSize: itemsPerPage, // items per page
+						    proxy: {
+						        type: 'ajax',
+						        url: 'motiongrid.json',  
+						        reader: {
+						            type: 'json',
+						            root: 'gridData',
+						            totalProperty: 'totalCount'
+						        },
+                            	extraParams : {
+		                     		user_id: index.data['id']
+		                   		}
+			    			}  
+						});
+
+						exercisestore.load({
+			    			params:{
+			        			start:0,
+			        			limit: itemsPerPage,
+			    			}
+						});
+                        var exercisegrid=Ext.create('Ext.grid.Panel',{
+							title : title,
+							frame:true,
+							viewConfig: {
+								forceFit : true,
+	            				stripeRows: true
+	        				},
+							store: exercisestore,
+							columns: [
+			 				{
+                            	xtype: 'rownumberer',
+                            	width: 60,
+                            	sortable: false,
+                            	header: '<%= t('list') %>', 
+                            	align: 'center'
+                            },
+                            {
+								header: '<%= t('id') %>', 
+								flex: 1, 
+								dataIndex: 'id', 
+								sortable: true, 
+								align: 'center', 
+								hidden: true
+							},
+							{
+								header: '<%= t('exercisetime') %>', 
+								flex: 1, 
+								dataIndex: 'motiontime', 
+								sortable: true, 
+								align: 'center',
+							},
+                            {
+								header: '<%= t('step') %>', 
+								flex: 1, 
+								dataIndex: 'step', 
+								sortable: true, 
+								align: 'center',
+							},
+							{
+								header: '<%= t('distance') %>', 
+								flex: 1, 
+								dataIndex: 'distance', 
+								sortable: true, 
+								align: 'center',
+							},
+                            {
+								header: '<%= t('calories') %>', 
+								flex: 1, 
+								dataIndex: 'calorie', 
+								sortable: true, 
+								align: 'center',
+							} 
+							],
+                    		dockedItems: [{
+						        xtype: 'pagingtoolbar',
+						        store: exercisestore,   
+						        dock: 'bottom',
+						        displayInfo: true,      
+	          				}],
+                  		});
+                    	var tabPage = tabpanel.add({ 
+							title: title,
+							closable : true,
+                        	items : [exercisegrid],
+                        	layout: 'fit'
+						})
+						tabpanel.setActiveTab(tabPage); 
+				}}      // end listen exercisegrid
+		}); // end studentgrid
+        var tabPage = tabpanel.add({ 
+			title: title,
+			closable : true,
+            items : [studentgrid],
+            layout: 'fit'
+		})
+		tabpanel.setActiveTab(tabPage); 
+	}} // end listen classgrid
+}); // end classgrid
+var tabpanel=Ext.create('Ext.tab.Panel', {
+    width: 400,
+    height: 400,
+    items: [classgrid]
+});
+
+var work_space = Ext.getCmp('center');
+work_space.removeAll();
+work_space.add(tabpanel);
+work_space.doLayout();

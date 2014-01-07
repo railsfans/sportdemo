@@ -1,0 +1,248 @@
+﻿Ext.Ajax.defaultHeaders = { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') };
+Ext.onReady(function() {
+ var dataProvince = [  
+        ['河北', '河北'],  
+        ['内蒙古', '内蒙古']  
+    ];  
+    var dataCityHebei = [  
+        ['唐山', '唐山'],  
+        ['秦皇岛', '秦皇岛'],  
+        ['承德', '承德'],  
+        ['张家口', '张家口']  
+    ];  
+    var dataCityNeimenggu = [  
+        ['呼和浩特', '呼和浩特'],  
+        ['包头', '包头']  
+    ];  
+    var dataCountyTangshan = [  
+        ['路南区', '路南区'],  
+        ['路北区', '路北区'],  
+        ['古治区', '古治区'],  
+        ['丰润区', '丰润区'],  
+        ['丰南区', '丰南区'],  
+        ['玉田', '玉田'],  
+        ['遵化', '遵化'],  
+        ['迁西', '迁西'],  
+        ['迁安', '迁安'],  
+        ['滦县', '滦县'],  
+        ['乐亭', '乐亭'],  
+        ['唐海', '唐海']  
+    ];  
+    var dataCountUnknow = [  
+        ['不知道', '不知道']  
+    ];  
+    var storeProvince = new Ext.data.SimpleStore({  
+        fields:['value', 'text'],  
+        data:dataProvince  
+    });  
+    var storeCity = new Ext.data.SimpleStore({  
+        fields:['value', 'text'],  
+        data:[]  
+    });  
+    var storeCounty = new Ext.data.SimpleStore({  
+        fields:['value', 'text'],  
+        data:[]  
+    });  
+    var comboProvince = new Ext.form.ComboBox({  
+        store:storeProvince,  
+        emptyText:'请选择省份',  
+        mode:'local',  
+        triggerAction:'all',  
+        valueField:'value',  
+        displayField:'text',  
+        fieldLabel:'请选择省份'  
+    });  
+    var comboCity = new Ext.form.ComboBox({  
+        store:storeCity,  
+        emptyText:'请选择城市',  
+        mode:'local',  
+        triggerAction:'all',  
+        valueField:'value',  
+        displayField:'text',  
+        fieldLabel:'请选择城市'  
+    });  
+    var comboCounty = new Ext.form.ComboBox({  
+        store:storeCounty,  
+        emptyText:'请选择县级',  
+        mode:'local',  
+        triggerAction:'all',  
+        valueField:'value',  
+        displayField:'text',  
+        fieldLabel:'请选择县级'  
+    });  
+    var entity = function(province, city, county) {  
+        this.province = province;  
+        this.city = city;  
+        this.county = county;  
+    }  
+    var en = new entity();  
+    comboProvince.on('select', function(comboBox){  
+        var province = comboBox.getValue();  
+        en.province = province;  
+        if (province == '河北') {  
+            storeCity.loadData(dataCityHebei);  
+            comboCity.clearValue();  
+            comboCounty.clearValue();  
+        } else if (province == '内蒙古') {  
+            storeCity.loadData(dataCityNeimenggu);  
+            comboCity.clearValue();  
+            comboCounty.clearValue();  
+        }  
+    });  
+    comboCity.on('select', function(comboBox) {  
+        var city = comboBox.getValue();  
+        en.city = city;  
+        if (city == '唐山') {  
+            storeCounty.loadData(dataCountyTangshan);  
+            comboCounty.clearValue();  
+        }else {  
+            storeCounty.loadData(dataCountUnknow);  
+            comboCounty.clearValue();  
+        }  
+    });  
+    comboCounty.on('select', function(comboBox) {  
+        var county = comboBox.getValue();  
+        en.county = county;  
+        Ext.Msg.alert('提示', en.province + '省' + en.city + '市' + en.county + '县');  
+    });  
+Ext.getCmp('left').items.items[1].expand();
+Ext.QuickTips.init();
+var required = '<span style="color:red;font-weight:bold" data-qtip="Required">*</span>';
+var personinfopanel = Ext.widget({
+    xtype: 'form',
+    id: 'multiColumnForm',
+    collapsible: true,
+    frame: true,
+    title: 'Multi Column, Nested Layouts and Anchoring',
+    bodyPadding: '5 5 0',
+    width: 600,
+    fieldDefaults: {
+        labelAlign: 'left',
+        msgTarget: 'side'
+    },
+	autoScroll: true,
+    items: [{
+        xtype: 'container',
+        anchor: '100%',
+        layout: 'hbox',
+        items:[{
+            xtype: 'container',
+            flex: 1,
+            layout: 'anchor',
+            items: [{
+                xtype:'textfield',
+                fieldLabel: 'username',
+                afterLabelTextTpl: required,
+                allowBlank: false,
+                name: 'username',
+                anchor:'95%',
+                value: '<%= current_user.username %>'
+            }, {
+                xtype:'textfield',
+                fieldLabel: 'realname',
+                name: 'name',
+                anchor:'95%',
+				value: '<%= Student.find(current_user.id).name %>'
+            },{
+            xtype: 'radiogroup',
+            fieldLabel: 'sex',
+			anchor:'95%',
+            items: [
+                {boxLabel: 'male', name: 'sex', inputValue: 'true', checked: <%=Student.find(current_user.id).sex ==true ? true : false%>},
+                {boxLabel: 'female', name: 'sex', inputValue: 'false', checked: <%=Student.find(current_user.id).sex ==false ? true : false %>}
+            ]
+        }]
+        },{
+            xtype: 'container',
+            flex: 1,
+            layout: 'anchor',
+            items: [{
+                xtype:'textfield',
+                fieldLabel: 'height',
+                name: 'height',
+                anchor:'95%',
+				value: '<%= Student.find(current_user.id).height %>',
+            },{
+                xtype:'textfield',
+                fieldLabel: 'Email',
+                afterLabelTextTpl: required,
+                allowBlank: false,
+                name: 'email',
+                vtype:'email',
+                anchor:'95%',
+                value: '<%= Student.find(current_user.id).email %>',
+            },{
+            xtype : 'hidden',  //should use the more standard hiddenfield
+            name  : 'user_id',
+            value: '<%= Student.find(current_user.id).id %>'
+        	},comboProvince, comboCity,comboCounty ]
+        },{
+            xtype: 'container',
+            flex: 1,
+            layout: 'anchor',
+            items: [{
+		        xtype: 'numberfield',
+		        anchor: '100%',
+		        name: 'weight',
+		        fieldLabel: 'weight',
+		        value: '<%= Student.find(current_user.id).weight %>',
+		        minValue: 0.01,
+                maxValue: 200,
+		    	}, {
+		            fieldLabel: 'birthday',
+		            name: 'birthday',
+		            xtype: 'datefield',
+					anchor:'100%'
+			}]
+        }]
+    }, {
+        xtype: 'htmleditor',
+        name: 'profile',
+		labelAlign: 'top',
+        fieldLabel: 'profile',
+        height: 200,
+        anchor: '100%'
+    }],
+	buttonAlign: 'center',
+    buttons: [{
+        text: 'Save',
+        handler: function() {
+            if(this.up('form').getForm().isValid())
+            	this.up('form').getForm().submit({
+                	url: 'changepersoninfo.json',                     
+               		waitMsg: 'waiting',
+                 	success: function(fp, o) { 
+     					Ext.Msg.alert('Error', 'form is not valid');
+						function hide_message() {
+    						Ext.defer(function() {
+        					Ext.MessageBox.hide();
+    					}, 1000);
+						}
+						hide_message();     									  
+                  	},
+                 	failure: function(form,action){
+                         
+                           					
+                	}
+                    });
+        }
+    },{
+        text: 'Cancel',
+        handler: function() {
+            this.up('form').getForm().reset();
+        }
+    }]
+});
+
+			
+		
+var work_space = Ext.getCmp('center');
+work_space.removeAll();
+work_space.add(personinfopanel);
+work_space.doLayout();
+
+})
+$(function(){
+	$("#personinfo-management a").removeClass("selected");
+	$("#personinfo-management a:first").addClass("selected");
+})
