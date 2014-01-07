@@ -1,4 +1,6 @@
 require "bundler/capistrano" 
+ssh_options[:forward_agent] = true
+default_run_options[:pty] = true
 set :application, "sportdemo"
 set :repository,  "sportdemo"
 set :scm, :git
