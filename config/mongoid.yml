@@ -81,7 +81,7 @@ test:
 production:
   sessions:
     default:
-      database: sportdemo_test
+      database: sportdemo_production
       hosts:
         - localhost:10001
       options:
