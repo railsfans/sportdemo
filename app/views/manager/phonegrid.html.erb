@@ -1,0 +1,286 @@
+<script>
+Ext.Ajax.defaultHeaders = { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') };
+Ext.onReady(function(){
+itemsPerPage = 20;  
+function phone_action_handler(type) {
+	var form = new Ext.form.Panel({
+	width: 500,
+	frame: true,
+	height: 300,
+	defaults: {
+  		anchor: '100%',
+ 		allowBlank: false,
+  		msgTarget: 'side',
+		labelWidth: 60
+    },
+    items: [
+        {xtype:"hidden",name: "id"},   
+        {xtype:"textfield",fieldLabel: '<%= t('versioncode') %>',name: "versioncode"},  
+        {xtype:"textarea",fieldLabel: '<%= t('softinfo') %>',name: "softinfo"}      
+    ],
+    buttonAlign:"center",       
+    buttons: [
+        {
+            text: '<%= t('save') %>',
+            handler:function() {                   
+                if (form.getForm().isValid()) {
+                    switch (type) {
+                    case "add":
+	                    form.submit({
+	                    url: 'phone_version_add.json',                       
+	                    waitMsg: '<%= t('waiting') %>',
+	                    success: function(fp, o) {                   
+	              			phonestore.reload();              
+	                		phone_window.close();										  
+	                    },
+	                    failure: function(form,action){
+	                    	phonestore.reload();
+	                        show_tip_message('<%= t('enter same phoneid') %>')
+			   				phone_window.close();						
+	                    }
+	                	});
+	                    break;
+                    case "edit": 
+	                    form.submit({
+							url: 'phone_version_edit.json',
+	                    	waitMsg: '<%= t('uploading') %>',
+	                    	success: function(fp, o) {
+	                        	phonestore.reload();
+	                        	phone_window.close();										  
+	                    	},
+	                    	failure: function(form,action){
+		                    	phonestore.reload();
+		                  		show_tip_message('<%= t('enter same phoneid') %>')
+				   				phone_window.close();						
+		                    }
+	                	});
+	                    break;
+                    }     //switch     
+                }       //form                 
+           	}      //handler 
+      	},                    
+        {
+            text: '<%= t('cancel') %>',
+            handler:function() {
+                phone_window.close()
+            }
+        }
+    ]
+	});
+	var phone_window = new Ext.Window({
+	    width:400,
+	    height:200,
+	    resizable:false,
+	    layout:"fit",
+	    closeAction:'close',
+	    plain: true,
+	    constrainHeader:true,
+	    modal:true,	    bodyStyle: 'padding:5px;',
+	    items:[form]
+	});
+  	var rows = phonegrid.getSelectionModel().getSelection();
+    if (type == "add") {
+		phone_window.show();
+        phone_window.setTitle('<%= t('add phone version') %>');
+    }  
+	else if(type == "edit"){
+		if(rows.length==1){
+    		form.getForm().setValues({
+                id:rows[0].get("id"),
+                versioncode:rows[0].get("versioncode"),
+                softinfo:rows[0].get("softinfo"),
+                updatetime: rows[0].get("updatetime"),
+            });
+            phone_window.show();
+            phone_window.setTitle('<%= t('edit phone data') %>');
+    	}
+  		else if(rows.length>1)
+ 		{
+   			show_tip_message('<%= t('chose one more data') %>')
+		}
+   		else {
+            show_tip_message('<%= t('chose a data') %>')
+    	}
+	}
+	else
+	{
+  		if(rows.length!=0){
+   			var delete_id="";
+    		for(var i=0; i<rows.length; i++){
+           		delete_id+=rows[i].get("id");
+               	if(i!=rows.length-1){
+             		delete_id+=",";
+                }
+      		};
+     		Ext.MessageBox.confirm('<%= t('delete') %>', '<%= t('are you sure') %>', function(btn){
+		 		if(btn === 'yes'){
+		  			Ext.Ajax.request({
+			    		url: 'phone_version_delete',
+			    		params: { id : delete_id },
+			    		success: function(response){
+				       		var obj = Ext.decode(response.responseText);
+		                		if (obj.success) {
+		                 			phonestore.reload();
+		                      	} else {
+		                     		show_tip_message("false")
+		                      	}
+		              		},
+	        			failure: function(response) {
+	                		show_tip_message("network false")
+	               		}                
+                 	});
+		 		}
+		 		else{
+ 
+		   		}
+			});
+		}
+    	else
+   		{
+     		show_tip_message('<%= t('chose a data') %>')
+   		}
+	}
+}
+
+
+var phonestore = Ext.create('Ext.data.Store', {
+    autoLoad: false,
+    fields:['id','softinfo','updatetime','versioncode'],
+    pageSize: itemsPerPage,  
+    proxy: {
+        type: 'ajax',
+        url: 'phonesoftlog.json',   
+        reader: {
+            type: 'json',
+            root: 'gridData',
+            totalProperty: 'totalCount'
+        }
+    }  
+});
+ 
+phonestore.load({
+    params:{
+        start:0,
+        limit: itemsPerPage,
+    }
+});
+
+var phonegrid=Ext.create('Ext.grid.Panel',{
+	title : '<%= t('phone manage') %>', 
+	frame:true,
+	viewConfig: {
+		forceFit : true,
+    		stripeRows: true
+	},
+	store:  phonestore,
+	columns: [ 
+	    {
+	        xtype: 'rownumberer',
+	        width: 60,
+	        sortable: false,
+	        header: '<%= t('list') %>', 
+	        align: 'center'
+	    },
+ 		{
+			header: '<%= t('id') %>', 
+			flex: 1, 
+			dataIndex: 'id', 
+			sortable: true, 
+			align: 'center', 
+			hidden: true
+		},
+        {
+			header: '<%= t('versioncode') %>', 
+			flex: 1, 
+			dataIndex: 'versioncode', 
+			sortable: true, 
+			align: 'center',
+		},
+		{
+			header: '<%= t('softinfo') %>', 
+			flex: 1, 
+			dataIndex: 'softinfo', 
+			sortable: true, 
+			align: 'center',  
+			renderer: function (value, meta, record) {
+         		var max = 20;
+              	meta.tdAttr = 'data-qtip="' + value + '"';
+              	return value.length < max ? value : value.substring(0, max) + '...';
+         	}
+		},
+		{
+			header: '<%= t('updatetime') %>', 
+			flex: 1, 
+			dataIndex: 'updatetime', 
+			sortable: true, 
+			align: 'center',   
+			renderer: function (value, meta, record) {
+                return value.replace('T',' ').replace('Z','');
+        	}
+		} 
+		],
+   		dockedItems: [{
+			xtype: 'pagingtoolbar',
+			store: phonestore,   
+		  	dock: 'bottom',
+		 	displayInfo: true,   
+			items:[
+		    	'-',
+              	{ 
+					text: '<%= t('add') %>', 
+					iconCls:"silk-user_add", 
+					handler: function() {
+				        phone_action_handler("add")
+					}
+				},
+				{ 
+					text: '<%= t('edit') %>', 
+					iconCls:"silk-user_edit", 
+					handler: function() {
+				        phone_action_handler("edit")
+					}
+				},
+				{ 
+					text: '<%= t('delete') %>', 
+					iconCls:"silk-user_delete", 
+					handler: function() {
+				        phone_action_handler("delete")
+					}
+				},
+		        {
+			    	xtype: 'textfield',
+			    	hideLabel: true,
+			    	width: 70,
+			    	id: "keyname",
+			    },
+                {
+                    text: 'upload', handler: function(){
+                         phone_action_handler("upload")
+                	} 
+                }, 
+			   	{ 
+					text: '<%= t('search') %>',
+					id:"search_record_button", 
+					iconCls:"silk-zoom", 
+					handler:function(){
+						record_search("search")
+					} 
+				},
+		        { 
+					text: '<%= t('clear') %>', 
+					id:"clear_record_button", 
+					disabled:true, 
+					handler: function(){
+						record_search("clear")
+					} 
+				}
+			]       
+		}]                
+});
+
+var work_space = Ext.getCmp('center');
+work_space.removeAll();
+work_space.add(phonegrid);
+work_space.doLayout();
+})
+</script>
