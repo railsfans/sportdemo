@@ -1,10 +1,32 @@
 <%= show_simple_captcha %>
 <script>
 ﻿Ext.Ajax.defaultHeaders = { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') };
-Ext.BLANK_IMAGE_URL='image/blank.gif';  
+Ext.BLANK_IMAGE_URL='assets/rails.png';  
 var login = function(){  
     Ext.QuickTips.init(); 
-    var form = new Ext.form.FormPanel({   
+	var form;
+	function submitOnEnter(field, event) {
+		if (event.getKey() == event.ENTER) {
+			field.up('form').getForm().submit({ 
+                        method:'POST', 
+                        waitTitle:'Connecting', 
+                        waitMsg:'Sending data...',
+                        success:function(rec, op){ 
+								if(op.result.type=='student')
+									window.location.href="http://"+'<%= request.original_url.split('/')[2] %>'+'/student/historydata'
+								else if(op.result.type=='teacher')
+									window.location.href="http://"+'<%= request.original_url.split('/')[2] %>'+"/teacher/index"
+								else
+									window.location.href="http://"+'<%= request.original_url.split('/')[2] %>'+"/manager/index"
+                        },
+                        failure:function(forms, action){ 
+                            Ext.Msg.alert('Warning!', 'password or username or confirmation code wrong'); 
+                            form.getForm().reset(); 
+                        } 
+                    }); 
+		}
+	}
+	form = new Ext.form.FormPanel({   
         defaultType:'textfield',  
         labelAlign:'right',  
         labelWidth:60,  
@@ -47,9 +69,15 @@ var login = function(){
                                 name:'captcha'}]  
                             } ]  
            }  
-        ], 
-         buttonAlign:"center",  
-         buttons:[{ 
+        ],
+		defaults: {
+			listeners: {
+				specialkey: submitOnEnter
+			}
+		},
+		url: 'sessions/create',
+      	buttonAlign:"center",  
+		buttons:[{ 
                 text:'Login',
                 handler:function(){ 
                     if (form.getForm().isValid()) {
@@ -57,14 +85,13 @@ var login = function(){
                         method:'POST', 
                         waitTitle:'Connecting', 
                         waitMsg:'Sending data...',
-                        url: 'sessions/create',
                         success:function(rec, op){ 
 								if(op.result.type=='student')
-									window.location.href="http://localhost:3000"
+									window.location.href="http://"+'<%= request.original_url.split('/')[2] %>'+'/student/historydata'
 								else if(op.result.type=='teacher')
-									window.location.href="http://localhost:3000/teacher/index"
+									window.location.href="http://"+'<%= request.original_url.split('/')[2] %>'+"/teacher/index"
 								else
-									window.location.href="http://localhost:3000/manager/index"
+									window.location.href="http://"+'<%= request.original_url.split('/')[2] %>'+"/manager/index"
                         },
                         failure:function(forms, action){ 
                             Ext.Msg.alert('Warning!', 'password or username or confirmation code wrong'); 

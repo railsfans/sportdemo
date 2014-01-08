@@ -26,13 +26,13 @@ Ext.onReady(function() {
                     handler : function ( b, e ) {
                       	Ext.Msg.confirm("Messagebox Title", "Are you sure logout?", function(e){if(e == 'yes'){
 						 	Ext.Ajax.request({
-                   			url: 'http://localhost:3000/logout',
-                   			success: function(response, opts) {
-                       			window.location.href="http://localhost:3000/login"
-		                   },
-		                   failure: function(response, opts) {
-		                      console.log('server-side failure with status code ' + response.status);
-		                   }
+	                   			url: "http://"+document.location.href.split('/')[2]+'/logout',
+	                   			success: function(response, opts) {
+	                       			window.location.href="http://"+document.location.href.split('/')[2]+'/login'
+			                   },
+			                   failure: function(response, opts) {
+			                      console.log('server-side failure with status code ' + response.status);
+			                   }
                 			});
 						}
 						});
