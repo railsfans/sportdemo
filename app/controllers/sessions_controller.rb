@@ -48,7 +48,7 @@ def destroy
 #	params[:logintype]= params[:logintype] || 'pc'
 #	if params[:logintype]=='pc'
 		reset_session 
-		redirect_to login_path, :notice => "You successfully logged out" 
+#		redirect_to login_path, :notice => "You successfully logged out" 
 #	else if params[:logintype]='phone'
 #		Phonelock.where(:token=>params[:passwordtoken).first.update_attributes(:token=>'', :status=>false)
 #		format.json{ render :json=>{:message=>"success logout"}}
