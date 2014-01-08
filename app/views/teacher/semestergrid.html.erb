@@ -130,6 +130,11 @@ var semestergrid=Ext.create('Ext.grid.Panel',{
             },
             disabled: true
         }],
+	bbar: Ext.create('Ext.PagingToolbar', {
+	    store: semesterstore,
+	    displayInfo: true,
+	    plugins: Ext.create('Ext.ux.ProgressBarPager', {})
+	}),
 	plugins: [rowEditing],
 	listeners: {
         edit: function(editor, e) {

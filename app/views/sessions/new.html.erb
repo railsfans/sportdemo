@@ -60,9 +60,11 @@ var login = function(){
                         url: 'sessions/create',
                         success:function(rec, op){ 
 								if(op.result.type=='student')
-								window.location.href="http://localhost:3000"
+									window.location.href="http://localhost:3000"
+								else if(op.result.type=='teacher')
+									window.location.href="http://localhost:3000/teacher/index"
 								else
-								window.location.href="http://localhost:3000/teacher/index"
+									window.location.href="http://localhost:3000/manager/index"
                         },
                         failure:function(forms, action){ 
                             Ext.Msg.alert('Warning!', 'password or username or confirmation code wrong'); 

@@ -8,6 +8,8 @@ Sportdemo::Application.routes.draw do
 
   match "teacher/classgrid"=>"teacher#classgrid"
   match "teacher/semestergrid"=>"teacher#semestergrid"
+
+  match "manager/phonegrid"=>"manager#phonegrid"
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

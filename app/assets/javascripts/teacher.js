@@ -14,6 +14,7 @@
 //= require jquery_ujs
 //= require ext-all
 //= require ext-lang-zh_CN
+//= require ProgressBarPager
 //= require teacherinit
 //= require highcharts
 //= require highcharts-more
