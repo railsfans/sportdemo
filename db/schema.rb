@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140107063205) do
+ActiveRecord::Schema.define(:version => 20140109065254) do
 
   create_table "logins", :force => true do |t|
     t.string   "hashed_password"
@@ -112,6 +112,7 @@ ActiveRecord::Schema.define(:version => 20140107063205) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
     t.string   "phone"
+    t.string   "studentid"
   end
 
   create_table "teachers", :force => true do |t|

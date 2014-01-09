@@ -82,6 +82,19 @@ def getversioninfo
    end
 end 
 
+def updateuserinfo
+	params[:passwdtoken]=params[:passwdtoken] || ''
+	if !params[:passwdtoken].empty? && !Phonelock.where(:token=>params[:passwdtoken]).empty?
+		flag=true
+		Login.getuserinfo(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).first.update_attributes(:email=>params[:email], :name=>params[:name], :sex=>params[:sex]=='male' ? true : false , :height=>params[:height], :weight=>params[:weight], :phone=>params[:phone])
+	else
+		flag=false
+	end
+	respond_to do |format|
+		format.json { render :json=>{ :success=>flag }}
+	end
+end
+
   
 def login 
 	user = Login.phone_authenticate(params[:username], params[:password]) 
@@ -98,7 +111,7 @@ def login
     end
     respond_to do |format|
 		if flag
-			format.json { render :json=>{:usertype=>user.first.usertype, :userdata=>{:email=>Login.getuserinfo(user.first.id).first.email, :sex=>Login.getuserinfo(user.first.id).first.sex==true ? 'male' : 'female', :phone=>Login.getuserinfo(user.first.id).first.phone, :height=>Login.getuserinfo(user.first.id).first.height, :weight=>Login.getuserinfo(user.first.id).first.weight, :name=>Login.getuserinfo(user.first.id).first.name}, :passwdtoken=>passwdtoken} }
+			format.json { render :json=>{:usertype=>user.first.usertype, :userdata=>{:email=>Login.getuserinfo(user.first.id).first.email, :sex=>Login.getuserinfo(user.first.id).first.sex==true ? 'male' : 'female', :phone=>Login.getuserinfo(user.first.id).first.phone, :height=>Login.getuserinfo(user.first.id).first.height, :weight=>Login.getuserinfo(user.first.id).first.weight, :name=>Login.getuserinfo(user.first.id).first.name, :studentid=>Login.getuserinfo(user.first.id).first.studentid}, :passwdtoken=>passwdtoken} }
        	else
        		format.json	{ render :json=>{:errormessage=>message}}
        	end
