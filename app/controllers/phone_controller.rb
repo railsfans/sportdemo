@@ -84,7 +84,7 @@ end
 
 def updateuserinfo
 	params[:passwdtoken]=params[:passwdtoken] || ''
-	if !params[:passwdtoken].empty? && !Phonelock.where(:token=>params[:passwdtoken]).empty?
+	if !params[:passwdtoken].empty? && !Phonelock.where(:token=>params[:passwdtoken],:status=>true).empty?
 		flag=true
 		Login.getuserinfo(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).first.update_attributes(:email=>params[:email], :name=>params[:name], :sex=>params[:sex]=='male' ? true : false , :height=>params[:height], :weight=>params[:weight], :phone=>params[:phone])
 	else
@@ -105,9 +105,7 @@ def login
     	flag=true
      	passwdtoken=Login.newpass(12)
 		phonelock=Phonelock.where(:login_id=>user.first.id).first_or_create(:login_id=>user.first.id, :status=>true, :token=>passwdtoken)
-		if 	phonelock.status==false
-			phonelock.update_attributes(login_id=>user.first.id, :status=>true, :token=>passwdtoken)
-		end
+		phonelock.update_attributes(:login_id=>user.first.id, :status=>true, :token=>passwdtoken)
     end
     respond_to do |format|
 		if flag
