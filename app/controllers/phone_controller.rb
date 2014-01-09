@@ -111,7 +111,7 @@ def login
     end
     respond_to do |format|
 		if flag
-			format.json { render :json=>{:usertype=>user.first.usertype, :userdata=>{:email=>Login.getuserinfo(user.first.id).first.email, :sex=>Login.getuserinfo(user.first.id).first.sex==true ? 'male' : 'female', :phone=>Login.getuserinfo(user.first.id).first.phone, :height=>Login.getuserinfo(user.first.id).first.height, :weight=>Login.getuserinfo(user.first.id).first.weight, :name=>Login.getuserinfo(user.first.id).first.name, :studentid=>Login.getuserinfo(user.first.id).first.studentid}, :passwdtoken=>passwdtoken} }
+			format.json { render :json=>{:usertype=>user.first.usertype, :userdata=>{:email=>Login.getuserinfo(user.first.id).first.email, :sex=>Login.getuserinfo(user.first.id).first.sex==true ? 'male' : 'female', :phone=>Login.getuserinfo(user.first.id).first.phone, :height=>Login.getuserinfo(user.first.id).first.height, :weight=>Login.getuserinfo(user.first.id).first.weight, :name=>Login.getuserinfo(user.first.id).first.name, :studentid=>Login.getuserinfo(user.first.id).first.studentid, :class=>'class 1'}, :passwdtoken=>passwdtoken} }
        	else
        		format.json	{ render :json=>{:errormessage=>message}}
        	end

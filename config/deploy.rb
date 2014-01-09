@@ -29,7 +29,7 @@ namespace :deploy do
   end
   
    task :dev_migrate do
-     run "cd /opt/sportdemo/current; rake db:migrate RAILS_ENV=production"
+     run "cd /opt/sportdemo/current; bundle exec rake db:migrate RAILS_ENV=production"
    end
    
    task :restart do 
