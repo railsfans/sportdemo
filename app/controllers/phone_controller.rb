@@ -89,9 +89,32 @@ def updateuserinfo
 		Login.getuserinfo(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).first.update_attributes(:email=>params[:email], :name=>params[:name], :sex=>params[:sex]=='male' ? true : false , :height=>params[:height], :weight=>params[:weight], :phone=>params[:phone])
 	else
 		flag=false
+		message="please send passwdtoken or passwdtoken wrong"
 	end
 	respond_to do |format|
-		format.json { render :json=>{ :success=>flag }}
+		if flag
+			format.json { render :json=>{ :success=>flag }}
+		else
+			format.json { render :json=>{ :success=>flag, :errormessage=>message}}
+		end
+	end
+end
+
+def resetpassword
+	params[:passwdtoken]=params[:passwdtoken] || ''
+	if !params[:passwdtoken].empty? && !Phonelock.where(:token=>params[:passwdtoken],:status=>true).empty? && Login.getuserinfo(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).first.passwd==params[:oldpasswd]
+		flag=true
+		Login.getuserinfo(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).first.update_attributes(:passwd=>params[:newpasswd])
+	else
+		flag=false
+		message="please send passwdtoken or passwdtoken wrong"
+	end
+	respond_to do |format|
+		if flag
+			format.json { render :json=>{ :success=>flag }}
+		else
+			format.json { render :json=>{ :success=>flag, :errormessage=>message}}
+		end
 	end
 end
 
