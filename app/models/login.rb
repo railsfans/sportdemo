@@ -9,6 +9,8 @@ class Login < ActiveRecord::Base
     has_one :teacher
     has_one :manager
     has_one :student
+
+	has_many :devices
    
 	def self.authenticate(username, password, usertype) 
 		user = find_by_username_and_usertype(username, usertype) 

@@ -86,14 +86,13 @@ def getdeviceinfo
 	params[:passwdtoken]=params[:passwdtoken] || ''
 	if !params[:passwdtoken].empty? && !Phonelock.where(:token=>params[:passwdtoken],:status=>true).empty?
 		flag=true
-		Login.getuserinfo(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).first.devices
 	else
 		flag=false
 		message="equipment haven't bound"
 	end
 	respond_to do |format|
 		if flag
-			format.json { render :json=>{ :success=>flag }}
+			format.json { render :json=>{ :success=>flag, :battery=>Login.find(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).devices.first.battery, :lastupdate=>Login.find(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).devices.first.lastupdate.to_s.gsub(/ UTC/, ''), :deviceid=>Login.find(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).devices.first.deviceid }}
 		else
 			format.json { render :json=>{ :success=>flag, :errormessage=>message}}
 		end

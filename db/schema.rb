@@ -11,7 +11,16 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140109065254) do
+ActiveRecord::Schema.define(:version => 20140110130303) do
+
+  create_table "devices", :force => true do |t|
+    t.integer  "login_id"
+    t.integer  "battery"
+    t.string   "deviceid"
+    t.datetime "lastupdate"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "logins", :force => true do |t|
     t.string   "hashed_password"
