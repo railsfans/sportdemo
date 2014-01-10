@@ -102,9 +102,9 @@ end
 
 def resetpassword
 	params[:passwdtoken]=params[:passwdtoken] || ''
-	if !params[:passwdtoken].empty? && !Phonelock.where(:token=>params[:passwdtoken],:status=>true).empty? && Login.getuserinfo(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).first.passwd==params[:oldpasswd]
+	if !params[:passwdtoken].empty? && !Phonelock.where(:token=>params[:passwdtoken],:status=>true).empty? && Login.find(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).hashed_password==params[:oldpasswd]
 		flag=true
-		Login.getuserinfo(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).first.update_attributes(:hashed_password=>params[:newpasswd])
+		Login.find(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).update_attributes(:hashed_password=>params[:newpasswd])
 	else
 		flag=false
 		message="please send right passwd and passwdtoken"
