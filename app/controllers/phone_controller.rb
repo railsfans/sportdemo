@@ -139,6 +139,25 @@ def resetpassword
 	end
 end
 
+def getexercise
+	params[:data]=params[:data] || ''
+    params[:passwdtoken]=params[:passwdtoken] || ''
+	if !params[:data].empty? && !params[:passwdtoken].empty? && !Phonelock.where(:token=>params[:passwdtoken]).empty?
+		flag=true
+		exercisedata=Motiondata.where(:user_id=>Phonelock.where(:token=>params[:passwdtoken]).first.login_id, :user_type=>Login.find(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).usertype).where(:motiontime.lt=>Time.new(params[:data].split('-')[0],params[:data].split('-')[1],params[:data].split('-')[2]).end_of_day).where(:motiontime.gte=>Time.new(params[:data].split('-')[0],params[:data].split('-')[1],params[:data].split('-')[2]).beginning_of_day)
+	else
+		flag=false
+		errormessage="please send right params"
+	end
+	respond_to do |format|
+		if flag
+			format.json  { render :json=> {:success=>flag, :current=>{ :step=>exercisedata.sum(:step), :distance=>exercisedata.sum(:distance), :calorie=>exercisedata.sum(:calorie), :activetime=>exercisedata.sum(:step) } } }
+		else
+			format.json { render :json=> {:success=>flag, :errormessage=>errormessage } }
+		end	
+	end
+end
+
   
 def login 
 	user = Login.phone_authenticate(params[:username], params[:password]) 
@@ -153,7 +172,7 @@ def login
     end
     respond_to do |format|
 		if flag
-			format.json { render :json=>{:usertype=>user.first.usertype, :userdata=>{:email=>Login.getuserinfo(user.first.id).first.email, :sex=>Login.getuserinfo(user.first.id).first.sex==true ? 'male' : 'female', :phone=>Login.getuserinfo(user.first.id).first.phone, :height=>Login.getuserinfo(user.first.id).first.height, :weight=>Login.getuserinfo(user.first.id).first.weight, :name=>Login.getuserinfo(user.first.id).first.name, :studentid=>Login.getuserinfo(user.first.id).first.studentid, :class=>'class 1'}, :passwdtoken=>passwdtoken} }
+			format.json { render :json=>{:usertype=>user.first.usertype, :userdata=>{:email=>Login.getuserinfo(user.first.id).first.email, :sex=>Login.getuserinfo(user.first.id).first.sex==true ? 'male' : 'female', :phone=>Login.getuserinfo(user.first.id).first.phone, :height=>Login.getuserinfo(user.first.id).first.height, :weight=>Login.getuserinfo(user.first.id).first.weight, :name=>Login.getuserinfo(user.first.id).first.name, :studentid=>Login.getuserinfo(user.first.id).first.studentid, :class=>'class 1'}, :passwdtoken=>passwdtoken, :current=>{ :step=>Motiondata.where(:user_id=>user.first.id, :user_type=>user.first.usertype).where(:motiontime.lt=>Time.now.end_of_day).where(:motiontime.gte=>Time.now.beginning_of_day).sum(:step), :distance=>Motiondata.where(:user_id=>user.first.id, :user_type=>user.first.usertype).where(:motiontime.lt=>Time.now.end_of_day).where(:motiontime.gte=>Time.now.beginning_of_day).sum(:distance), :calorie=>Motiondata.where(:user_id=>user.first.id, :user_type=>user.first.usertype).where(:motiontime.lt=>Time.now.end_of_day).where(:motiontime.gte=>Time.now.beginning_of_day).sum(:calories), :activetime=>Motiondata.where(:user_id=>user.first.id, :user_type=>user.first.usertype).where(:motiontime.lt=>Time.now.end_of_day).where(:motiontime.gte=>Time.now.beginning_of_day).sum(:step) },:target=>{:step=>user.first.target.step, :distance=>user.first.target.distance, :calorie=>user.first.target.calorie, :activetime=>user.first.target.activetime }} }
        	else
        		format.json	{ render :json=>{:errormessage=>message}}
        	end

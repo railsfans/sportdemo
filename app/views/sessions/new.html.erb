@@ -26,6 +26,26 @@ var login = function(){
                     }); 
 		}
 	}
+ var row2 = {  
+            layout:'column',  
+            items:[{  
+                columnWidth:.5,  
+                layout:'form',  
+                items:[{  
+                    xtype:'textfield',  
+                    fieldLabel:'座右铭1',  
+                    width:22  
+                }]  
+            },{  
+                columnWidth:.5,  
+                layout:'form',  
+                items:[{  
+                    xtype:'textfield',  
+                    fieldLabel:'座右铭2',  
+                    width:22 
+                }]  
+            }]  
+        }; 
 	form = new Ext.form.FormPanel({   
         defaultType:'textfield',  
         labelAlign:'right',  
@@ -33,31 +53,33 @@ var login = function(){
         region:'center',  
         defaults:{boder:false},    
         items:[    
-            {fieldLabel:'登录帐号',name:'username',allowBlank:false }, 
+            {fieldLabel:'登录帐号',name:'username',allowBlank:false, emptyText: 'placeholder text',}, 
             {fieldLabel:'登录密码',name:'password',inputType:'password',allowBlank:false},  
-            {  xtype: 'combo',
-            store: Ext.create('Ext.data.ArrayStore', {
-                fields: [ 'usertype' ],
-                data: [
-                    ['student'],
-                    ['manager'],
-                    ['teacher']
-                ]
-            }),
-            displayField: 'usertype',
-            fieldLabel: '用户类型',
-            queryMode: 'local',
-            name: 'usertype', 
-            allowBlank:false,
-            listConfig : {
-				emptyText : 'no match data', 
-				maxHeight : 120 
-			},
-            value:'student',
+            {  	xtype: 'combo',
+	            store: Ext.create('Ext.data.ArrayStore', {
+	                fields: [ 'usertype' ],
+	                data: [
+	                    ['student'],
+	                    ['manager'],
+	                    ['teacher']
+	                ]
+	            }),
+	            displayField: 'usertype',
+	            fieldLabel: '用户类型',
+	            queryMode: 'local',
+	            name: 'usertype', 
+	            allowBlank:false,
+	            listConfig : {
+					emptyText : 'no match data', 
+					maxHeight : 120 
+				},
+	            value:'student',
             },
+/*
             {  
                     xtype:'panel',  
-                    layout:'column',  
+                    layout:'column', 
+					boder:false,   
                     items:[{  
                             columnWidth:.6,  
                             layout:'form',  
@@ -68,7 +90,19 @@ var login = function(){
                                 fieldLabel:'效  验  码',  
                                 name:'captcha'}]  
                             } ]  
-           }  
+           },
+
+		 {
+                fieldLabel: '验证码',
+                id: 'checkcode',
+                allowBlank: false,
+                width: 200,
+                blankText: '请输入验证码！',
+                maxLength: 4,
+                maxLengthText: '验证码不能超过4个字符!'
+         },
+*/
+		row2  
         ],
 		defaults: {
 			listeners: {
@@ -109,7 +143,7 @@ var login = function(){
           
     });  
       
-  
+    
     var panel = new Ext.Panel({  
         renderTo:'loginpanel',  
         layout:'border',
@@ -131,7 +165,18 @@ var login = function(){
         },form]  
     });  
     Ext.get('loginpanel').setStyle('position', 'absolute').center(Ext.getBody());  
+/*
+     var checkcode = Ext.getDom('checkcode');
+            var checkimage = Ext.get(checkcode.parentNode);
+            checkimage.createChild({
+                tag: 'img',
+                src: 'assets/connect.png',
+                align: 'absbottom',
+                style: 'padding-left:23px;cursor:pointer;'
+            });
+*/
 };  
 Ext.onReady(login);
+
 </script>
 <div id="loginpanel"></div>  

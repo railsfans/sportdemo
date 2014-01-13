@@ -9,6 +9,7 @@ class Login < ActiveRecord::Base
     has_one :teacher
     has_one :manager
     has_one :student
+	has_one :target
 
 	has_many :devices
    
