@@ -86,9 +86,13 @@ def getdeviceinfo
 	params[:passwdtoken]=params[:passwdtoken] || ''
 	if !params[:passwdtoken].empty? && !Phonelock.where(:token=>params[:passwdtoken],:status=>true).empty?
 		flag=true
-	else
+	else if !params[:passwdtoken].empty? && Phonelock.where(:token=>params[:passwdtoken],:status=>true).empty?
 		flag=false
+        message="phone token error, please login again"
+	else
+		flag=false 
 		message="equipment haven't bound"
+	end
 	end
 	respond_to do |format|
 		if flag
