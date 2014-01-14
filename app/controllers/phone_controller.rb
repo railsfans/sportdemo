@@ -157,7 +157,7 @@ def getexercisedata
 		if flag
 			format.json  { render :json=> {:success=>flag, :current=>{ :step=>exercisedata.sum(:step).round(0), :distance=>exercisedata.sum(:distance).round(2), :calorie=>exercisedata.sum(:calorie).round(0), :activetime=>exercisedata.sum(:step).round(0) } } }
 		else
-			format.json { render :json=> {:success=>flag, :errormessage=>errormessage } }
+			format.json { render :json=> {:success=>errormessage } }
 		end	
 	end
 end
