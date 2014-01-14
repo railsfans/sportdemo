@@ -139,12 +139,12 @@ def resetpassword
 	end
 end
 
-def getexercise
-	params[:data]=params[:data] || ''
+def getexercisedata
+	params[:date]=params[:date] || ''
     params[:passwdtoken]=params[:passwdtoken] || ''
-	if !params[:data].empty? && !params[:passwdtoken].empty? && !Phonelock.where(:token=>params[:passwdtoken]).empty?
+	if !params[:date].empty? && !params[:passwdtoken].empty? && !Phonelock.where(:token=>params[:passwdtoken]).empty?
 		flag=true
-		exercisedata=Motiondata.where(:user_id=>Phonelock.where(:token=>params[:passwdtoken]).first.login_id, :user_type=>Login.find(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).usertype).where(:motiontime.lt=>Time.new(params[:data].split('-')[0],params[:data].split('-')[1],params[:data].split('-')[2]).end_of_day).where(:motiontime.gte=>Time.new(params[:data].split('-')[0],params[:data].split('-')[1],params[:data].split('-')[2]).beginning_of_day)
+		exercisedata=Motiondata.where(:user_id=>Phonelock.where(:token=>params[:passwdtoken]).first.login_id, :user_type=>Login.find(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).usertype).where(:motiontime.lt=>Time.new(params[:date].split('-')[0],params[:date].split('-')[1],params[:date].split('-')[2]).end_of_day).where(:motiontime.gte=>Time.new(params[:date].split('-')[0],params[:date].split('-')[1],params[:date].split('-')[2]).beginning_of_day)
 	else
 		flag=false
 		errormessage="please send right params"
