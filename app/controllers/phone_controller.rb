@@ -98,7 +98,7 @@ def getdeviceinfo
 		if flag
 			format.json { render :json=>{ :success=>flag, :battery=>Login.find(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).devices.first.battery, :lastupdate=>Login.find(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).devices.first.lastupdate.to_s.gsub(/ UTC/, ''), :deviceid=>Login.find(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).devices.first.deviceid }}
 		else
-			format.json { render :json=>{ :success=>flag, :errormessage=>message}}
+			format.json { render :json=>{ :success=>message}}
 		end
 	end
 end
