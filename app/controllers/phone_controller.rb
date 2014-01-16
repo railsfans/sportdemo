@@ -86,7 +86,7 @@ def updatetargetdata
 	params[:passwdtoken] = params[:passwdtoken] || ''
 	if !params[:passwdtoken].empty? && !Phonelock.where(:token=>params[:passwdtoken],:status=>true).empty?
 		flag=true
-		Login.find(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).update_attributes(:step=>params[:step], :distance=>params[:distance], :calorie=>params[:calorie], :activetime=>params[:activetime])
+		Login.find(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).target.update_attributes(:step=>params[:step], :distance=>params[:distance], :calorie=>params[:calorie], :activetime=>params[:activetime])
 	else
 		flag=false
 		errormessage="please send right params"
@@ -125,7 +125,7 @@ def updateuserinfo
 	params[:passwdtoken]=params[:passwdtoken] || ''
 	if !params[:passwdtoken].empty? && !Phonelock.where(:token=>params[:passwdtoken],:status=>true).empty?
 		flag=true
-		Login.getuserinfo(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).first.target.update_attributes(:email=>params[:email], :name=>params[:name], :sex=>params[:sex]=='male' ? true : false , :height=>params[:height], :weight=>params[:weight], :phone=>params[:phone])
+		Login.getuserinfo(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).first.update_attributes(:email=>params[:email], :name=>params[:name], :sex=>params[:sex]=='male' ? true : false , :height=>params[:height], :weight=>params[:weight], :phone=>params[:phone])
 	else
 		flag=false
 		message="please send passwdtoken or passwdtoken wrong"
