@@ -185,6 +185,24 @@ def getexercisedata
 	end
 end
 
+def updateteacherinfo
+	params[:passwdtoken]=params[:passwdtoken] || ''
+	if !params[:passwdtoken].empty? && !Phonelock.where(:token=>params[:passwdtoken],:status=>true).empty?
+		flag=true
+		Login.getuserinfo(Phonelock.where(:token=>params[:passwdtoken]).first.login_id).first.update_attributes(:email=>params[:email], :name=>params[:name], :sex=>params[:sex]=='male' ? true : false , :height=>params[:height], :teacherid=>params[:teacherid], :phone=>params[:phone])
+	else
+		flag=false
+		message="please send passwdtoken or passwdtoken wrong"
+	end
+	respond_to do |format|
+		if flag
+			format.json { render :json=>{ :success=>flag }}
+		else
+			format.json { render :json=>{ :success=>flag, :errormessage=>message}}
+		end
+	end
+end
+
   
 def login 
 	user = Login.phone_authenticate(params[:username], params[:password]) 
