@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140113051432) do
+ActiveRecord::Schema.define(:version => 20140121113557) do
 
   create_table "devices", :force => true do |t|
     t.integer  "login_id"
@@ -142,6 +142,8 @@ ActiveRecord::Schema.define(:version => 20140113051432) do
     t.boolean  "sex"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.string   "teacherid"
+    t.string   "phone"
   end
 
 end
