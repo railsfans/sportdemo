@@ -131,7 +131,7 @@ var personinfopanel = Ext.widget({
             layout: 'anchor',
             items: [{
                 xtype:'textfield',
-                fieldLabel: 'username',
+                fieldLabel: '<%= t(:username) %>',
                 afterLabelTextTpl: required,
                 allowBlank: false,
                 name: 'username',
@@ -139,13 +139,13 @@ var personinfopanel = Ext.widget({
                 value: '<%= current_user.username %>'
             }, {
                 xtype:'textfield',
-                fieldLabel: 'realname',
+                fieldLabel: '<%= t(:realname) %>',
                 name: 'name',
                 anchor:'95%',
 				value: '<%= Student.find(current_user.id).name %>'
             },{
             xtype: 'radiogroup',
-            fieldLabel: 'sex',
+            fieldLabel: '<%= t(:sex) %>',
 			anchor:'95%',
             items: [
                 {boxLabel: 'male', name: 'sex', inputValue: 'true', checked: <%=Student.find(current_user.id).sex ==true ? true : false%>},
@@ -158,13 +158,13 @@ var personinfopanel = Ext.widget({
             layout: 'anchor',
             items: [{
                 xtype:'textfield',
-                fieldLabel: 'height',
+                fieldLabel: '<%= t(:height) %>',
                 name: 'height',
                 anchor:'95%',
 				value: '<%= Student.find(current_user.id).height %>',
             },{
                 xtype:'textfield',
-                fieldLabel: 'Email',
+                fieldLabel: '<%= t(:email) %>',
                 afterLabelTextTpl: required,
                 allowBlank: false,
                 name: 'email',
@@ -184,12 +184,12 @@ var personinfopanel = Ext.widget({
 		        xtype: 'numberfield',
 		        anchor: '100%',
 		        name: 'weight',
-		        fieldLabel: 'weight',
+		        fieldLabel: '<%= t(:weight) %>',
 		        value: '<%= Student.find(current_user.id).weight %>',
 		        minValue: 0.01,
                 maxValue: 200,
 		    	}, {
-		            fieldLabel: 'birthday',
+		            fieldLabel: '<%= t(:birthday) %>',
 		            name: 'birthday',
 		            xtype: 'datefield',
 					anchor:'100%'
@@ -205,7 +205,7 @@ var personinfopanel = Ext.widget({
     }],
 	buttonAlign: 'center',
     buttons: [{
-        text: 'Save',
+        text: '<%= t(:save) %>',
         handler: function() {
             if(this.up('form').getForm().isValid())
             	this.up('form').getForm().submit({
@@ -227,7 +227,7 @@ var personinfopanel = Ext.widget({
                     });
         }
     },{
-        text: 'Cancel',
+        text: "<%= t('clear info') %>",
         handler: function() {
             this.up('form').getForm().reset();
         }

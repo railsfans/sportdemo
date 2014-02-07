@@ -6,10 +6,10 @@ Ext.onReady(function() {
                 border: false,
                 height: 24,
                 tbar: [{
-                    	text: '<marquee width="400px">welcome to here</marquee>',
+                    	text: '<marquee width="400px">欢迎访问</marquee>',
                 },  '->',
 				{
-                    text: 'Options',
+                    text: '选项',
                     iconCls: 'options_icon',
                     menu: [{
                         text: 'User Info'
@@ -19,12 +19,12 @@ Ext.onReady(function() {
                         text: 'Switch Theme'
                     }]
                 }, {
-                    text: 'Help'
+                    text: '帮助'
                 }, '-', {
-                    text: 'Logout',
+                    text: '退出',
                     iconCls: 'logout',
                     handler : function ( b, e ) {
-                      	Ext.Msg.confirm("Messagebox Title", "Are you sure logout?", function(e){if(e == 'yes'){
+                      	Ext.Msg.confirm("", "确定退出?", function(e){if(e == 'yes'){
 						 	Ext.Ajax.request({
 	                   			url: "http://"+document.location.href.split('/')[2]+'/logout',
 	                   			success: function(response, opts) {
@@ -62,7 +62,7 @@ Ext.onReady(function() {
                 collapsible: true,
                 split: true,
                 id: 'left',
-                title: 'Navigation',
+                title: '目录',
                 width: 150,
                 layout: 'accordion',
                 items: [{

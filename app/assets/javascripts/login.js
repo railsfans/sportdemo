@@ -14,4 +14,3 @@
 //= require jquery_ujs
 //= require ext-all
 //= require ext-lang-zh_CN
-

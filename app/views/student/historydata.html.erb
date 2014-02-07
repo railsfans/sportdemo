@@ -34,7 +34,7 @@ historydatastore.load({
 });
 
 var historydatagrid=Ext.create('Ext.grid.Panel',{
-	title : 'historydata', 
+	title : '<%= t(:historydata) %>', 
 	frame:true,
 	viewConfig: {
 		forceFit : true,
@@ -46,7 +46,7 @@ var historydatagrid=Ext.create('Ext.grid.Panel',{
             xtype: 'rownumberer',
             width: 60,
             sortable: false,
-            header: 'list', 
+            header: '<%= t(:list) %>', 
             align: 'center'
         },
 		{
@@ -58,42 +58,42 @@ var historydatagrid=Ext.create('Ext.grid.Panel',{
 			hidden: true
 		},
 		{
-			header: 'motiontime', 
+			header: '<%= t(:motiontime) %>', 
 			flex: 1, 
 			dataIndex: 'motiontime', 
 			sortable: true, 
 			align: 'center',
 		},
 		{
-			header: 'step', 
+			header: '<%= t(:step) %>', 
 			flex: 1, 
 			dataIndex: 'step', 
 			sortable: true, 
 			align: 'center',
 		},
 		{
-			header: 'distance', 
+			header: '<%= t(:distance) %>', 
 			flex: 1, 
 			dataIndex: 'distance', 
 			sortable: true, 
 			align: 'center',
 		},
 		{
-			header: 'calorie', 
+			header: '<%= t(:calorie) %>', 
 			flex: 1, 
 			dataIndex: 'calorie', 
 			sortable: true, 
 			align: 'center',
 		},
 		{
-			header: 'intensity', 
+			header: '<%= t(:intensity) %>', 
 			flex: 1, 
 			dataIndex: 'intensity', 
 			sortable: true, 
 			align: 'center',
 		},
 		{
-			header: 'point', 
+			header: '<%= t(:point) %>', 
 			flex: 1, 
 			dataIndex: 'point', 
 			sortable: true, 
@@ -108,19 +108,19 @@ var historydatagrid=Ext.create('Ext.grid.Panel',{
         items:[
                 '-',
 				{ 
-					text: 'add', 
+					text: '<%= t(:add) %>', 
 					iconCls:"silk-user_add", 
 					handler: function() {
 		        		device_action_handler("add")
 				}},
 				{ 
-					text: 'edit', 
+					text: '<%= t(:edit) %>', 
 					iconCls:"silk-user_edit", 
 					handler: function() {
 		        		device_action_handler("edit")
 				}},
 				{ 
-					text: 'delete', 
+					text: '<%= t(:delete) %>', 
 					iconCls:"silk-user_delete", 
 					handler: function() {
 		        		device_action_handler("delete")
@@ -133,7 +133,7 @@ var historydatagrid=Ext.create('Ext.grid.Panel',{
 
 	    		}, 
 	   			{ 
-					text: 'search',
+					text: '<%= t(:search) %>',
 					id:"search_record_button", 
 					iconCls:"silk-zoom", 
 					handler:function(){
@@ -141,7 +141,7 @@ var historydatagrid=Ext.create('Ext.grid.Panel',{
 					} 
 				},
            		{ 
-					text: 'clear', 
+					text: '<%= t(:clear) %>', 
 					id:"clear_record_button", 
 					disabled:true, 
 					handler: function(){

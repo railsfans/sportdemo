@@ -1,5 +1,12 @@
 class SessionsController < ApplicationController
+ include SimpleCaptcha::ControllerHelpers
 layout "login"
+
+def test
+	respond_to do |format|
+		format.html
+	end
+end
 
 def create 
 #	if user = Login.authenticate(params[:username], params[:password], params[:usertype]) 
@@ -11,7 +18,9 @@ def create
 #	end
 #	params[:logintype]= params[:logintype] || 'pc'
 #	if params[:logintype]=='pc'
-	    if  Login.authenticate(params[:username], params[:password], params[:usertype])
+	errormessage=''
+	if simple_captcha_valid?
+		if  Login.authenticate(params[:username], params[:password], params[:usertype])
 	        user = Login.authenticate(params[:username], params[:password], params[:usertype])
 	        session[:user_id] = user.id 
 			flag=true
@@ -19,7 +28,14 @@ def create
 	    else
 	  		flag=false
 			type=''
+			errormessage='password wrong'
 		end
+	else
+  		flag=false
+		type=''
+		errormessage='checkcode wrong'
+	end
+	    
 #	else if params[:logintype]='phone'
 #		if Login.phoneauthenticate(params[:username], params[:password])
 #			flag=true
@@ -33,7 +49,7 @@ def create
 #	end
 	respond_to do |format|
 #		if params[:logintype]=='pc'
-			format.json { render :json=>{:success=>flag, :type=>type} }
+			format.json { render :json=>{:success=>flag, :type=>type, :errormessage=>errormessage} }
 #		else if params[:logintype]='phone'
 #			if flag
 #       			format.json { render :json=>{ :usertype=>user.usertype, :userdata=>Login.getuserinfo(user.id), :token=>passwdtoken} }
