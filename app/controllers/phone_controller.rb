@@ -193,7 +193,7 @@ def getstationinfo
 		errormessage="passwdtoken error"
 	end
 	respond_to do |format|
-		if !flag
+		if flag
 			format.json { render :json=>{:stationinfo=>Basestation.all.collect { |list| { :id=>list.code, :status=>list.status ?  'ok' : 'error', :name=>list.name, :place=>list.place, :lastupdate=>list.updated_at.to_s.split('T')[0].split('U')[0]  }}  }}
 		else
 			format.json { render :json=>{:errormessage=>errormessage }}
@@ -235,7 +235,7 @@ def login
     respond_to do |format|
 		if flag && usertype=="student"
 			format.json { render :json=>{:usertype=>user.first.usertype, :userdata=>{:email=>Login.getuserinfo(user.first.id).first.email, :sex=>Login.getuserinfo(user.first.id).first.sex==true ? 'male' : 'female', :phone=>Login.getuserinfo(user.first.id).first.phone, :height=>Login.getuserinfo(user.first.id).first.height, :weight=>Login.getuserinfo(user.first.id).first.weight, :name=>Login.getuserinfo(user.first.id).first.name, :studentid=>Login.getuserinfo(user.first.id).first.studentid, :class=>'class 1'}, :passwdtoken=>passwdtoken, :current=>{ :step=>Motiondata.where(:user_id=>user.first.id, :user_type=>user.first.usertype).where(:motiontime.lt=>Time.now.end_of_day).where(:motiontime.gte=>Time.now.beginning_of_day).sum(:step).round(0), :distance=>Motiondata.where(:user_id=>user.first.id, :user_type=>user.first.usertype).where(:motiontime.lt=>Time.now.end_of_day).where(:motiontime.gte=>Time.now.beginning_of_day).sum(:distance).round(2), :calorie=>Motiondata.where(:user_id=>user.first.id, :user_type=>user.first.usertype).where(:motiontime.lt=>Time.now.end_of_day).where(:motiontime.gte=>Time.now.beginning_of_day).sum(:calorie).round(0), :activetime=>Motiondata.where(:user_id=>user.first.id, :user_type=>user.first.usertype).where(:motiontime.lt=>Time.now.end_of_day).where(:motiontime.gte=>Time.now.beginning_of_day).sum(:step).round(0) },:target=>{:step=>user.first.target.step.round(0), :distance=>user.first.target.distance.round(2), :calorie=>user.first.target.calorie.round(0), :activetime=>user.first.target.activetime.round(0) }} }
-       	else if flag && usertype="teacher"
+       	else if flag && usertype=="teacher"
 #			format.json { render :json=>{:usertype=>user.first.usertype, :userdata=>{:email=>Login.getuserinfo(user.first.id).first.email, :sex=>Login.getuserinfo(user.first.id).first.sex==true ? 'male' : 'female', :name=>Login.getuserinfo(user.first.id).first.name}, :passwdtoken=>passwdtoken, :classinfo=>Login.getuserinfo(user.first.id).first.shclasses.collect { |list| { :classinfo=>{:classname=>list.name, :studentinfo=>Student.where(:shclass_id=>list.id)}}} } }
 			format.json { render :json=>{:usertype=>"class"+user.first.usertype, :userdata=>{:email=>Login.getuserinfo(user.first.id).first.email, :sex=>Login.getuserinfo(user.first.id).first.sex==true ? 'male' : 'female', :name=>Login.getuserinfo(user.first.id).first.name, :class=>Login.getuserinfo(user.first.id).first.shclasses.first.name, :phone=>Login.getuserinfo(user.first.id).first.phone, :teacherid=>Login.getuserinfo(user.first.id).first.teacherid}, :passwdtoken=>passwdtoken, :studentinfo=>Student.where(:shclass_id=>Login.getuserinfo(user.first.id).first.shclasses.first.id).collect { |list| { :id=>list.studentid, :name=>list.name}} } }
 		else
