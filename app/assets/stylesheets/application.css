@@ -139,3 +139,12 @@ a {
     -khtml-border-radius: 20px;
     border-radius: 20px;
 }
+
+// edit add delete search icon
+.add { background-image: url(shared/icons/fam/user_add.png) !important; background-repeat: no-repeat; }
+
+.delete { background-image: url(shared/icons/fam/user_delete.png) !important; background-repeat: no-repeat; }
+
+.edit { background-image: url(shared/icons/fam/user_edit.png) !important; background-repeat: no-repeat; }
+
+.search { background-image: url(shared/icons/fam/zoom.png) !important; background-repeat: no-repeat; }

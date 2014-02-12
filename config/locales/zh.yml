@@ -31,4 +31,6 @@ zh:
   endtime: "截止时间"  
   student: "学生"
   manager: "管理员"
-  teacher: "教师"  
+  teacher: "教师" 
+  working: "正常"
+  breaking: "故障" 

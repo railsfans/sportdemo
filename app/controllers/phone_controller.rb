@@ -185,6 +185,22 @@ def getexercisedata
 	end
 end
 
+def getstationinfo
+	if !params[:passwdtoken].empty? && !Phonelock.where(:token=>params[:passwdtoken]).empty?
+		flag=true
+	else
+		flag=false
+		errormessage="passwdtoken error"
+	end
+	respond_to do |format|
+		if !flag
+			format.json { render :json=>{:stationinfo=>Basestation.all.collect { |list| { :id=>list.code, :status=>list.status ?  'ok' : 'error', :name=>list.name, :place=>list.place, :lastupdate=>list.updated_at.to_s.split('T')[0].split('U')[0]  }}  }}
+		else
+			format.json { render :json=>{:errormessage=>errormessage }}
+		end
+	end
+end
+
 def updateteacherinfo
 	params[:passwdtoken]=params[:passwdtoken] || ''
 	if !params[:passwdtoken].empty? && !Phonelock.where(:token=>params[:passwdtoken],:status=>true).empty?
