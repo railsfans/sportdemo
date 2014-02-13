@@ -57,14 +57,14 @@ def basestation
 end
 
 def basestation_add 
-	Basestation.create(:place=>params[:place], :status=>params[:status], :code=>params[:code], :name=>params[:name], :longitude=>params[:longitude], :latitude=>params[:latitude], :ip=>params[:ip])
+	Basestation.create(:place=>params[:place], :status=>params[:status]==t(:working) ? true : false, :code=>params[:code], :name=>params[:name], :longitude=>params[:longitude], :latitude=>params[:latitude], :ip=>params[:ip])
    	respond_to do |format| 
 		format.json { render :json=>{:success=>true }}
   	end
 end
 
 def basestation_edit
-  	Basestation.find(params[:id]).update_attributes(:place=>params[:place], :status=>params[:status], :code=>params[:code], :name=>params[:name], :longitude=>params[:longitude], :latitude=>params[:latitude], :ip=>params[:ip])
+  	Basestation.find(params[:id]).update_attributes(:place=>params[:place], :status=>params[:status]==t(:working) ? true : false, :code=>params[:code], :name=>params[:name], :longitude=>params[:longitude], :latitude=>params[:latitude], :ip=>params[:ip])
    
 	respond_to do |format| 
    		format.json { render :json=>{:success=>true }}
