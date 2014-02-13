@@ -1,0 +1,353 @@
+<script>
+Ext.Ajax.defaultHeaders = { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') };
+
+Ext.apply(Ext.form.VTypes,{  
+    // function for validation  
+    ip: function(ipValue){  
+        // just a simple   
+        var ipRegex = /^(\d{1,3})(\.\d{1,3}){3}$/i;  
+        return ipRegex.test(ipValue);  
+    },  
+    // default error text  
+    ipText: "Not a valid IP, Correct Format is 12.23.2.1",  
+    // filter keys, can only type digit and dot  
+    ipMask: /[\d\.]/i  
+});
+Ext.onReady(function(){
+Ext.getCmp('left').items.items[1].expand();
+itemsPerPage = 20;  
+function basestation_action_handler(type) {
+	Ext.regModel('StatusInfo', {
+	    fields: [{name: 'basestationstatus'},{name: 'value'}]
+	});
+	//定义组合框中显示的数据源
+	var BasestationStore = Ext.create('Ext.data.Store',{
+		model : 'StatusInfo',
+		data : [
+			{basestationstatus:'正常',value:'100000'},
+			{basestationstatus:'故障',value:'101100'},
+			
+		]
+	});
+	var form = new Ext.form.Panel({
+	width: 500,
+	frame: true,
+	height: 300,
+	defaults: {
+  		anchor: '100%',
+ 		allowBlank: false,
+  		msgTarget: 'side',
+		labelWidth: 60
+    },
+    items: [
+        {xtype:"hidden",name: "id"},   
+        {xtype:"textfield",fieldLabel: '<%= t('code') %>',name: "code"},  
+        {xtype:"textfield",fieldLabel: '<%= t('name') %>',name: "name"},  
+        {xtype:"textfield",fieldLabel: 'IP',name: "ip", vtype: "ip", vtypeText:'<%= t('ip format error') %>'},  
+        {xtype:"textfield",fieldLabel: '<%= t('place') %>',name: "place"},   
+        {xtype:"textfield",fieldLabel: '<%= t('longitude') %>',name: "longitude"},  
+        {xtype:"textfield",fieldLabel: '<%= t('latitude') %>',name: "latitude"},  
+        {
+			xtype : 'combo',
+			listConfig : {
+				emptyText : '<%= t('no match value') %>',//当值不在列表是的提示信息
+				maxHeight : 60//设置下拉列表的最大高度为60像素
+			},
+			name:'status',
+			autoSelect : true,
+			fieldLabel:'<%= t('status') %>',
+			triggerAction: 'all',
+			store : BasestationStore,
+			displayField:'basestationstatus',
+			valueField:'basestationstatus',
+			queryMode: 'local',
+			forceSelection : true,
+			typeAhead : true,
+			value:'<%= t(:working) %>'
+		}       
+    ],
+    buttonAlign:"center",       
+    buttons: [
+        {
+            text: '<%= t('save') %>',
+            handler:function() {                   
+                if (form.getForm().isValid()) {
+                    switch (type) {
+                    case "add":
+	                    form.submit({
+	                    url: 'basestation_add.json',                       
+	                    waitMsg: '<%= t('waiting') %>',
+	                    success: function(fp, o) {                   
+	              			basestationstore.reload();              
+	                		basestation_window.close();										  
+	                    },
+	                    failure: function(form,action){
+	                    	basestationstore.reload();
+	                        Ext.MessageBox.alert("title",'<%= t('enter same basestationid') %>')
+			   				basestation_window.close();						
+	                    }
+	                	});
+	                    break;
+                    case "edit": 
+	                    form.submit({
+							url: 'basestation_edit.json',
+	                    	waitMsg: '<%= t('waiting') %>',
+	                    	success: function(fp, o) {
+	                        	basestationstore.reload();
+	                        	basestation_window.close();										  
+	                    	},
+	                    	failure: function(form,action){
+		                    	basestationstore.reload();
+		                  		Ext.MessageBox.alert("title",'<%= t('enter same basestationid') %>')
+				   				basestation_window.close();						
+		                    }
+	                	});
+	                    break;
+                    }     //switch     
+                }       //form                 
+           	}      //handler 
+      	},                    
+        {
+            text: '<%= t('cancel') %>',
+            handler:function() {
+                basestation_window.close()
+            }
+        }
+    ]
+	});
+	var basestation_window = new Ext.Window({
+	    width:400,
+	    height:300,
+	    resizable:false,
+	    layout:"fit",
+	    closeAction:'close',
+	    plain: true,
+	    constrainHeader:true,
+	    modal:true,	    bodyStyle: 'padding:5px;',
+	    items:[form]
+	});
+  	var rows = basestationgrid.getSelectionModel().getSelection();
+    if (type == "add") {
+		basestation_window.show();
+        basestation_window.setTitle('<%= t('add basestation') %>');
+    }  
+	else if(type == "edit"){
+		if(rows.length==1){
+    		form.getForm().setValues({
+                id:rows[0].get("id"),
+                code:rows[0].get("code"),
+                name:rows[0].get("name"),
+                place: rows[0].get("place"),
+                longitude:rows[0].get("longitude"),
+                latitude:rows[0].get("latitude"),
+                ip: rows[0].get("ip"),
+                status: rows[0].get("status"),
+            });
+            basestation_window.show();
+            basestation_window.setTitle('<%= t('edit basestation data') %>');
+    	}
+  		else if(rows.length>1)
+ 		{
+   			Ext.MessageBox.alert("title",'<%= t('chose one more data') %>')
+		}
+   		else {
+            Ext.MessageBox.alert("title",'<%= t('chose a data') %>')
+    	}
+	}
+	else
+	{
+  		if(rows.length!=0){
+   			var delete_id="";
+    		for(var i=0; i<rows.length; i++){
+           		delete_id+=rows[i].get("id");
+               	if(i!=rows.length-1){
+             		delete_id+=",";
+                }
+      		};
+     		Ext.MessageBox.confirm('<%= t('delete') %>', '<%= t('are you sure delete') %>', function(btn){
+		 		if(btn === 'yes'){
+		  			Ext.Ajax.request({
+			    		url: 'basestation_delete',
+			    		params: { id : delete_id },
+			    		success: function(response){
+				       		var obj = Ext.decode(response.responseText);
+		                		if (obj.success) {
+		                 			basestationstore.reload();
+		                      	} else {
+		                     		Ext.MessageBox.alert("title","false")
+		                      	}
+		              		},
+	        			failure: function(response) {
+	                		Ext.MessageBox.alert("title","network false")
+	               		}                
+                 	});
+		 		}
+		 		else{
+ 
+		   		}
+			});
+		}
+    	else
+   		{
+     		Ext.MessageBox.alert("title",'<%= t('chose a data') %>')
+   		}
+	}
+}
+
+
+var basestationstore = Ext.create('Ext.data.Store', {
+    autoLoad: false,
+    fields:['id','place','name','code','longitude','latitude','status'],
+    pageSize: itemsPerPage,  
+    proxy: {
+        type: 'ajax',
+        url: 'basestation.json',   
+        reader: {
+            type: 'json',
+            root: 'gridData',
+            totalProperty: 'totalCount'
+        }
+    }  
+});
+ 
+basestationstore.load({
+    params:{
+        start:0,
+        limit: itemsPerPage,
+    }
+});
+
+var basestationgrid=Ext.create('Ext.grid.Panel',{
+	title : '<%= t('basestation manage') %>', 
+	frame:true,
+	viewConfig: {
+		forceFit : true,
+    		stripeRows: true
+	},
+	store:  basestationstore,
+	columns: [ 
+	    {
+	        xtype: 'rownumberer',
+	        width: 60,
+	        sortable: false,
+	        header: '<%= t('list') %>', 
+	        align: 'center'
+	    },
+ 		{
+			header: '<%= t('id') %>', 
+			flex: 1, 
+			dataIndex: 'id', 
+			sortable: true, 
+			align: 'center', 
+			hidden: true
+		},
+		{
+			header: '<%= t('code') %>', 
+			flex: 1, 
+			dataIndex: 'code', 
+			sortable: true, 
+			align: 'center'
+		},
+		{
+			header: '<%= t('name') %>', 
+			flex: 1, 
+			dataIndex: 'name', 
+			sortable: true, 
+			align: 'center'
+		},
+        {
+			header: 'IP', 
+			flex: 1, 
+			dataIndex: 'ip', 
+			sortable: true, 
+			align: 'center',
+		},
+        {
+			header: '<%= t('place') %>', 
+			flex: 1, 
+			dataIndex: 'place', 
+			sortable: true, 
+			align: 'center'
+		},
+		{
+			header: '<%= t('longitude') %>', 
+			flex: 1, 
+			dataIndex: 'longitude', 
+			sortable: true, 
+			align: 'center'
+		}, 
+        {
+			header: '<%= t('latitude') %>', 
+			flex: 1, 
+			dataIndex: 'latitude', 
+			sortable: true, 
+			align: 'center'
+		},
+		{
+			header: '<%= t('status') %>', 
+			flex: 1, 
+			dataIndex: 'status', 
+			sortable: true, 
+			align: 'center'
+		}  
+		],
+   		dockedItems: [{
+			xtype: 'pagingtoolbar',
+			store: basestationstore,   
+		  	dock: 'bottom',
+		 	displayInfo: true,   
+			items:[
+		    	'-',
+              	{ 
+					text: '<%= t('add') %>', 
+					iconCls:"add", 
+					handler: function() {
+				        basestation_action_handler("add")
+					}
+				},
+				{ 
+					text: '<%= t('edit') %>', 
+					iconCls:"edit", 
+					handler: function() {
+				        basestation_action_handler("edit")
+					}
+				},
+				{ 
+					text: '<%= t('delete') %>', 
+					iconCls:"delete", 
+					handler: function() {
+				        basestation_action_handler("delete")
+					}
+				},
+		        {
+			    	xtype: 'textfield',
+			    	hideLabel: true,
+			    	width: 70,
+			    	id: "keyname",
+			    },
+			   	{ 
+					text: '<%= t('search') %>',
+					id:"search_record_button", 
+					iconCls:"search", 
+					handler:function(){
+						record_search("search")
+					} 
+				},
+		        { 
+					text: '<%= t('clear') %>', 
+					id:"clear_record_button", 
+					disabled:true, 
+					handler: function(){
+						record_search("clear")
+					} 
+				}
+			]       
+		}]                
+});
+
+var work_space = Ext.getCmp('center');
+work_space.removeAll();
+work_space.add(basestationgrid);
+work_space.doLayout();
+})
+</script>
