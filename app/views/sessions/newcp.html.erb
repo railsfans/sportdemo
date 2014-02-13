@@ -1,0 +1,148 @@
+<%= show_simple_captcha %>
+<script>
+﻿Ext.Ajax.defaultHeaders = { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') };
+Ext.BLANK_IMAGE_URL='assets/rails.png';  
+var login = function(){  
+    Ext.QuickTips.init(); 
+	var form;
+	function submitOnEnter(field, event) {
+		if (event.getKey() == event.ENTER) {
+			field.up('form').getForm().submit({ 
+                        method:'POST', 
+                        waitTitle:'Connecting', 
+                        waitMsg:'Sending data...',
+                        success:function(rec, op){ 
+								if(op.result.type=='student')
+									window.location.href="http://"+'<%= request.original_url.split('/')[2] %>'+'/student/historydata'
+								else if(op.result.type=='teacher')
+									window.location.href="http://"+'<%= request.original_url.split('/')[2] %>'+"/teacher/index"
+								else
+									window.location.href="http://"+'<%= request.original_url.split('/')[2] %>'+"/manager/index"
+                        },
+                        failure:function(forms, action){ 
+                            Ext.Msg.alert('Warning!', 'password or username or confirmation code wrong'); 
+                            form.getForm().reset(); 
+                        } 
+                    }); 
+		}
+	}
+	form = new Ext.form.FormPanel({   
+        defaultType:'textfield',  
+        labelAlign:'right',  
+        labelWidth:60,  
+        region:'center',  
+        defaults:{boder:false},    
+        items:[    
+            {fieldLabel:'登录帐号',name:'username',allowBlank:false }, 
+            {fieldLabel:'登录密码',name:'password',inputType:'password',allowBlank:false},  
+            {  	xtype: 'combo',
+	            store: Ext.create('Ext.data.ArrayStore', {
+	                fields: [ 'usertype' ],
+	                data: [
+	                    ['student'],
+	                    ['manager'],
+	                    ['teacher']
+	                ]
+	            }),
+	            displayField: 'usertype',
+	            fieldLabel: '用户类型',
+	            queryMode: 'local',
+	            name: 'usertype', 
+	            allowBlank:false,
+	            listConfig : {
+					emptyText : 'no match data', 
+					maxHeight : 120 
+				},
+	            value:'student',
+            },
+/*
+            {  
+                    xtype:'panel',  
+                    layout:'column',  
+                    items:[{  
+                            columnWidth:.6,  
+                            layout:'form',  
+                            boder:false,  
+                            items:[{  
+                                xtype:'textfield',  
+                                anchor:'98%',  
+                                fieldLabel:'效  验  码',  
+                                name:'captcha'}]  
+                            } ]  
+           }
+*/
+		 {
+                fieldLabel: '验证码',
+                id: 'checkcode',
+                allowBlank: false,
+                width: 200,
+                blankText: '请输入验证码！',
+                maxLength: 4,
+                maxLengthText: '验证码不能超过4个字符!'
+         }  
+        ],
+		defaults: {
+			listeners: {
+				specialkey: submitOnEnter
+			}
+		},
+		url: 'sessions/create',
+      	buttonAlign:"center",  
+		buttons:[{ 
+                text:'Login',
+                handler:function(){ 
+                    if (form.getForm().isValid()) {
+                    form.getForm().submit({ 
+                        method:'POST', 
+                        waitTitle:'Connecting', 
+                        waitMsg:'Sending data...',
+                        success:function(rec, op){ 
+								if(op.result.type=='student')
+									window.location.href="http://"+'<%= request.original_url.split('/')[2] %>'+'/student/historydata'
+								else if(op.result.type=='teacher')
+									window.location.href="http://"+'<%= request.original_url.split('/')[2] %>'+"/teacher/index"
+								else
+									window.location.href="http://"+'<%= request.original_url.split('/')[2] %>'+"/manager/index"
+                        },
+                        failure:function(forms, action){ 
+                            Ext.Msg.alert('Warning!', 'password or username or confirmation code wrong'); 
+                            form.getForm().reset(); 
+                        } 
+                    }); 
+                  }
+                } 
+            },{
+			text: 'cancel',
+            handler: function(){
+            	form.getForm().reset();
+            }
+            }]  
+          
+    });  
+      
+    
+    var panel = new Ext.Panel({  
+        renderTo:'loginpanel',  
+        layout:'border',
+        width:525,  
+        height:290,  
+        defaults:{border:false},  
+        items:[{  
+            region:"north", 
+            height:56,  
+            html:'<img src="assets/header.png" style="background-repeat:repeat-y;width: 525px;"/>'  
+        },{  
+            region:"south",  
+            height:56,  
+            html:'<img src="assets/header.png" style="background-repeat:repeat-y;width: 525px;"/>'  
+        },{  
+            region:"west",  
+            width:253,  
+            html:'<img src="assets/left.jpg" style="position: absolute; top: -100px; left: -100px;"/>'  
+        },form]  
+    });  
+    Ext.get('loginpanel').setStyle('position', 'absolute').center(Ext.getBody());  
+};  
+Ext.onReady(login);
+</script>
+<div id="loginpanel"></div>  
