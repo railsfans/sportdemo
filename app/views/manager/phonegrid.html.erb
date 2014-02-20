@@ -35,7 +35,7 @@ function phone_action_handler(type) {
 	                    },
 	                    failure: function(form,action){
 	                    	phonestore.reload();
-	                        show_tip_message('<%= t('enter same phoneid') %>')
+	                        Ext.MessageBox.alert("title",'<%= t('enter same phoneid') %>')
 			   				phone_window.close();						
 	                    }
 	                	});
@@ -50,7 +50,7 @@ function phone_action_handler(type) {
 	                    	},
 	                    	failure: function(form,action){
 		                    	phonestore.reload();
-		                  		show_tip_message('<%= t('enter same phoneid') %>')
+		                  		Ext.MessageBox.alert("title",'<%= t('enter same phoneid') %>')
 				   				phone_window.close();						
 		                    }
 	                	});
@@ -92,14 +92,14 @@ function phone_action_handler(type) {
                 updatetime: rows[0].get("updatetime"),
             });
             phone_window.show();
-            phone_window.setTitle('<%= t('edit phone data') %>');
+            phone_window.setTitle('<%= t('edit phone version data') %>');
     	}
   		else if(rows.length>1)
  		{
-   			show_tip_message('<%= t('chose one more data') %>')
+   			Ext.MessageBox.alert("title",'<%= t('chose one more data') %>')
 		}
    		else {
-            show_tip_message('<%= t('chose a data') %>')
+            Ext.MessageBox.alert("title",'<%= t('chose a data') %>')
     	}
 	}
 	else
@@ -112,7 +112,7 @@ function phone_action_handler(type) {
              		delete_id+=",";
                 }
       		};
-     		Ext.MessageBox.confirm('<%= t('delete') %>', '<%= t('are you sure') %>', function(btn){
+     		Ext.MessageBox.confirm('<%= t('delete') %>', '<%= t('are you sure delete') %>', function(btn){
 		 		if(btn === 'yes'){
 		  			Ext.Ajax.request({
 			    		url: 'phone_version_delete',
@@ -122,11 +122,11 @@ function phone_action_handler(type) {
 		                		if (obj.success) {
 		                 			phonestore.reload();
 		                      	} else {
-		                     		show_tip_message("false")
+		                     		Ext.MessageBox.alert("title",'false')
 		                      	}
 		              		},
 	        			failure: function(response) {
-	                		show_tip_message("network false")
+	                		Ext.MessageBox.alert("title",'network false')
 	               		}                
                  	});
 		 		}
@@ -228,21 +228,21 @@ var phonegrid=Ext.create('Ext.grid.Panel',{
 		    	'-',
               	{ 
 					text: '<%= t('add') %>', 
-					iconCls:"silk-user_add", 
+					iconCls:"add", 
 					handler: function() {
 				        phone_action_handler("add")
 					}
 				},
 				{ 
 					text: '<%= t('edit') %>', 
-					iconCls:"silk-user_edit", 
+					iconCls:"edit", 
 					handler: function() {
 				        phone_action_handler("edit")
 					}
 				},
 				{ 
 					text: '<%= t('delete') %>', 
-					iconCls:"silk-user_delete", 
+					iconCls:"delete", 
 					handler: function() {
 				        phone_action_handler("delete")
 					}
@@ -252,16 +252,11 @@ var phonegrid=Ext.create('Ext.grid.Panel',{
 			    	hideLabel: true,
 			    	width: 70,
 			    	id: "keyname",
-			    },
-                {
-                    text: 'upload', handler: function(){
-                         phone_action_handler("upload")
-                	} 
-                }, 
+			    }, 
 			   	{ 
 					text: '<%= t('search') %>',
 					id:"search_record_button", 
-					iconCls:"silk-zoom", 
+					iconCls:"search", 
 					handler:function(){
 						record_search("search")
 					} 

@@ -77,7 +77,7 @@ Ext.onReady(function() {
                     autoScroll: true
                 },{
                     contentEl: 'datagraph-management',
-                    title:  '运动趋势图',
+                    title:  '地图管理',
                     iconCls: 'three', // see the HEAD section for style used
                     autoScroll: true
                 }, {

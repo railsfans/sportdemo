@@ -197,7 +197,7 @@ function basestation_action_handler(type) {
 
 var basestationstore = Ext.create('Ext.data.Store', {
     autoLoad: false,
-    fields:['id','place','name','code','longitude','latitude','status'],
+    fields:['ip','place','name','code','longitude','latitude','status'],
     pageSize: itemsPerPage,  
     proxy: {
         type: 'ajax',

@@ -12,9 +12,13 @@
 	<% end %>
 </li>
 <li id="datagraph-management" class="left-menu">
-	<%= link_to student_datagraph_path do %>
+	<%= link_to manager_baidumap_path do %>
 		<div><%= image_tag("shortcuts_11.png", :class=>'menu-icon') %></div>
-		<div class="menu-text">趋势图表</div>
+		<div class="menu-text">百度地图</div>
+	<% end %>  
+	<%= link_to manager_googlemap_path do %>
+		<div><%= image_tag("shortcuts_11.png", :class=>'menu-icon') %></div>
+		<div class="menu-text">谷歌地图</div>
 	<% end %>  
 </li>
 <li id="rank-management" class="left-menu">

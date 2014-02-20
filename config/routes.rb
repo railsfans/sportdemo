@@ -11,6 +11,8 @@ Sportdemo::Application.routes.draw do
 
   match "manager/phonegrid"=>"manager#phonegrid"
   match "manager/basestationgrid"=>"manager#basestationgrid"
+  match "manager/baidumap"=>"manager#baidumap"
+  match "manager/googlemap"=>"manager#googlemap"
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

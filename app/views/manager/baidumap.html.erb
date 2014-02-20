@@ -1,0 +1,288 @@
+<script>
+Ext.onReady(function () {
+	Ext.getCmp('left').items.items[2].expand();
+	var markersArray = [];
+	var baidumap=Ext.create('Ext.panel.Panel', {
+	    title: '',
+	    layout: 'border',
+	    items: [
+		 {
+	        xtype: 'panel',
+	        region: 'east',
+			id: 'east-panel',
+	        title: '新建区域或机构',
+	        animCollapse: true,
+	        collapsible: true,
+	        split: true,
+	        width: 225,  
+	        minSize: 175,
+	        maxSize: 400,
+	        margins: '0 5 0 0',
+	        items: [ 
+				Ext.create('Ext.form.Panel', { 
+		            id: 'zone-form',  
+		            title: '', 
+		            bodyStyle:'padding-top: 25px; padding-left: 10px;padding-right: 20px;',  
+		            defaults: {  
+		                width: 240,  
+		               labelWidth: 75, 
+		                anchor: '98%',  
+		                allowBlank: false,  
+		                selectOnFocus: true,  
+		                msgTarget: 'side'  
+		            },  
+		            defaultType: 'textfield',  
+		            method: 'POST',  
+		            border: false, 
+					buttonAlign: 'center',
+		            buttons: [{  
+						text:'保存',
+						id: 'btnOK',
+						handler: function(){
+							while(markersArray.length){
+								map.removeOverlay(markersArray.pop());
+							}
+						}
+					},{  
+						text: '重置',  
+						handler: function(){  
+							Ext.getCmp('zone-form').form.reset();  
+						}  
+					}],  
+		            items: [  
+						{  
+		                    id: 'txtZoneName',  
+		                    name: 'txtZoneName', 
+		                    fieldLabel: '区域名称', 
+		                    minLength:1, 
+		                    maxLength:30,
+		                    emptyText: '请输入区域名称',
+		                    blankText: '请输入区域名称'  
+		                },{
+		                	id: 'txtPosX',
+		                	name: 'txPosX',
+							xtype : "numberfield",
+							fieldLabel: '纬度或X坐标', 
+							value: 0.0,
+			                allowBlank: true,
+			                allowNegative: true,
+			                allowDecimals: true,
+			                decimalPrecision:3
+			            },{
+		                	id: 'txtPosY',
+		                	name: 'txtPosY',
+							xtype : "numberfield",
+							fieldLabel: '经度或Y坐标', 
+							value: 0.0,
+			                allowBlank: true,
+			                allowNegative: true,
+			                allowDecimals: true,
+			                decimalPrecision: 3 
+			            }              
+					]
+	    		})  
+			]
+	    },{
+	        title: 'Center Region',
+			id: 'mapcenter',
+	        region: 'center',     // center region is required, no width/height specified
+	        xtype: 'panel',
+	        layout: 'fit',
+			html:"<div style='width:100%;height:100%;border:1px solid gray' id='mapDiv'><h4>网络错误</h4></div>"
+	    }],
+	});
+var east=Ext.getCmp('east-panel');
+east.collapse();
+var show_map_in_panel=new Ext.panel.Panel({
+	layout:'fit',
+	items: [baidumap]
+})
+	var work_space = Ext.getCmp('center');
+	work_space.removeAll();
+	work_space.add(show_map_in_panel);
+	work_space.doLayout();
+	var map = new BMap.Map("mapDiv");                
+/*
+	function myFun(result){
+	    var cityName = result.name;
+	    map.setCenter(cityName);
+	    alert(cityName);
+	}
+	var myCity = new BMap.LocalCity();
+	myCity.get(myFun);
+*/
+
+	var point="杭州市"
+	//map.centerAndZoom(point,15);                     
+	//map.centerAndZoom(myCity.get(myFun), 15);
+	map.addControl(new BMap.NavigationControl());
+	//map.addControl(new BMap.MapTypeControl);
+	//map.addControl(new BMap.MapTypeControl({mapTypes: [BMAP_NORMAL_MAP,BMAP_HYBRID_MAP]}));
+	//map.addControl(new BMap.ScaleControl);
+	//map.addControl(new BMap.OverviewMapControl);
+/**********
+	function ZoomControl(){  
+	 	this.defaultAnchor = BMAP_ANCHOR_TOP_RIGHT;  
+	 	this.defaultOffset = new BMap.Size(0, 0);  
+	}  
+	ZoomControl.prototype = new BMap.Control(); 
+	ZoomControl.prototype.initialize = function(map){  
+		var div = document.createElement("div");  
+		div.appendChild(document.createTextNode(""));  
+		div.style.cursor = "pointer";  
+		div.style.border = "1px solid gray";  
+		div.style.backgroundColor = "white"; 
+		// div.onclick = function(e){  
+		//   map.zoomTo(map.getZoom() + 2);  
+		// }  
+		map.getContainer().appendChild(div);  
+		return div;  
+	}  
+	var myZoomCtrl = new ZoomControl();  
+
+	map.addControl(myZoomCtrl);
+***********/
+	var bdary = new BMap.Boundary();
+    bdary.get("杭州西湖区", function(rs){       
+//    	map.clearOverlays();             
+        var count = rs.boundaries.length; 
+        for(var i = 0; i < count; i++){
+            var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, strokeColor: "#ff0000", fillOpacity: 0.01,}); 
+            map.addOverlay(ply);  
+            map.setViewport(ply.getPath());            
+        }                
+    });   
+
+
+map.enableScrollWheelZoom();
+map.addEventListener("click",function(e){  
+	east.collapse();
+	console.log(e.point); 
+})
+var marker;
+<% Basestation.all.each do |basestation| %>
+// 	marker = new BMap.Marker(new BMap.Point(<%= basestation.longitude %>, <%= basestation.latitude %>));
+	var icon = new BMap.Icon('https://maps.google.com/mapfiles/kml/shapes/schools_maps.png', new BMap.Size(128, 128), { 
+	    anchor: new BMap.Size(10, 30) 
+	}); 
+	var marker = new BMap.Marker(new BMap.Point(<%= basestation.longitude %>, <%= basestation.latitude %>), {
+	    icon: icon
+	});
+	map.addOverlay(marker); 
+	marker.addEventListener("click", function(e){  
+		east.expand();		
+		console.log(e.point); 	
+		Ext.getCmp('txtPosX').setValue(e.point.lng);
+		Ext.getCmp('txtPosY').setValue(e.point.lat);
+	});
+	markersArray.push(marker);
+<% end %>   
+/*
+map.addEventListener("click",function(e){  
+	var flag=false;
+	<% Basestation.all.each do |basestation| %>
+	if((e.point.lng!=<%= basestation.longitude %>) || ( e.point.lat!=<%= basestation.latitude %>))
+	{
+	  	flag=true  
+	}
+	<% end %>
+	if(flag==true){
+	//	alert(e.point.lng + "," + e.point.lat); 
+        // map.removeControl(myZoomCtrl);
+	function Append(){   
+	 	this.defaultAnchor = BMAP_ANCHOR_TOP_RIGHT;  
+	 	this.defaultOffset = new BMap.Size(0, 0);  
+	}  
+	Append.prototype = new BMap.Control(); 
+	Append.prototype.initialize = function(map){  
+		var div = document.createElement("div");  
+ 		div.className = "message";
+ 		div.style.cursor = "pointer";  
+ 		div.style.border = "1px solid gray";  
+ 		div.style.backgroundColor = "white"; 
+ 		map.getContainer().appendChild(div);
+		var str= e.point.lng + "," + e.point.lat;
+		$( ".message" ).html(str);
+ 		return div;  
+	}  
+	var myAppend = new Append(); 
+	map.addControl(myAppend);
+	}
+}); 
+
+var marker1;
+<% Basestation.all.each do |basestation| %>
+ 	marker1 = new BMap.Marker(new BMap.Point(<%= basestation.longitude %>, <%= basestation.latitude %>)); 
+	map.addOverlay(marker1);  
+// 	marker1.setAnimation(BMAP_ANIMATION_BOUNCE); 
+	var opts = {  
+ 		width : 250,     
+ 		height: 100,      
+ 		title : "基站信息",  
+    	enableMessage: false,
+    	enableAutoPan: true
+		}  
+	var infoWindow = new BMap.InfoWindow('经度'+'<%= basestation.longitude %>'+'纬度'+'<%= basestation.latitude %>', opts);   
+	marker1.addEventListener("click", function(){this.openInfoWindow(infoWindow);});
+<% end %>
+*/
+
+
+
+/*
+	var sContent =
+	"<h4 style='margin:0 0 5px 0;padding:0.2em 0'>天安门</h4>" + 
+	"<img style='float:right;margin:4px' id='imgDemo' src='http://app.baidu.com/map/images/tiananmen.jpg' width='139' height='104' title='天安门'/>" + 
+	"<p style='margin:0;line-height:1.5;font-size:13px;text-indent:2em'>天安门坐落在中国北京市中心,故宫的南侧,与天安门广场隔长安街相望,是清朝皇城的大门...</p>" + 
+	"</div>";
+	var points = new BMap.Point(116.404, 39.915);
+	var marker = new BMap.Marker(points);
+	var infoWindow = new BMap.InfoWindow(sContent);  // 创建信息窗口对象
+	map.addOverlay(marker);
+	marker.addEventListener("click", function(){          
+	   this.openInfoWindow(infoWindow);
+	   //图片加载完毕重绘infowindow
+	   document.getElementById('imgDemo').onload = function (){
+	       infoWindow.redraw();   //防止在网速较慢，图片未加载时，生成的信息框高度比图片的总高度小，导致图片部分被隐藏
+	   }
+	});
+*/
+
+/*
+	var marker = new BMap.Marker(point);  
+    map.addOverlay(marker);  
+    marker.addEventListener("click",function(){ //点击标注时出发事件  
+        alert("您点击了标注");  
+    });  
+    marker.enableDragging();    //标注可拖拽  
+        
+    //创建信息窗口  
+    var opts = {    
+        width : 250,     // 信息窗口宽度    
+        height: 100,     // 信息窗口高度    
+        title : "Hello"  // 信息窗口标题    
+    }    
+    var infoWindow = new BMap.InfoWindow("World", opts);  // 创建信息窗口对象    
+    map.openInfoWindow(infoWindow, map.getCenter());      // 打开信息窗口   
+        
+    //折线  
+
+    var polyline = new BMap.Polyline([    
+	    new BMap.Point(116.399, 39.910),    
+	    new BMap.Point(116.405, 39.920),  
+	    new BMap.Point(117.321,40.321)    
+	        ],    
+	{strokeColor:"blue", strokeWeight:6, strokeOpacity:0.5}  //蓝色、宽度为6  
+    );    
+    map.addOverlay(polyline);  
+*/  
+/*                        
+	var map = new BMap.Map("real_bmap");// 创建Map实例
+	var aa="金华"
+	map.centerAndZoom(aa);
+	map.addControl(new BMap.NavigationControl());
+	map.enableScrollWheelZoom();		
+*/
+   
+});
+</script>

@@ -48,6 +48,20 @@ def basestationgrid
 	end
 end
 
+def baidumap
+	respond_to do |format|
+		format.js
+		format.html
+	end
+end
+
+def googlemap
+	respond_to do |format|
+		format.js
+		format.html
+	end
+end
+
 def basestation
 	data=Basestation.offset(params[:start].to_i).limit(params[:limit].to_i)
   	totalcount=Basestation.all.count
