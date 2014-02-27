@@ -4,6 +4,7 @@ zh:
   clear info: "清空"
   save: "保存"
   cancel: "取消"
+  reset: "重置"
   add: "添加"
   edit: "编辑"
   delete: "删除"
@@ -45,6 +46,7 @@ zh:
   add basestation: "添加基站"
   edit basestation data: "编辑基站"
   basestation manage: "基站管理"
+  basestation info: "基站信息"
   chose one more data: "您选择了多条数据"
   chose a data: "请选择一条数据"
   are you sure delete: "确认删除"
@@ -57,3 +59,6 @@ zh:
   edit phone version data: "编辑手机版本信息"
   add phone version: "添加手机版本信息"
   mapnav: "地图导航"
+  zone name: "区域名称"
+  input zone name: "请输入区域名称"
+  

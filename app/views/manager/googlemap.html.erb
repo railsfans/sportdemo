@@ -1,140 +1,450 @@
 <script>
+Ext.Ajax.defaultHeaders = { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') };
+Ext.apply(Ext.form.VTypes,{  
+    // function for validation  
+    ip: function(ipValue){  
+        // just a simple   
+        var ipRegex = /^(\d{1,3})(\.\d{1,3}){3}$/i;  
+        return ipRegex.test(ipValue);  
+    },  
+    // default error text  
+    ipText: "Not a valid IP, Correct Format is 12.23.2.1",  
+    // filter keys, can only type digit and dot  
+    ipMask: /[\d\.]/i  
+});
+// fix form submit mask auto destroy bug
+Ext.define('Ext.form.SubmitFix', {
+    override: 'Ext.ZIndexManager',
+ 
+    register : function(comp) {
+        var me = this,
+            compAfterHide = comp.afterHide;
+      
+        if (comp.zIndexManager) {
+            comp.zIndexManager.unregister(comp);
+        }
+        comp.zIndexManager = me;
+ 
+        me.list[comp.id] = comp;
+        me.zIndexStack.push(comp);
+      
+        // Hook into Component's afterHide processing
+        comp.afterHide = function() {
+            compAfterHide.apply(comp, arguments);
+            me.onComponentHide(comp);
+        };
+    },
+ 
+    /**
+    * Unregisters a {@link Ext.Component} from this ZIndexManager. This should not
+    * need to be called. Components are automatically unregistered upon destruction.
+    * See {@link #register}.
+    * @param {Ext.Component} comp The Component to unregister.
+    */
+    unregister : function(comp) {
+        var me = this,
+            list = me.list;
+      
+        delete comp.zIndexManager;
+        if (list && list[comp.id]) {
+            delete list[comp.id];
+          
+            // Relinquish control of Component's afterHide processing
+            delete comp.afterHide;
+            Ext.Array.remove(me.zIndexStack, comp);
+ 
+            // Destruction requires that the topmost visible floater be activated. Same as hiding.
+            me._activateLast();
+        }
+    }
+});
 Ext.onReady(function () {
 	Ext.getCmp('left').items.items[2].expand();
 	var markersArray = [];
+	var base;
+	var i=5;
+	var marker;
+	Ext.regModel('StatusInfo', {
+	    fields: [{name: 'basestationstatus'},{name: 'value'}]
+	});
+	var BasestationStore = Ext.create('Ext.data.Store',{
+		model : 'StatusInfo',
+		data : [
+			{basestationstatus:'<%= t(:working) %>',value:'100000'},
+			{basestationstatus:'<%= t(:breaking) %>',value:'101100'},
+		]
+	});
 	var googlemap=Ext.create('Ext.panel.Panel', {
-	    title: '',
-	    layout: 'border',
-	    items: [
-		 {
-	        xtype: 'panel',
-	        region: 'east',
-			id: 'east-panel',
-	        title: '新建区域或机构',
-	        animCollapse: true,
-	        collapsible: true,
-	        split: true,
-	        width: 225,  
-	        minSize: 175,
-	        maxSize: 400,
-	        margins: '0 5 0 0',
-	        items: [ 
-				Ext.create('Ext.form.Panel', { 
-		            id: 'zone-form',  
-		            title: '', 
-		            bodyStyle:'padding-top: 25px; padding-left: 10px;padding-right: 20px;',  
-		            defaults: {  
-		                width: 240,  
-		               labelWidth: 75, 
-		                anchor: '98%',  
-		                allowBlank: false,  
-		                selectOnFocus: true,  
-		                msgTarget: 'side'  
-		            },  
-		            defaultType: 'textfield',  
-		            method: 'POST',  
-		            border: false, 
-					buttonAlign: 'center',
-		            buttons: [{  
-						text:'保存',
-						id: 'btnOK',
-						handler: function(){
-							console.log('save');
-	//						var regionContent=Ext.getCmp('mapcenter');
-	//						regionContent.removeAll(); // if you want to remove all the items
-	//  					regionContent.update('this is the original content');
-	//  					regionContent.doLayout();
-	//						marker.setPosition(new google.maps.LatLng(23, 116));//refresh marker
-	//						map.setCenter(new google.maps.LatLng(23, 116));//resfresh center of the map
-							while(markersArray.length){
-	    						markersArray.pop().setMap(null);
-							}
+    title: '',
+    layout: 'border',
+    items: [
+	 {
+        xtype: 'panel',
+        region: 'east',
+		id: 'east-panel',
+        title: '<%= t('basestation info') %>',
+        animCollapse: true,
+        collapsible: true,
+        split: true,
+        width: 225,  
+        minSize: 175,
+        maxSize: 400,
+        margins: '0 5 0 0',
+        items: [ 
+			Ext.create('Ext.form.Panel', { 
+	            id: 'zone-form',  
+	            title: '', 
+	            bodyStyle:'padding-top: 25px; padding-left: 10px;padding-right: 20px;',  
+	            defaults: {  
+	                width: 240,  
+	               	labelWidth: 75, 
+	                anchor: '98%',  
+	                allowBlank: false,  
+	                selectOnFocus: true,  
+	                msgTarget: 'side'  
+	            },  
+	            defaultType: 'textfield',  
+	            method: 'POST',  
+	            border: false, 
+				buttonAlign: 'center',
+	            buttons: [{  
+					text:'<%= t('save') %>',
+					id: 'btnOK',
+					handler: function(){
+						if(Ext.getCmp('zone-form').getForm().isValid()){
+							Ext.getCmp('zone-form').getForm().submit({     
+								waitTitle : '<%= t(:tip) %>', 
+								waitMsg : '<%= t(:waiting) %>',   
+								url : 'basestation_edit', 
+								callback: function(option){
+										console.log(option);
+								},
+								requestcomplete: function( conn, response, options, eOpts ){
+									console.log('success');
+								},
+								success : function(form, action){
+									while(markersArray.length){
+			    						markersArray.pop().setMap(null);
+									}	
+								//	console.log(markersArray);
+									var baseurl='http://'+document.URL.split('/')[2]+'/assets/';
+									base=action.result.griddata;
+								//	console.log(base[0]);
+									var index;
+									console.log(i)
+									for( i=0; i<action.result.griddata.length; i++)
+									{
+										if(base[i].status)
+										{
+										    marker = new google.maps.Marker({
+										  		position: new google.maps.LatLng(base[i].latitude,base[i].longitude),
+												map: map, 
+												draggable: true,
+												title: base[i].name,
+												icon: baseurl+'working.png'
+											});	
+										}
+										else
+										{
+											marker = new google.maps.Marker({
+										  		position: new google.maps.LatLng(base[i].latitude,base[i].longitude),
+												map: map, 
+												draggable: true,
+												title: base[i].name,
+												icon: baseurl+'breaking.png'
+											});	
+										}
+									//	console.log(i);
+										google.maps.event.addListener(marker, "click", function(event) {
+											east.expand(); 
+											Ext.getCmp('zoneid').setValue(base[i].id);	
+											Ext.getCmp('code').setValue(base[i].code);	
+											Ext.getCmp('ip').setValue(base[i].ip);	
+											Ext.getCmp('txtZoneName').setValue(base[i].name);
+											Ext.getCmp('place').setValue(base[i].place);	
+										 	Ext.getCmp('status').setValue(base[i].status ? '<%= t(:working) %>' : '<%= t(:breaking) %>');			
+											Ext.getCmp('txtPosX').setValue(base[i].latitude);
+											Ext.getCmp('txtPosY').setValue(base[i].longitude);
+										})
+										 markersArray.push(marker);
+									//	console.log(markersArray);
+									}
+								},   
+								failure : function(form,action) {    
+									Ext.Msg.alert('title', "false");   
+								}   
+							});   
 						}
-					},{  
-						text: '重置',  
-						handler: function(){  
-							Ext.getCmp('zone-form').form.reset();  
-						}  
-					}],  
-		            items: [  
-						{  
-		                    id: 'txtZoneName',  
-		                    name: 'txtZoneName', 
-		                    fieldLabel: '区域名称', 
-		                    minLength:1, 
-		                    maxLength:30,
-		                    emptyText: '请输入区域名称',
-		                    blankText: '请输入区域名称'  
-		                },{
-		                	id: 'txtPosX',
-		                	name: 'txPosX',
-							xtype : "numberfield",
-							fieldLabel: '纬度或X坐标', 
-							value: 0.0,
-			                allowBlank: true,
-			                allowNegative: true,
-			                allowDecimals: true,
-			                decimalPrecision:3
-			            },{
-		                	id: 'txtPosY',
-		                	name: 'txtPosY',
-							xtype : "numberfield",
-							fieldLabel: '经度或Y坐标', 
-							value: 0.0,
-			                allowBlank: true,
-			                allowNegative: true,
-			                allowDecimals: true,
-			                decimalPrecision: 3 
-			            }              
-					]
-	    		})  
+						
+					}
+				},{  
+					text: '<%= t('reset') %>',  
+					handler: function(){  
+						Ext.getCmp('zone-form').form.reset();  
+					}  
+				}],  
+	            items: [ 
+					{  
+	                    id: 'zoneid',  
+	                    name: 'id', 
+						allowBlank: false,
+						hidden: true,
+	                },	
+					{xtype:"textfield",fieldLabel: '<%= t('code') %>',name: "code", id: 'code'},   
+					{  
+	                    id: 'txtZoneName',  
+	                    name: 'name', 
+						allowBlank: false,
+	                    fieldLabel: '<%= t('zone name') %>', 
+	                    minLength:1, 
+	                    maxLength:30,
+	                    emptyText: '<%= t('input zone name') %>',
+	                    blankText: '<%= t('input zone name') %>'  
+	                },
+					{xtype:"textfield",fieldLabel: 'IP',name: "ip", vtype: "ip", vtypeText:'<%= t('ip format error') %>', id: 'ip'},
+					{xtype:"textfield",fieldLabel: '<%= t('place') %>',name: "place", id: 'place'}, 
+					{
+	                	id: 'txtPosY',
+	                	name: 'longitude',
+						xtype : "numberfield",
+						fieldLabel: '<%= t('longitude') %>', 
+						value: 0.0,
+		                allowBlank: true,
+		                allowNegative: true,
+		                allowDecimals: true,
+		                decimalPrecision: 3 
+		            },{
+	                	id: 'txtPosX',
+	                	name: 'latitude',
+						xtype : "numberfield",
+						fieldLabel: '<%= t('latitude') %>', 
+						value: 0.0,
+		                allowBlank: true,
+		                allowNegative: true,
+		                allowDecimals: true,
+		                decimalPrecision:3
+		            },
+					{
+						xtype : 'combo',
+						id: 'status',
+						listConfig : {
+							emptyText : '<%= t('no match value') %>', 
+							maxHeight : 60 
+						},
+						name:'status',
+						autoSelect : true,
+						fieldLabel:'<%= t('status') %>',
+						triggerAction: 'all',
+						store : BasestationStore,
+						displayField:'basestationstatus',
+						valueField:'basestationstatus',
+						queryMode: 'local',
+						forceSelection : true,
+						typeAhead : true,
+						value:'<%= t(:working) %>'
+					}    	              
+				]
+    		})  
 			]
 	    },{
-	        title: 'Center Region',
+	        title: '<%= t('mapnav') %>',
 			id: 'mapcenter',
-	        region: 'center',     // center region is required, no width/height specified
+	        region: 'center',      
 	        xtype: 'panel',
 	        layout: 'fit',
 			html:"<div style='width:100%;height:100%;border:1px solid gray' id='mapDiv'><h4>网络错误</h4></div>"
 	    }],
 	});
-var east=Ext.getCmp('east-panel');
-east.collapse();
-var show_map_in_panel=new Ext.panel.Panel({
-	layout:'fit',
-	items: [googlemap]
-})
+	var east=Ext.getCmp('east-panel');
+	east.collapse();
+	var show_map_in_panel=new Ext.panel.Panel({
+		layout:'fit',
+		items: [googlemap]
+	})
 	var work_space = Ext.getCmp('center');
 	work_space.removeAll();
 	work_space.add(show_map_in_panel);
 	work_space.doLayout();
+
 	var mapOptions = 
 	{         
-        zoom: 6, //缩放级别     
-        center: new google.maps.LatLng(23.093233384581232, 114.36010122299194), //将地图的中心设置为指定的地理点 可以使用 0（最低缩放级别，在地图上可以看到整个世界）到 19（最高缩放级别，可以看到独立建筑物）之间的缩放级别   
-        mapTypeId: google.maps.MapTypeId.ROADMAP,   //ROADMAP - 默认视图 SATELLITE-显示Google地球卫星图像 HYBRID-混合显示普通视图和卫星视图 TERRAIN-地形图    
-        scaleControl: true,    //比例尺   
+        zoom: 6,    
+        center: new google.maps.LatLng(30.26, 120.19),  
+        mapTypeId: google.maps.MapTypeId.ROADMAP,    
+        scaleControl: true,       
         mapTypeControl: true       
     };   
     map = new google.maps.Map(Ext.getDom('mapDiv'), mapOptions);
 	google.maps.event.addListener(map, "click", function(event) {
 		east.collapse();
 	})
-	<% (1..3).each do %> 
+	 var baseurl='http://'+document.URL.split('/')[2]+'/assets/';
+ 	<% Basestation.all.each do |base| %> 
     marker = new google.maps.Marker({
-		  position: map.getCenter(), 
-		  map: map, 
-		  draggable: false,
-		  title: "广东省"
+  		position: new google.maps.LatLng(<%= base.latitude %>,<%= base.longitude %>),
+		map: map, 
+		draggable: true,
+		title: '<%= base.name %>',
+		<% if base.status %>
+		icon: baseurl+'working.png'
+		<% else %>
+		icon: baseurl+'breaking.png'
+		<% end %>
 	});	
 	google.maps.event.addListener(marker, "click", function(event) {
 		east.expand();
-		var latLng = event.latLng;				
+		var latLng = event.latLng;
+		Ext.getCmp('zoneid').setValue('<%= base.try(:id) %>');	
+		Ext.getCmp('code').setValue('<%= base.try(:code) %>');	
+		Ext.getCmp('ip').setValue('<%= base.try(:ip) %>');	
+		Ext.getCmp('txtZoneName').setValue('<%= base.try(:name) %>');
+		Ext.getCmp('place').setValue('<%= base.try(:place) %>');	
+		Ext.getCmp('status').setValue('<%= base.try(:status) ? t(:working) : t(:breaking)  %>');			
 		Ext.getCmp('txtPosX').setValue(latLng.lat());
 		Ext.getCmp('txtPosY').setValue(latLng.lng());
 	})
 	 markersArray.push(marker);
 	<% end %>
+})
+</script>
+/*
+
+						console.log('save');
+//						var regionContent=Ext.getCmp('mapcenter');
+//						regionContent.removeAll(); // if you want to remove all the items
+//  					regionContent.update('this is the original content');
+//  					regionContent.doLayout();
+//						marker.setPosition(new google.maps.LatLng(23, 116));//refresh marker
+//						map.setCenter(new google.maps.LatLng(23, 116));//resfresh center of the map
+
+
+	 Ext.Ajax.request({
+        url: 'http://ip.taobao.com/service/getIpInfo.php',
+        params: { ip: "123.123.123.123" },
+        method: 'GET',
+        success: function (response, options) {
+            Ext.MessageBox.alert('成功', '从服务端获取结果: ' + response.responseText);
+        },
+        failure: function (response, options) {
+            Ext.MessageBox.alert('失败', '请求超时或网络故障,错误编号：' + response.status);
+        },
+		callback: function(options, success, response){
+			console.log(success);
+			console.log(response);	
+		}
+    });
+ 
+var phonestoress = Ext.create('Ext.data.Store', {
+	    autoLoad: false,
+	    fields:['code','data'],
+	    proxy: {
+	        type: 'ajax',
+	        url: 'http://ip.taobao.com/service/getIpInfo.php?ip=123.123.123.123',   
+	        reader: {
+	            type: 'json',
+	            root: 'data'
+	        }
+	    }  
+	});
+	 
+	phonestoress.load({
+		callback: function(records, operation, success) {
+        	console.log(records);
+    	}
+	});
+ 
+	$.getJSON("http://ip.taobao.com/service/getIpInfo.php?ip=123.123.123.123&callback=?", function(data) {
+         
+	});
+ 
+	var ds = new Ext.data.Store({  
+    proxy: new Ext.data.ScriptTagProxy({  
+        url: 'http://ip.taobao.com/service/getIpInfo.php?ip=123.123.123.123'  
+    }),  
+    reader: new Ext.data.JsonReader({  
+        root: 'data' 
+    }, [  
+        {name: 'title', mapping: 'code'},
+    ]),
+	callback: function(records, operation, success) {
+        	console.log(records);
+    	}  
+	});
+ 
+	Ext.regModel("person",{  
+	fields:[  
+	{name:'code',type:'string'}  
+	],  
+	proxy:{  
+	type:'jsonp',  
+	url:'http://ip.taobao.com/service/getIpInfo.php?ip=123.123.123.123'  
+	}  
+	});  
+	var person = Ext.ModelManager.getModel('person');  
+	person.load(1,{  
+	scope:this,  
+	success:function(model){  
+	alert(model.get('code'));  
+	}  
+	});  
+	 
+	$.ajax({
+	    type: 'POST',
+	    url: 'http://ip.taobao.com/service/getIpInfo.php?ip=123.123.123.123',
+	    crossDomain: true,
+	    data: '{"some":"json"}',
+	    dataType: 'json',
+	    success: function(responseData, textStatus, jqXHR) {
+	        var value = responseData.someKey;
+	    },
+	    error: function (responseData, textStatus, errorThrown) {
+	        alert('POST failed.');
+	    }
+	}); 
+
+	Ext.define('customer', {
+	    extend: 'Ext.data.Model',
+	    fields: ['country', 'area']
+	});
+		
+	var dsCustomer = Ext.create('Ext.data.Store',{
+	    model : 'customer',
+	    autoLoad : true,
+	    proxy : {
+		type: 'jsonp',  // NOTE: type is "jsonp"
+		url: 'http://ip.taobao.com/service/getIpInfo.php?ip=123.123.123.123',
+	    	reader: {
+		    type: 'json',
+		    root: 'data'
+		}
+	    }
+	});	
+	dsCustomer.proxy.reader.rawData
+
+	Ext.define('MovieModel', {
+	        extend : 'Ext.data.Model',
+	        fields : [ {
+	            name : 'Title',
+	            type : 'string'
+	        }, 'Plot' ],
+
+	        proxy : {
+	            type : 'jsonp',
+	            url : 'http://www.imdbapi.com/?y=1969&plot=full',
+	//			url: 'http://115.238.44.116:10000/boys.json'
+	            reader : {
+	                type : 'json'
+	            }
+	        }
+	    });
+
+	MovieModel.load(1,{
+	    params:{t: 'True Grit'},
+	    success: function(record, operation) {
+	        alert(record.get('Plot'));
+	    }
+	});	
+*/
 
 /*
 	var markers = [
@@ -143,10 +453,10 @@ var show_map_in_panel=new Ext.panel.Panel({
     ['Cronulla Beach', -34.028249, 151.157507],
     ['Manly Beach', -33.80010128657071, 151.28747820854187],
     ['Maroubra Beach', -33.950198, 151.259302]
-];
+	];
 
-	  var infowindow = new google.maps.InfoWindow(), marker, i;
-	 for (i = 0; i < markers.length; i++) {  
+	var infowindow = new google.maps.InfoWindow(), marker, i;
+	for (i = 0; i < markers.length; i++) {  
         marker = new google.maps.Marker({
             position: new google.maps.LatLng(markers[i][1], markers[i][2]),
             map: map
@@ -163,10 +473,11 @@ var show_map_in_panel=new Ext.panel.Panel({
 /*
 	var myLatlng = new google.maps.LatLng(-25.363882,131.044922);
 	var markers = new google.maps.Marker({
-      position: myLatlng,
-      map: map,
-      title: 'Hello World!'
-  });
+      	position: myLatlng,
+//		position: map.getCenter(),
+      	map: map,
+      	title: 'Hello World!'
+  	});
 */
 /*
    	google.maps.event.addListener(marker, "dragend", function(event) {
@@ -179,20 +490,19 @@ var show_map_in_panel=new Ext.panel.Panel({
             // expand or collapse that Panel based on its collapsed property state
             west.collapsed ? west.expand() : west.collapse();
 			Ext.getCmp('txtPosX').setValue(latLng.lat());
-				Ext.getCmp('txtPosY').setValue(latLng.lng());
+			Ext.getCmp('txtPosY').setValue(latLng.lng());
 	});	
 	google.maps.event.addListener(map, 'center_changed', function() {
     // 3 seconds after the center of the map has changed, pan back to the
     // marker.
-    window.setTimeout(function() {
-      map.panTo(marker.getPosition());
-    }, 3000);
-  });
+		window.setTimeout(function() {
+	      	map.panTo(marker.getPosition());
+	    }, 3000);
+	});
 
-  google.maps.event.addListener(marker, 'click', function() {
-    map.setZoom(8);
-    map.setCenter(marker.getPosition());
-  });
+  	google.maps.event.addListener(marker, 'click', function() {
+    	map.setZoom(8);
+    	map.setCenter(marker.getPosition());
+  	});
 */
-});
-</script>
+

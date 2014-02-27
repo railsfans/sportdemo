@@ -19,49 +19,12 @@ Ext.onReady(function () {
 	work_space.add(show_map_in_panel);
 	work_space.doLayout();
 	var map = new BMap.Map("mapDiv");             
-	/*
-	function myFun(result){
-	    var cityName = result.name;
-	    map.setCenter(cityName);
-	    alert(cityName);
-	}
-	var myCity = new BMap.LocalCity();
-	myCity.get(myFun);
-*/
 
 	var point="杭州市"
-	//map.centerAndZoom(point,15);                     
-	//map.centerAndZoom(myCity.get(myFun), 15);
 	map.addControl(new BMap.NavigationControl());
-	//map.addControl(new BMap.MapTypeControl);
-	//map.addControl(new BMap.MapTypeControl({mapTypes: [BMAP_NORMAL_MAP,BMAP_HYBRID_MAP]}));
-	//map.addControl(new BMap.ScaleControl);
-	//map.addControl(new BMap.OverviewMapControl);
-/**********
-	function ZoomControl(){  
-	 	this.defaultAnchor = BMAP_ANCHOR_TOP_RIGHT;  
-	 	this.defaultOffset = new BMap.Size(0, 0);  
-	}  
-	ZoomControl.prototype = new BMap.Control(); 
-	ZoomControl.prototype.initialize = function(map){  
-		var div = document.createElement("div");  
-		div.appendChild(document.createTextNode(""));  
-		div.style.cursor = "pointer";  
-		div.style.border = "1px solid gray";  
-		div.style.backgroundColor = "white"; 
-		// div.onclick = function(e){  
-		//   map.zoomTo(map.getZoom() + 2);  
-		// }  
-		map.getContainer().appendChild(div);  
-		return div;  
-	}  
-	var myZoomCtrl = new ZoomControl();  
 
-	map.addControl(myZoomCtrl);
-***********/
 	var bdary = new BMap.Boundary();
-    bdary.get("杭州西湖区", function(rs){       
-//    	map.clearOverlays();             
+    bdary.get("杭州西湖区", function(rs){           
         var count = rs.boundaries.length; 
         for(var i = 0; i < count; i++){
             var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, strokeColor: "#ff0000", fillOpacity: 0.01,}); 
@@ -107,7 +70,6 @@ var marker1;
 <% Basestation.all.each do |basestation| %>
  	marker1 = new BMap.Marker(new BMap.Point(<%= basestation.longitude %>, <%= basestation.latitude %>)); 
 	map.addOverlay(marker1);  
-// 	marker1.setAnimation(BMAP_ANIMATION_BOUNCE); 
 	var opts = {  
  		width : 250,     
  		height: 100,      
@@ -119,61 +81,5 @@ var marker1;
 	marker1.addEventListener("click", function(){this.openInfoWindow(infoWindow);});
 <% end %>
 
-
-
-
-/*
-	var sContent =
-	"<h4 style='margin:0 0 5px 0;padding:0.2em 0'>天安门</h4>" + 
-	"<img style='float:right;margin:4px' id='imgDemo' src='http://app.baidu.com/map/images/tiananmen.jpg' width='139' height='104' title='天安门'/>" + 
-	"<p style='margin:0;line-height:1.5;font-size:13px;text-indent:2em'>天安门坐落在中国北京市中心,故宫的南侧,与天安门广场隔长安街相望,是清朝皇城的大门...</p>" + 
-	"</div>";
-	var points = new BMap.Point(116.404, 39.915);
-	var marker = new BMap.Marker(points);
-	var infoWindow = new BMap.InfoWindow(sContent);  // 创建信息窗口对象
-	map.addOverlay(marker);
-	marker.addEventListener("click", function(){          
-	   this.openInfoWindow(infoWindow);
-	   //图片加载完毕重绘infowindow
-	   document.getElementById('imgDemo').onload = function (){
-	       infoWindow.redraw();   //防止在网速较慢，图片未加载时，生成的信息框高度比图片的总高度小，导致图片部分被隐藏
-	   }
-	});
-*/
-
-/*
-	var marker = new BMap.Marker(point);  
-    map.addOverlay(marker);  
-    marker.addEventListener("click",function(){ //点击标注时出发事件  
-        alert("您点击了标注");  
-    });  
-    marker.enableDragging();    //标注可拖拽  
-        
-    //创建信息窗口  
-    var opts = {    
-        width : 250,     // 信息窗口宽度    
-        height: 100,     // 信息窗口高度    
-        title : "Hello"  // 信息窗口标题    
-    }    
-    var infoWindow = new BMap.InfoWindow("World", opts);  // 创建信息窗口对象    
-    map.openInfoWindow(infoWindow, map.getCenter());      // 打开信息窗口   
-        
-    //折线  
-
-    var polyline = new BMap.Polyline([    
-	    new BMap.Point(116.399, 39.910),    
-	    new BMap.Point(116.405, 39.920),  
-	    new BMap.Point(117.321,40.321)    
-	        ],    
-	{strokeColor:"blue", strokeWeight:6, strokeOpacity:0.5}  //蓝色、宽度为6  
-    );    
-    map.addOverlay(polyline);  
-*/  
-/*                        
-	var map = new BMap.Map("real_bmap");// 创建Map实例
-	var aa="金华"
-	map.centerAndZoom(aa);
-	map.addControl(new BMap.NavigationControl());
-	map.enableScrollWheelZoom();		
-*/
 });
+
