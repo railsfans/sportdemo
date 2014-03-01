@@ -115,7 +115,7 @@ var toolbar = new Ext.toolbar.Toolbar({
 		{ 
 			text: '<%= t('search') %>',
 			id:"search_button", 
-			iconCls:"silk-zoom", 
+			iconCls:"search", 
 			handler:function(){
 				search("search")
 			} },
@@ -202,7 +202,7 @@ $(function () {
         		}
         },
         title: {
-            text: 'welcome'
+            text: '<%= t('welcome') %>'
         },
         xAxis: {
             type: 'datetime',

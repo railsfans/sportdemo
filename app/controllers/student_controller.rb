@@ -2,9 +2,10 @@ class StudentController < ApplicationController
 layout "student" 
 before_filter :authenticate_student
 def historydata
-	@historydata=Motiondata.all
+	@historydata=Motiondata.all.limit(params[:limit].to_i).offset(params[:start].to_i)
+	@count=Motiondata.all.count
     respond_to do |format|
-    	 format.json { render :json=>{ :gridData=>@historydata, :totalCount=>@historydata.count }}
+    	 format.json { render :json=>{ :gridData=>@historydata, :totalCount=>@count }}
          format.html
          format.js
  	end
@@ -40,7 +41,7 @@ def loaddata
     [:step, :distance, :calorie].each do |item|
     	(0..6).each do |i|
     		sum=0
-			sum+=Motiondata.where(:user_type=>'student', :user_id=>current_user.id).where(:motiontime.lt=>Time.now.end_of_day+i.days).where(:motiontime.gte=>Time.now.beginning_of_day+i.days).sum(item) 
+			sum+=Motiondata.where(:user_type=>'student', :user_id=>current_user.id).where(:motiontime.lt=>Time.now.end_of_day-i.days).where(:motiontime.gte=>Time.now.beginning_of_day-i.days).sum(item) 
 			@data<<sum
  		end
     	@totaldata<<@data

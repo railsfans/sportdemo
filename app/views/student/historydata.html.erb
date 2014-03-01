@@ -109,19 +109,19 @@ var historydatagrid=Ext.create('Ext.grid.Panel',{
                 '-',
 				{ 
 					text: '<%= t(:add) %>', 
-					iconCls:"silk-user_add", 
+					iconCls:"add", 
 					handler: function() {
 		        		device_action_handler("add")
 				}},
 				{ 
 					text: '<%= t(:edit) %>', 
-					iconCls:"silk-user_edit", 
+					iconCls:"edit", 
 					handler: function() {
 		        		device_action_handler("edit")
 				}},
 				{ 
 					text: '<%= t(:delete) %>', 
-					iconCls:"silk-user_delete", 
+					iconCls:"delete", 
 					handler: function() {
 		        		device_action_handler("delete")
 				}},
@@ -135,7 +135,7 @@ var historydatagrid=Ext.create('Ext.grid.Panel',{
 	   			{ 
 					text: '<%= t(:search) %>',
 					id:"search_record_button", 
-					iconCls:"silk-zoom", 
+					iconCls:"search", 
 					handler:function(){
 						record_search("search")
 					} 
