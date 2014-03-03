@@ -1,7 +1,7 @@
 require 'digest'
 class Login < ActiveRecord::Base
 	attr_accessor :password
-	attr_accessible :hashed_password, :username, :usertype, :password_confirmation, :password
+	attr_accessible :hashed_password, :username, :usertype, :password_confirmation, :password, :locale
 	validates :password, :confirmation => true, :presence => true, :if => :password_required?
 	before_save :encrypt_new_password 
 	validates :username, :uniqueness => true 

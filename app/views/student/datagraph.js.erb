@@ -148,7 +148,7 @@ function requestData()
 		datatype: "json",
 		success: function(data) 
 		{
-			beginDate=Date.UTC(<%=(Time.now-6.day).strftime("%Y").to_i %>,<%= (Time.now-6.day).strftime("m").to_i %>-1, <%= (Time.now-6.day).strftime("%d").to_i %>);
+			beginDate=Date.UTC(<%=(Time.now-7.day).strftime("%Y").to_i %>,<%= (Time.now-7.day).strftime("m").to_i %>-1, <%= (Time.now-7.day).strftime("%d").to_i %>);
 			someData = [];
             unit=[' step',' km',' kj'];
 		    for( var j=0; j<data.data.length; j++)
