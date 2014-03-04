@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
   # reset captcha code after each request for security
-before_filter :set_locale
+before_filter :set_locale, :set_environmentvariable
   protect_from_forgery
 def setlanguage
 	I18n.locale=params[:language]
@@ -10,9 +10,19 @@ def setlanguage
 	end
 end
 
+def settheme
+	$currenttheme=params[:theme] if ['extjs-yellow', 'extjs-default', 'extjs-pink'].include? params[:theme]
+	respond_to do |format|
+		format.json { render :json=>{ :success=>true, :currenttheme=>$currenttheme}}
+	end
+end
+
 private
-  def set_locale
+  def set_environmentvariable
 	$currenturl= $currenturl || root_path
+    $currenttheme = $currenttheme || "extjs-default"
+  end
+  def set_locale
     I18n.locale =  cookies[:locale] || setup_locale 
   end
 

@@ -14,17 +14,47 @@ Ext.onReady(function() {
                     menu: [{
                         text: 'change yellow theme',
 						handler: function(){
-							 Ext.util.CSS.swapStyleSheet('theme','/assets/extjs-yellow.css');  
+							Ext.util.CSS.swapStyleSheet('theme','/assets/extjs-yellow.css'); 
+							Ext.Ajax.request({
+								url: "http://"+document.location.href.split('/')[2]+'/application/settheme.json',
+								params: { theme: 'extjs-yellow' },								
+								success: function(response, opts){
+									console.log('success');
+								},
+								failure: function(){
+									console.log('failure');
+								}
+							}) 
 						}
                     },{
                         text: 'change ping theme',
 						handler: function(){
 							 Ext.util.CSS.swapStyleSheet('theme','/assets/extjs-pink.css');  
+							Ext.Ajax.request({
+								url: "http://"+document.location.href.split('/')[2]+'/application/settheme.json',
+								params: { theme: 'extjs-pink' },								
+								success: function(response, opts){
+									console.log('success');
+								},
+								failure: function(){
+									console.log('failure');
+								}
+							}) 
 						}
                     }, {
                         text: 'change default theme',
 						handler: function(){
-							 Ext.util.CSS.swapStyleSheet('theme','/assets/extjs-default.css');  
+							 Ext.util.CSS.swapStyleSheet('theme','/assets/extjs-default.css');
+							Ext.Ajax.request({
+								url: "http://"+document.location.href.split('/')[2]+'/application/settheme.json',
+								params: { theme: 'extjs-default' },								
+								success: function(response, opts){
+									console.log('success');
+								},
+								failure: function(){
+									console.log('failure');
+								}
+							})   
 						}
                     }, {
                         text: 'change chinese',
