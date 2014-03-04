@@ -308,6 +308,21 @@ Ext.onReady(function () {
 })
 </script>
 /*
+	Ext.define('Balaee.view.sn.user.weather',{
+   extends:'Ext.container.Container',
+   alias:'widget.weatherView',
+   tpl:Ext.create('Ext.XTemplate',
+        '<div id="main"></br>',
+          '<b>City :- </b> {city} </br>',
+          '<b>Temp:- </b> {temp_c} </br>',
+        '</div>')
+	});
+	var viewObj=Ext.create('Balaee.view.sn.user.weather',{
+   renderTo:'IdOfYourRenderingArea' // Or it can be Ext.getBody()
+});
+viewObj.update({city:location, temp_c:temp_c});
+*/
+/*
 
 						console.log('save');
 //						var regionContent=Ext.getCmp('mapcenter');

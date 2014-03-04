@@ -1,13 +1,49 @@
 Ext.onReady(function() {
+//	 Ext.require('Ext.data.JsonP', function() {
+		Ext.data.JsonP.request({
+		    url : "http://api.wunderground.com/api/4ab310c7d75542f3/geolookup/conditions/q/IA/hangzhou.json",
+		    success : function(parsed_json) {
+		        var location = parsed_json['location']['city'];
+		        var temp_c = parsed_json['current_observation']['temperature_string'];
+				Ext.getCmp('weatherreport').setText("<marquee>杭州当前温度为" + temp_c+"</marquee>");
+		        	return temp_c;
+		    }
+		});
+//        });
+		var reload = function() {
+		  Ext.data.JsonP.request({
+			    url : "http://api.wunderground.com/api/4ab310c7d75542f3/geolookup/conditions/q/IA/hangzhou.json",
+			    success : function(parsed_json) {
+			        var location = parsed_json['location']['city'];
+			        var temp_c = parsed_json['current_observation']['temperature_string'];
+					Ext.getCmp('weatherreport').setText("<marquee>杭州当前温度为" + temp_c+"</marquee>");
+			        	return temp_c;
+			    }
+			});
+		}
+		setInterval(reload, 100000);
+
+		var weatherBtn = Ext.create('Ext.button.Button', {
+    //		text: '<marquee width="400px">欢迎访问</marquee>',
+			id: 'weatherreport',
+    		scope   : this,
+    		handler : function() {
+        
+    		},
+			listeners : {
+    			click: function(button,event) {
+        			button.setText('Hide');
+    			}
+			}
+		});
         Ext.create('Ext.container.Viewport', {
             layout: 'border',
             items: [{
                 region: 'north',
                 border: false,
                 height: 24,
-                tbar: [{
-                    	text: '<marquee width="400px">欢迎访问</marquee>',
-                },  '->',
+                tbar: [weatherBtn,
+				'->',
 				{
                     text: 'Options',
                     iconCls: 'options_icon',
