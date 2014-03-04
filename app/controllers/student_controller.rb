@@ -9,13 +9,21 @@ def historydata
          format.html
          format.js
  	end
-	p request.original_url
+	$currenturl=request.original_url
+	p $currenturl
 #	render :layout => false
 end
 def personinfo
-	 
+	$currenturl=request.original_url
+	p $currenturl
+	respond_to do |format|
+         format.html
+         format.js
+ 	end
 end
 def datagraph
+	$currenturl=request.original_url
+	p $currenturl
 	respond_to do |format|
          format.html
          format.js

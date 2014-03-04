@@ -12,11 +12,50 @@ Ext.onReady(function() {
                     text: '选项',
                     iconCls: 'options_icon',
                     menu: [{
-                        text: 'User Info'
+                        text: 'change yellow theme',
+						handler: function(){
+							 Ext.util.CSS.swapStyleSheet('theme','/assets/extjs-yellow.css');  
+						}
+                    },{
+                        text: 'change ping theme',
+						handler: function(){
+							 Ext.util.CSS.swapStyleSheet('theme','/assets/extjs-pink.css');  
+						}
                     }, {
-                        text: 'Settings'
+                        text: 'change default theme',
+						handler: function(){
+							 Ext.util.CSS.swapStyleSheet('theme','/assets/extjs-default.css');  
+						}
                     }, {
-                        text: 'Switch Theme'
+                        text: 'change chinese',
+						handler: function(){
+							Ext.Ajax.request({
+								url: "http://"+document.location.href.split('/')[2]+'/application/setlanguage.json',
+								params: { language: 'zh' },
+								success: function(response, opts){
+									console.log(Ext.decode(response.responseText).currenturl);
+									window.location.href=Ext.decode(response.responseText).currenturl.replace(/.json/,'');
+								},
+								failure: function(){
+									console.log('failure');
+								}
+							})
+						}
+                    }, {
+                        text: 'change english',
+						handler: function(){
+							Ext.Ajax.request({
+								url: "http://"+document.location.href.split('/')[2]+'/application/setlanguage.json',
+								params: { language: 'en' },
+								success: function(response, opts){
+									console.log(Ext.decode(response.responseText).currenturl);
+									window.location.href=Ext.decode(response.responseText).currenturl.replace(/.json/,'');
+								},
+								failure: function(){
+									console.log('failure');
+								}
+							})
+						}
                     }]
                 }, {
                     text: '帮助'

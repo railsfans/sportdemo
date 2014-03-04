@@ -2,9 +2,17 @@ class ApplicationController < ActionController::Base
   # reset captcha code after each request for security
 before_filter :set_locale
   protect_from_forgery
+def setlanguage
+	I18n.locale=params[:language]
+	cookies[:locale]=params[:language]
+	respond_to do |format|
+		format.json { render :json=>{ :success=>true, :currenturl=>$currenturl}}
+	end
+end
 
 private
   def set_locale
+	$currenturl= $currenturl || root_path
     I18n.locale =  cookies[:locale] || setup_locale 
   end
 
