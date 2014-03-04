@@ -62,7 +62,7 @@ Ext.onReady(
 				});
 				var checkcode = Ext.create('CheckCode',{
 				 	cls : 'key',
-		            fieldLabel : '验证码',
+		            fieldLabel : '<%= t('checkcode') %>',
 		            name : 'captcha',
 		            id : 'CheckCode',
 		            allowBlank : false,
@@ -96,7 +96,7 @@ Ext.onReady(
 					form = Ext.create('Ext.form.Panel',{
 						frame:true,
 						title:'用户登录',
-						width:300,
+						width:350,
 						height:220,
 						//渲染到页面中的loginForm层中
 						renderTo:'loginpanel', 
@@ -128,15 +128,14 @@ Ext.onReady(
 					       	},
 					       	{
 					    	   	xtype:'textfield',
-					    	   	fieldLabel:'用户名',
+					    	   	fieldLabel:'<%= t('username') %>',
 					    	   	name:'username',
-					    	   	//不允许为空
 					    	   	allowBlank:false,
 					    	   	blankText:'用户名不能为空'
 					       	},
 					       	{
 					    	   	xtype:'textfield',
-					    	   	fieldLabel:'密    码',
+					    	   	fieldLabel:'<%= t('password') %>',
 					    	   	name:'password',
 					    	   	inputType:'password',
 					    	   	allowBlank:false,
@@ -154,7 +153,7 @@ Ext.onReady(
 					            }),
 					            displayField: 'usertype',
 								valueField:'value',
-					            fieldLabel: '用户类型',
+					            fieldLabel: '<%= t('usertype') %>',
 					            queryMode: 'local',
 					            name: 'usertype', 
 					            allowBlank:false,
@@ -186,6 +185,16 @@ Ext.onReady(
 			                        failure:function(forms, action){ 
 			                            Ext.Msg.alert('Failed', action.result ? action.result.errormessage : 'No response');
 			                            form.getForm().reset(); 
+										Ext.Ajax.request({     
+								       		url:'sessions/test.html',  
+								        	success: function(resp,opts) {   
+												Ext.select('img.x-form-code').each(function(i){
+															var d = new Date();
+															var n = d.getTime(); 
+															i.dom.src=url+'?code='+code+'&time=' + n.toString()
+												});
+											}
+										})
 			                        } 
 			                    }); 
 			                  }
