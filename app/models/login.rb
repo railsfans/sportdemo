@@ -10,6 +10,7 @@ class Login < ActiveRecord::Base
     has_one :manager
     has_one :student
 	has_one :target
+	has_one :gradeteacher
 
 	has_many :devices
    
@@ -62,6 +63,8 @@ class Login < ActiveRecord::Base
   			return Teacher.where(:login_id=>id)
 		when 'manager'
   			return Manager.where(:login_id=>id)
+		when 'gradeteacher'
+  			return Gradeteacher.where(:login_id=>id)
 		else
   			puts "others"
 		end
