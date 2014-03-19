@@ -1,39 +1,23 @@
 <script>
 ﻿Ext.Ajax.defaultHeaders = { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') };
 Ext.onReady(function() {
-
+ 
 Ext.getCmp('left').items.items[4].expand();
-Ext.create('Ext.data.Store', {
-    storeId:'simpsonsStore',
-    fields:['name', 'email', 'phone'],
-    data:{'items':[
-        { 'name': 'Lisa',  "email":"lisa@simpsons.com",  "phone":"555-111-1224"  },
-        { 'name': 'Bart',  "email":"bart@simpsons.com",  "phone":"555-222-1234" },
-       
-    ]},
-    proxy: {
-        type: 'memory',
-        reader: {
-            type: 'json',
-            root: 'items'
-        }
-    }
-});
-
-var devicegrids=Ext.create('Ext.grid.Panel', {
-    title: 'Simpsons',
-    store: Ext.data.StoreManager.lookup('simpsonsStore'),
-    columns: [
-        { header: 'Name',  dataIndex: 'name' },
-        { header: 'Email', dataIndex: 'email', flex: 1 },
-        { header: 'Phone', dataIndex: 'phone' }
-    ],
+ 
+var tabledata='<div id="picsection"><ul class="sortable"><li><div class="picsmall"><div class="front"><table id="one-column-emphasis"><colgroup><col class="oce-first" /></colgroup><thead><tr><th scope="col">统计项目</th><th scope="col">记录</th></tr></thead><tbody><tr><td>中等运动强度时间</td><td>20.3分钟</td></tr><tr><td>高等运动强度时间</td><td>50.2</td></tr><tr><td>中高等运动强度时间</td><td>25.4</td></tr></tbody></table></div><div class="back">back</div></div></li>';
+tabledata+='<li><div class="piclarge"><div class="front"><table id="one-column-emphasis"><colgroup><col class="oce-first" /></colgroup><thead><tr><th scope="col">指标</th><th scope="col">结果</th></tr></thead><tbody><tr><td>体力活动得分</td><td>20.3</td></tr><tr><td>阳光体育一小时</td><td>50.2分钟</td></tr><tr><td>中等以上运动强度</td><td>25.4</td></tr><tr><td>大课间有效运动时间</td><td>50.2</td></tr><tr><td>小课间有效运动时间</td><td>25.4</td></tr><tr><td>体育课有效运动时间</td><td>25.4</td></tr><tr><td>课外活动有效运动时间</td><td>25.4</td></tr></tbody></table></div><div class="back">back</div></div></li></ul></div>';
+tabledata+='<div id="notice"><div class="card"><div class="front">front</div><div class="back">back</div></div></div>';
+var feedback=Ext.create('Ext.panel.Panel', {
+    title: 'Hello',
     layout: 'fit',
+	autoScroll: true,
+    bodyStyle:{"background-color":"#fed"},
+    html: tabledata
 });
 
 var work_space = Ext.getCmp('center');
 work_space.removeAll();
-work_space.add(devicegrids);
+work_space.add(feedback);
 work_space.doLayout();
 
 })
@@ -43,5 +27,13 @@ work_space.doLayout();
 $(function(){
 	$("#feedback-management a").removeClass("selected");
 	$("#feedback-management a:first").addClass("selected");
+	$(document.body).on('click', '.piclarge', function() {
+    	document.querySelector('.piclarge').classList.toggle("flip");
+  	});
+	$(document.body).on('click', '.picsmall', function() {
+    	document.querySelector('.picsmall').classList.toggle("flip");
+  	});
+	$(".sortable").sortable();
+	$(".sortable").disableSelection();
 })
 </script>

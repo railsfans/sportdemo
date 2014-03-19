@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140303152333) do
+ActiveRecord::Schema.define(:version => 20140319023622) do
 
   create_table "basestations", :force => true do |t|
     t.string   "name"
@@ -33,6 +33,17 @@ ActiveRecord::Schema.define(:version => 20140303152333) do
     t.datetime "lastupdate"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "gradeteachers", :force => true do |t|
+    t.string   "name"
+    t.string   "email"
+    t.boolean  "sex"
+    t.integer  "login_id"
+    t.string   "phone"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+    t.string   "gradeteacherid"
   end
 
   create_table "logins", :force => true do |t|
@@ -110,6 +121,17 @@ ActiveRecord::Schema.define(:version => 20140303152333) do
   create_table "shclasses", :force => true do |t|
     t.string   "name"
     t.integer  "shgrade_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "shgrade_gradeteachers", :id => false, :force => true do |t|
+    t.integer "shgrade_id"
+    t.integer "gradeteacher_id"
+  end
+
+  create_table "shgrades", :force => true do |t|
+    t.string   "name"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end

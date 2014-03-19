@@ -73,6 +73,7 @@ Ext.onReady(
 		        });
 				var form;
 				function submitOnEnter(field, event) {
+	/*
 					if (event.getKey() == event.ENTER) {
 						field.up('form').getForm().submit({ 
 			                        method:'POST', 
@@ -92,6 +93,8 @@ Ext.onReady(
 			                        } 
 			                    }); 
 					}
+*/
+	console.log('tes');
 				}
 					form = Ext.create('Ext.form.Panel',{
 						frame:true,
@@ -113,11 +116,9 @@ Ext.onReady(
 							//错误提示显示在一边(side)，还可以配置为under、title、none
 							msgTarget: 'side'
 						},
-						defaults: {
 							listeners: {
 								specialkey: submitOnEnter
-								}
-						},
+								},
 						items:[
 							{
 					    		xtype:'textfield',
