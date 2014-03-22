@@ -150,7 +150,7 @@ function requestData()
 		{
 			beginDate=Date.UTC(<%=(Time.now-7.day).strftime("%Y").to_i %>,<%= (Time.now-7.day).strftime("m").to_i %>-1, <%= (Time.now-7.day).strftime("%d").to_i %>);
 			someData = [];
-            unit=[' step',' km',' kj'];
+            unit=[' <%= t(:stepcount) %>',' <%= t(:km) %>',' <%= t(:kj) %>'];
 		    for( var j=0; j<data.data.length; j++)
        		{
 		   		for (var i = 0; i < 7; i++){
@@ -202,7 +202,7 @@ $(function () {
         		}
         },
         title: {
-            text: '<%= t('welcome') %>'
+            text: '<%= t('recent week motiondata') %>'
         },
         xAxis: {
             type: 'datetime',

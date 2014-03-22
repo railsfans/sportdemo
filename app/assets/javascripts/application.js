@@ -18,8 +18,9 @@
 //= require highcharts
 //= require highcharts-more
 //= require exporting 
+//= require jquery.ui
 $(document).ready(function(){
-
+// alert('download');
 $("li a").hover(function(){
 	$(this).addClass("hover");
 	}, function(){

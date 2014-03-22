@@ -1,6 +1,15 @@
 class StudentController < ApplicationController
 layout "student" 
 before_filter :authenticate_student
+def testsort
+#	 render :layout => false     
+end
+
+def loadjs
+	respond_to do |format|
+		format.js
+	end
+end
 def historydata
 	@historydata=Motiondata.all.limit(params[:limit].to_i).offset(params[:start].to_i)
 	@count=Motiondata.all.count
@@ -44,7 +53,7 @@ end
 def loaddata 
     @data=[]
     @totaldata=[]
-    @items=['step', 'distance', 'calorie']
+    @items=[t(:step), t(:distance), t(:calorie)]
 
     [:step, :distance, :calorie].each do |item|
     	(0..6).each do |i|

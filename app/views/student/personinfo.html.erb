@@ -109,12 +109,17 @@ Ext.onReady(function() {
 Ext.getCmp('left').items.items[1].expand();
 Ext.QuickTips.init();
 var required = '<span style="color:red;font-weight:bold" data-qtip="Required">*</span>';
+function hide_message() {
+	Ext.defer(function() {
+		Ext.MessageBox.hide();
+	}, 1000);
+}
 var personinfopanel = Ext.widget({
     xtype: 'form',
     id: 'multiColumnForm',
     collapsible: true,
     frame: true,
-    title: 'Multi Column, Nested Layouts and Anchoring',
+    title: '<%= t(:personinfo) %>',
     bodyPadding: '5 5 0',
     width: 600,
     fieldDefaults: {
@@ -149,8 +154,8 @@ var personinfopanel = Ext.widget({
             fieldLabel: '<%= t(:sex) %>',
 			anchor:'95%',
             items: [
-                {boxLabel: 'male', name: 'sex', inputValue: 'true', checked: <%=Student.find(current_user.id).sex ==true ? true : false%>},
-                {boxLabel: 'female', name: 'sex', inputValue: 'false', checked: <%=Student.find(current_user.id).sex ==false ? true : false %>}
+                {boxLabel: '<%= t(:male) %>', name: 'sex', inputValue: 'true', checked: <%=Student.find(current_user.id).sex ==true ? true : false%>},
+                {boxLabel: '<%= t(:female) %>', name: 'sex', inputValue: 'false', checked: <%=Student.find(current_user.id).sex ==false ? true : false %>}
             ]
         }]
         },{
@@ -193,39 +198,42 @@ var personinfopanel = Ext.widget({
 		            fieldLabel: '<%= t(:birthday) %>',
 		            name: 'birthday',
 		            xtype: 'datefield',
-					anchor:'100%'
+					anchor:'100%',
+					value: new Date(<%= 2013 %>,1,1)	
 			}]
         }]
     }, {
         xtype: 'htmleditor',
         name: 'profile',
 		labelAlign: 'top',
-        fieldLabel: 'profile',
+        fieldLabel: '<%= t(:profile) %>',
         height: 200,
-        anchor: '100%'
+        anchor: '100%',
+		value: new Date()
     }],
 	buttonAlign: 'center',
     buttons: [{
         text: '<%= t(:save) %>',
         handler: function() {
             if(this.up('form').getForm().isValid())
+			{
             	this.up('form').getForm().submit({
                 	url: 'changepersoninfo.json',                     
                		waitMsg: 'waiting',
                  	success: function(fp, o) { 
-     					Ext.Msg.alert('Error', 'form is not valid');
-						function hide_message() {
-    						Ext.defer(function() {
-        					Ext.MessageBox.hide();
-    					}, 1000);
-						}
-						hide_message();     									  
+     					Ext.Msg.alert('title', 'success');  									  
                   	},
                  	failure: function(form,action){
                          
                            					
                 	}
                     });
+			}
+			else
+			{
+				Ext.Msg.alert('Error', 'form is not valid');
+				hide_message();   
+			}
         }
     },{
         text: "<%= t('clear info') %>",

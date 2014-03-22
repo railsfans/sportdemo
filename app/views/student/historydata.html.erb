@@ -111,19 +111,19 @@ var historydatagrid=Ext.create('Ext.grid.Panel',{
 					text: '<%= t(:add) %>', 
 					iconCls:"add", 
 					handler: function() {
-		        		device_action_handler("add")
+		        		historydata_action_handler("add")
 				}},
 				{ 
 					text: '<%= t(:edit) %>', 
 					iconCls:"edit", 
 					handler: function() {
-		        		device_action_handler("edit")
+		        		historydata_action_handler("edit")
 				}},
 				{ 
 					text: '<%= t(:delete) %>', 
 					iconCls:"delete", 
 					handler: function() {
-		        		device_action_handler("delete")
+		        		historydata_action_handler("delete")
 				}},
                 {
 			    	xtype: 'textfield',

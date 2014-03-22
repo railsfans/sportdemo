@@ -26,8 +26,10 @@ Ext.onReady(
 				        this.callParent(arguments);
 				        this.codeEl = ct.createChild({ tag: 'img', src: Ext.BLANK_IMAGE_URL});
 				        this.codeEl.addCls('x-form-code');
-				        this.codeEl.on('click', this.loadCodeImg, this);
-				        
+//				        this.codeEl.on('click', this.loadCodeImg, this);
+                        this.codeEl = ct.createChild({ tag: 'img', src: 'assets/refresh.png'});
+				        this.codeEl.addCls('x-form-code-right');
+						Ext.select('img.x-form-code-right').on('click', this.loadCodeImg, this);
 				        if (this.isLoader) this.loadCodeImg();
 				    },
 				    alignErrorIcon: function() {
@@ -37,10 +39,20 @@ Ext.onReady(
 				    loadCodeImg: function() {	
 						if(a=='true')
 						{
-				        	this.codeEl.set({ src: this.codeUrl + '?code='+code+'&time=' + <%= Time.now.to_i.to_s %> });
-							this.codeEl.set({ title: 'click me to refresh' });
+//				        	this.codeEl.set({ src: this.codeUrl + '?code='+code+'&time=' + <%= Time.now.to_i.to_s %> });
+//							this.codeEl.set({ title: '<%= t('click me to refresh code') %>' });
+							Ext.select('img.x-form-code').each(function(i){
+												var d = new Date();
+												var n = d.getTime(); 
+												i.dom.src='simple_captcha' + '?code='+code+'&time=' + <%= Time.now.to_i.to_s %>;
+//												i.dom.title='<%= t('click me to refresh code') %>'
+									});
+							Ext.select('img.x-form-code-right').each(function(i){
+												i.dom.title='<%= t('click me to refresh code') %>'
+									});
 							a='false';
 							url=this.codeUrl;
+							console.log(url);
 						}
 						else
 							Ext.Ajax.request({     
@@ -100,9 +112,9 @@ Ext.onReady(
 						frame:true,
 						title:'用户登录',
 						width:350,
-						height:220,
+						height:170,
 						//渲染到页面中的loginForm层中
-						renderTo:'loginpanel', 
+					//	renderTo:'loginpanel', 
 						//是否可以拖动
 						draggable:true,
 						//使buttons中的button居中显示
@@ -116,9 +128,9 @@ Ext.onReady(
 							//错误提示显示在一边(side)，还可以配置为under、title、none
 							msgTarget: 'side'
 						},
-							listeners: {
-								specialkey: submitOnEnter
-								},
+						listeners: {
+							specialkey: submitOnEnter
+							},
 						items:[
 							{
 					    		xtype:'textfield',
@@ -208,6 +220,26 @@ Ext.onReady(
 			            }]  
 					}
 				)
+				var panels = new Ext.Panel({//声明定义一个面板，用来布局登录页面  
+			        renderTo:'loginpanel',//渲染（加载）到指定的loginpanel元素中  
+			        layout:'border',//采用border样式布局  
+			        width:550,  
+			        height:290,  
+			        defaults:{border:false},//容器中的每个子组件默认是右边框的  
+			        items:[{  
+			            region:"north",//顶部（北部）  
+			            height:56,  
+			            html:'<div id="headerimage" style="background: url(assets/header.png) repeat-x; height: 100px;"></div>'  
+			        },{  
+			            region:"south",//底部（南部）  
+			            height:56,  
+			            html:'<div id="headerimage" style="background: url(assets/header.png) repeat-x; height: 100px;"></div>'  
+			        },{  
+			            region:"west",  
+			            width:200,  
+			            html:'<img src="assets/leftimage.jpg"/>'  
+			        },form]  
+			    });  
 				Ext.get('loginpanel').setStyle('position', 'absolute').center(Ext.getBody());
 	  		},   
             failure: function(resp,opts) {   
