@@ -320,7 +320,7 @@ var basestationgrid=Ext.create('Ext.grid.Panel',{
 			            },
 			            store: { 
 			                autoLoad: true,
-						    fields:['id'], 
+						    fields:['id','logcontent'], 
 						    proxy: {
 						        type: 'ajax',
 						        url: 'stationlog.json',   
@@ -335,6 +335,7 @@ var basestationgrid=Ext.create('Ext.grid.Panel',{
 			            },
 			            columns: [
 			                {header: "id", flex: 1, dataIndex: 'id', sortable: true},
+							{header: "logcontent", flex: 1, dataIndex: 'logcontent', sortable: true},
 			            ]
 			        });
 					var tabPage = tabpanel.add({ 

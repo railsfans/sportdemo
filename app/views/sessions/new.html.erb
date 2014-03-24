@@ -185,8 +185,8 @@ Ext.onReady(
 			                    if (form.getForm().isValid()) {
 			                    form.getForm().submit({ 
 			                        method:'POST', 
-			                        waitTitle:'Connecting', 
-			                        waitMsg:'Sending data...',
+			                        waitTitle:'<%= t('redirecting') %>', 
+			                        waitMsg:'<%= t('please waiting') %>',
 			                        success:function(rec, op){ 
 											if(op.result.type=='student')
 												window.location.href="http://"+'<%= request.original_url.split('/')[2] %>'+'/student/historydata'
