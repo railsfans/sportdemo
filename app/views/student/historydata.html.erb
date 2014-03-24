@@ -33,6 +33,17 @@ historydatastore.load({
     }
 });
 
+var task = {
+   run: function() {
+        historydatastore.reload()
+   },
+   interval: 1000 //1 second
+}
+ 
+var runner = new Ext.util.TaskRunner();
+ 
+runner.start(task);
+
 var historydatagrid=Ext.create('Ext.grid.Panel',{
 	title : '<%= t(:historydata) %>', 
 	frame:true,

@@ -71,7 +71,7 @@ def basestation
 end
 
 def basestation_add 
-	Basestation.create(:place=>params[:place], :status=>params[:status]==t(:working) ? true : false, :code=>params[:code], :name=>params[:name], :longitude=>params[:longitude], :latitude=>params[:latitude], :ip=>params[:ip], :updatetime=>Time.now.to_i)
+	Basestation.create(:place=>params[:place], :status=>params[:status]==t(:working) ? true : false, :code=>params[:code], :name=>params[:name], :longitude=>params[:longitude], :latitude=>params[:latitude], :ip=>params[:ip])
    	respond_to do |format| 
 		format.json { render :json=>{:success=>true }}
   	end
@@ -79,7 +79,7 @@ end
 
 def basestation_edit
 	
-  	Basestation.find(params[:id]).update_attributes(:place=>params[:place], :status=>params[:status]==t(:working) ? true : false, :code=>params[:code], :name=>params[:name], :longitude=>params[:longitude], :latitude=>params[:latitude], :ip=>params[:ip], :updatetime=>Time.now.to_i)
+  	Basestation.find(params[:id]).update_attributes(:place=>params[:place], :status=>params[:status]==t(:working) ? true : false, :code=>params[:code], :name=>params[:name], :longitude=>params[:longitude], :latitude=>params[:latitude], :ip=>params[:ip], :setparamsflag=>'0')
    
 	respond_to do |format| 
    		format.json { render :json=>{:success=>true, :griddata=>Basestation.all }}
@@ -92,6 +92,13 @@ def basestation_delete
   	respond_to do |format| 
        	format.json { render :json=>{:success=>true }}
   	end
+end
+
+def stationlog
+	Basestation.find(params[:stationid]).update_attributes(:reqlogflag=>'0')
+	respond_to do |format|
+		format.json { render :json=>{:gridData=>Basestation.find(params[:stationid]) }}
+	end
 end
 
 end

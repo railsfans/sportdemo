@@ -11,19 +11,22 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140319023622) do
+ActiveRecord::Schema.define(:version => 20140324030833) do
 
   create_table "basestations", :force => true do |t|
     t.string   "name"
     t.string   "code"
     t.boolean  "status"
-    t.decimal  "longitude",  :precision => 10, :scale => 2
+    t.decimal  "longitude",     :precision => 10, :scale => 2
     t.string   "ip"
-    t.decimal  "latitude",   :precision => 10, :scale => 2
+    t.decimal  "latitude",      :precision => 10, :scale => 2
     t.string   "place"
-    t.datetime "created_at",                                :null => false
-    t.datetime "updated_at",                                :null => false
+    t.datetime "created_at",                                                    :null => false
+    t.datetime "updated_at",                                                    :null => false
     t.integer  "updatetime"
+    t.string   "reqlogflag",                                   :default => "1"
+    t.string   "setparamsflag",                                :default => "1"
+    t.string   "logcontent"
   end
 
   create_table "devices", :force => true do |t|

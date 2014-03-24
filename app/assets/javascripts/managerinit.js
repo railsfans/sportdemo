@@ -45,7 +45,7 @@ Ext.onReady(function() {
                 tbar: [weatherBtn,
 				'->',
 				{
-                    text: 'Options',
+                    text: '选项',
                     iconCls: 'options_icon',
                     menu: [{
                         text: 'User Info'
@@ -55,7 +55,7 @@ Ext.onReady(function() {
                         text: 'Switch Theme'
                     }]
                 }, {
-                    text: 'Help'
+                    text: '帮助'
                 }, '-', {
                     text: '退出',
                     iconCls: 'logout',

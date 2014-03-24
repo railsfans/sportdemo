@@ -289,7 +289,22 @@ var basestationgrid=Ext.create('Ext.grid.Panel',{
 			dataIndex: 'status', 
 			sortable: true, 
 			align: 'center'
-		}  
+		},{
+    		text: '<%= t('download stationlog') %>',
+	      	xtype: 'actioncolumn', 
+			iconCls: 'download',
+			align: 'center',
+			items: [{  
+	   			icon: 'download.png',
+				tooltip: '<%= t('download stationlog') %>',
+				handler: function(grid, rowIndex, colIndex) {
+					var rec = grid.getStore().getAt(rowIndex);
+	          		var models = grid.getStore().getRange();
+	             	var record=models[rowIndex]; 
+					console.log(rec.get('id'));
+				}
+			}]
+		}   
 		],
    		dockedItems: [{
 			xtype: 'pagingtoolbar',

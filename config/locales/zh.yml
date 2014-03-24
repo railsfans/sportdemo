@@ -45,6 +45,7 @@ zh:
   code: "编码"
   status: "状态"
   ip format error: "IP格式不对"
+  basestation: "基站"
   add basestation: "添加基站"
   edit basestation data: "编辑基站"
   basestation manage: "基站管理"
@@ -105,3 +106,4 @@ zh:
   click me to refresh code: "刷新验证码"
   exercise advise: "运动建议"
   person rank: "个人排名"
+  view stationlog: "查看基站日志"

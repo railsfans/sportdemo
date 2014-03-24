@@ -213,7 +213,18 @@ basestationstore.load({
         limit: itemsPerPage,
     }
 });
-
+/*
+var task = {
+   run: function() {
+        basestationstore.reload()
+   },
+   interval: 1000 //1 second
+}
+ 
+var runner = new Ext.util.TaskRunner();
+ 
+runner.start(task);
+*/
 var basestationgrid=Ext.create('Ext.grid.Panel',{
 	title : '<%= t('basestation manage') %>', 
 	frame:true,
@@ -286,7 +297,56 @@ var basestationgrid=Ext.create('Ext.grid.Panel',{
 			dataIndex: 'status', 
 			sortable: true, 
 			align: 'center'
-		}  
+		},{
+    		text: '<%= t('view stationlog') %>',
+	      	xtype: 'actioncolumn', 
+			iconCls: 'download',
+			align: 'center',
+			items: [{  
+	   			icon: 'download.png',
+				tooltip: '<%= t('view stationlog') %>',
+				handler: function(grid, rowIndex, colIndex) {
+					var rec = grid.getStore().getAt(rowIndex);
+	          		var models = grid.getStore().getRange();
+	             	var record=models[rowIndex]; 
+					console.log(rec.get('id'));
+					
+			        var stationloggrid=Ext.create('Ext.grid.Panel',{
+			            title : rec.get('code')+'<%= t(:basestation) %>',
+			            frame:true,
+			            viewConfig: {
+			                forceFit : true,
+			                stripeRows: true
+			            },
+			            store: { 
+			                autoLoad: true,
+						    fields:['id'], 
+						    proxy: {
+						        type: 'ajax',
+						        url: 'stationlog.json',   
+						        reader: {
+						            type: 'json',
+						            root: 'gridData'
+						        },
+								 extraParams: {
+							        stationid: rec.get('id')
+							    }			
+						    }		  
+			            },
+			            columns: [
+			                {header: "id", flex: 1, dataIndex: 'id', sortable: true},
+			            ]
+			        });
+					var tabPage = tabpanel.add({ 
+			           	title: rec.get('code')+'<%= t(:basestation) %>',
+				   		items : [stationloggrid],
+				   		closable : true,
+			         	layout: 'fit'
+					})
+					tabpanel.setActiveTab(tabPage); 
+				}
+			}]
+		} 
 		],
    		dockedItems: [{
 			xtype: 'pagingtoolbar',
@@ -341,10 +401,14 @@ var basestationgrid=Ext.create('Ext.grid.Panel',{
 			]       
 		}]                
 });
-
+var tabpanel=Ext.create('Ext.tab.Panel', {
+    width: 400,
+    height: 400,
+    items: [basestationgrid]
+});
 var work_space = Ext.getCmp('center');
 work_space.removeAll();
-work_space.add(basestationgrid);
+work_space.add(tabpanel);
 work_space.doLayout();
 })
 

@@ -318,3 +318,7 @@ a {
 	top: 86px;
 	cursor:pointer;
 }
+
+.download {
+	cursor: pointer;
+}
