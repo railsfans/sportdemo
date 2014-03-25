@@ -109,3 +109,5 @@ zh:
   view stationlog: "查看基站日志"
   redirecting: "跳转中..."
   please waiting:  "请稍等..."
+  online: "在线"
+  offline: "离线"

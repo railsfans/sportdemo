@@ -47,6 +47,7 @@ function basestation_action_handler(type) {
         {xtype:"textfield",fieldLabel: '<%= t('place') %>',name: "place"},   
         {xtype:"textfield",fieldLabel: '<%= t('longitude') %>',name: "longitude"},  
         {xtype:"textfield",fieldLabel: '<%= t('latitude') %>',name: "latitude"},  
+/*
         {
 			xtype : 'combo',
 			listConfig : {
@@ -64,7 +65,8 @@ function basestation_action_handler(type) {
 			forceSelection : true,
 			typeAhead : true,
 			value:'<%= t(:working) %>'
-		}       
+		}    
+*/   
     ],
     buttonAlign:"center",       
     buttons: [
@@ -141,7 +143,7 @@ function basestation_action_handler(type) {
                 longitude:rows[0].get("longitude"),
                 latitude:rows[0].get("latitude"),
                 ip: rows[0].get("ip"),
-                status: rows[0].get("status"),
+//                status: rows[0].get("status"),
             });
             basestation_window.show();
             basestation_window.setTitle('<%= t('edit basestation data') %>');
@@ -214,7 +216,17 @@ basestationstore.load({
     params:{
         start:0,
         limit: itemsPerPage,
-    }
+    },
+	callback: function(records, options, success){
+		 if (success) {
+			var msg = [];
+			basestationstore.each(function (person) {
+                msg.push(person.get('id') + ' ' + person.get('logcontent'));
+            });
+
+//            Ext.MessageBox.alert('提示', msg.join('<br />'));
+		}
+	}		
 });
 
 var basestationgrid=Ext.create('Ext.grid.Panel',{
@@ -289,19 +301,97 @@ var basestationgrid=Ext.create('Ext.grid.Panel',{
 			dataIndex: 'status', 
 			sortable: true, 
 			align: 'center'
-		},{
-    		text: '<%= t('download stationlog') %>',
+		},
+		{
+    		text: '<%= t('view stationlog') %>',
 	      	xtype: 'actioncolumn', 
 			iconCls: 'download',
 			align: 'center',
 			items: [{  
 	   			icon: 'download.png',
-				tooltip: '<%= t('download stationlog') %>',
+				tooltip: '<%= t('view stationlog') %>',
 				handler: function(grid, rowIndex, colIndex) {
 					var rec = grid.getStore().getAt(rowIndex);
 	          		var models = grid.getStore().getRange();
 	             	var record=models[rowIndex]; 
 					console.log(rec.get('id'));
+/*
+					var stationlogstore=Ext.create('Ext.data.Store', {
+					    autoLoad: false,
+					    fields:['ip','success','logcontent'],
+					    proxy: {
+					        type: 'ajax',
+					        url: 'stationlog.json',   
+					        reader: {
+					            type: 'json',
+					            root: 'gridData'
+					        }
+					    }  
+					});
+					 
+					stationlogstore.load({
+					    params:{
+					        stationid:rec.get('id'),
+					    },
+						callback: function(records, options, success){
+							 if (success) {
+								basestationstore.each(function (data) {
+					                if(data.get('success'))
+									{					
+										 Ext.MessageBox.alert('提示', 'success');
+									}
+									else
+									{
+										 Ext.MessageBox.alert('提示', 'failure');
+									}
+					            });
+							}
+						}		
+					});
+*/
+					var stationloggrid=Ext.create('Ext.grid.Panel',{
+			            title : rec.get('code')+'<%= t(:basestation) %>',
+			            frame:true,
+			            viewConfig: {
+			                forceFit : true,
+			                stripeRows: true
+			            },
+			            store: { 
+			                autoLoad: true,
+						    fields:['id','logcontent'], 
+						    proxy: {
+						        type: 'ajax',
+						        url: 'stationlog.json',   
+						        reader: {
+						            type: 'json',
+						            root: 'gridData'
+						        },
+								 extraParams: {
+							        stationid: rec.get('id')
+							    }			
+						    },
+							callback: function(records, options, success){
+								 if (success) {
+									store.each(function (person) {
+						                msg.push(person.get('id') + ' ' + person.get('logcontent'));
+						            });
+
+						            Ext.MessageBox.alert('提示', msg.join('<br />'));
+								}
+							}		  
+			            },
+			            columns: [
+			                {header: "id", flex: 1, dataIndex: 'id', sortable: true},
+							{header: "logcontent", flex: 1, dataIndex: 'logcontent', sortable: true},
+			            ]
+			        });
+					var tabPage = tabpanel.add({ 
+			           	title: rec.get('code')+'<%= t(:basestation) %>',
+				   		items : [stationloggrid],
+				   		closable : true,
+			         	layout: 'fit'
+					})
+					tabpanel.setActiveTab(tabPage); 					
 				}
 			}]
 		}   
@@ -359,10 +449,14 @@ var basestationgrid=Ext.create('Ext.grid.Panel',{
 			]       
 		}]                
 });
-
+var tabpanel=Ext.create('Ext.tab.Panel', {
+    width: 400,
+    height: 400,
+    items: [basestationgrid]
+});
 var work_space = Ext.getCmp('center');
 work_space.removeAll();
-work_space.add(basestationgrid);
+work_space.add(tabpanel);
 work_space.doLayout();
 })
 </script>

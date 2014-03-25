@@ -44,6 +44,7 @@ function basestation_action_handler(type) {
         {xtype:"textfield",fieldLabel: '<%= t('place') %>',name: "place"},   
         {xtype:"textfield",fieldLabel: '<%= t('longitude') %>',name: "longitude"},  
         {xtype:"textfield",fieldLabel: '<%= t('latitude') %>',name: "latitude"},  
+/*
         {
 			xtype : 'combo',
 			listConfig : {
@@ -62,6 +63,7 @@ function basestation_action_handler(type) {
 			typeAhead : true,
 			value:'正常'
 		}      
+*/
     ],
     buttonAlign:"center",       
     buttons: [
@@ -138,7 +140,7 @@ function basestation_action_handler(type) {
                 longitude:rows[0].get("longitude"),
                 latitude:rows[0].get("latitude"),
                 ip: rows[0].get("ip"),
-                status: rows[0].get("status"),
+//                status: rows[0].get("status"),
             });
             basestation_window.show();
             basestation_window.setTitle('<%= t('edit basestation data') %>');
@@ -297,7 +299,8 @@ var basestationgrid=Ext.create('Ext.grid.Panel',{
 			dataIndex: 'status', 
 			sortable: true, 
 			align: 'center'
-		},{
+		},
+		{
     		text: '<%= t('view stationlog') %>',
 	      	xtype: 'actioncolumn', 
 			iconCls: 'download',
@@ -331,7 +334,16 @@ var basestationgrid=Ext.create('Ext.grid.Panel',{
 								 extraParams: {
 							        stationid: rec.get('id')
 							    }			
-						    }		  
+						    },
+							callback: function(records, options, success){
+								 if (success) {
+									store.each(function (person) {
+						                msg.push(person.get('id') + ' ' + person.get('logcontent'));
+						            });
+
+						            Ext.MessageBox.alert('提示', msg.join('<br />'));
+								}
+							}		  
 			            },
 			            columns: [
 			                {header: "id", flex: 1, dataIndex: 'id', sortable: true},
