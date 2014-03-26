@@ -1,8 +1,63 @@
 class SessionsController < ApplicationController
  include SimpleCaptcha::ControllerHelpers
-layout "login"
+layout "login", :except => :editpassword
+ before_filter :authenticate_user, :only=>:resetpasswd
+def routeerror
+	render '/public/404.html'
+end
+def resetpasswd
+	
+	params[:passwordtoken]=params[:passwordtoken] || ''
+	params[:usertype]=params[:usertype] || ''
+  	@passwordtoken=params[:passwordtoken]
+	@usertype='student'
+	render layout: "modifypassword"
+end
 
-def test
+def editpassword
+  	if params[:usertype]=='student'
+    	login_id=Student.where(:passwdtoken=>params[:passwordtoken]).first.login_id
+    	Student.where(:passwdtoken=>params[:passwordtoken]).first.update_attributes(:passwdtoken=>Login.newpass(12), :resetpwdtime=>Time.now, :passwdstatus=>true)
+   
+  	else if params[:usertype]=='teacher'
+    	login_id=Teacher.where(:passwdtoken=>params[:passwordtoken]).first.login_id
+    	Teacher.where(:passwdtoken=>params[:passwordtoken]).first.update_attributes(:passwdtoken=>Login.newpass(12), :resetpwdtime=>Time.now, :passwdstatus=>true)
+    
+  	else if params[:usertype]=='headmaster'
+   		login_id=Headmaster.where(:passwdtoken=>params[:passwordtoken]).first.login_id
+   		Headmaster.where(:passwdtoken=>params[:passwordtoken]).first.update_attributes(:passwdtoken=>Login.newpass(12), :resetpwdtime=>Time.now, :passwdstatus=>true)
+  
+  	else if params[:usertype]=='grademaster'
+    	login_id=Grademaster.where(:passwdtoken=>params[:passwordtoken]).first.login_id
+    	Grademaster.where(:passwdtoken=>params[:passwordtoken]).first.update_attributes(:passwdtoken=>Login.newpass(12), :resetpwdtime=>Time.now, :passwdstatus=>true)
+   
+  	else if params[:usertype]=='supportman'
+   		login_id=Supportman.where(:passwdtoken=>params[:passwordtoken]).first.login_id
+   		Supportman.where(:passwdtoken=>params[:passwordtoken]).first.update_attributes(:passwdtoken=>Login.newpass(12), :resetpwdtime=>Time.now, :passwdstatus=>true)
+ 
+  	end
+  	end
+  	end
+  	end
+  	end
+      	Login.find(login_id).update_attributes(:password=>params[:password])
+     	redirect_to root_path
+end
+
+def sendemail
+	passwordtoken=Login.newpass(12)
+	flag=false
+	if !Student.where(:email=>params[:email]).empty?
+		flag=true
+		Student.where(:email=>params[:email]).first.update_attributes(:resetpwdtime=>Time.now, :passwdtoken=>passwordtoken, :passwdstatus=>false) 
+		Notifier.confirm(params[:email], passwordtoken).deliver
+	end
+	respond_to do |format|
+  		format.json { render :json=>{:success=>flag}}
+	end
+end
+
+def refreshcode
 	respond_to do |format|
 		format.html
 	end

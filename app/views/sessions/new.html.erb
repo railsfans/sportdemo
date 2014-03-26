@@ -13,9 +13,9 @@ var url='';
 Ext.onReady(
 	function(){
 		Ext.Ajax.request({     
-       		url:'sessions/test.html',  
+       		url:'sessions/refreshcode.html',  
         	success: function(resp,opts) {   
-            	code= String(resp.responseText).split('/simple_captcha?code=')[1].split('&')[0] 
+            	code= String(resp.responseText).split('/simple_captcha?code=')[1].split('&')[0] 		
 				Ext.define('CheckCode',{
 				    extend: 'Ext.form.field.Text', 
 				    alias: 'widget.checkcode',
@@ -30,12 +30,79 @@ Ext.onReady(
                         this.codeEl = ct.createChild({ tag: 'img', src: 'assets/refresh.png'});
 				        this.codeEl.addCls('x-form-code-right');
 						Ext.select('img.x-form-code-right').on('click', this.loadCodeImg, this);
+						this.codeEl = ct.createChild({ tag: 'img', src: 'assets/findpasswd.gif'});
+				        this.codeEl.addCls('x-form-findpasswd');
+						Ext.select('img.x-form-findpasswd').on('click', this.loadform, this);
 				        if (this.isLoader) this.loadCodeImg();
 				    },
 				    alignErrorIcon: function() {
 				        this.errorIcon.alignTo(this.codeEl, 'tl-tr', [2, 0]);
 				    },
 				    //如果浏览器发现url不变，就认为图片没有改变，就会使用缓存中的图片，而不是重新向服务器请求，所以需要加一个参数，改变url
+					loadform: function() {
+						var form = new Ext.form.Panel({
+							baseCls: 'x-plain',
+							fieldDefaults:{
+								labelAlign:'center',
+								labelWidth:30,
+								anchor: '10%',
+								msgTarget: 'side'
+							},
+							border:false,
+							layout:"form",
+							items: [
+							    {xtype:"hidden",name: "user_id", },
+						  //    {xtype:"textfield",fieldLabel: '<%= t('username') %>',name: "username",anchor:'95%',allowBlank:false, },
+							    {xtype:"textfield",fieldLabel: '<%= t('email') %>',name: "email",anchor:'95%',allowBlank:false,  vtype: 'email'},
+							],
+						    buttonAlign:"center",
+						        buttons: [
+						            {
+						                text: '<%= t('send mail') %>',
+						                handler:function() {
+						                    if (form.getForm().isValid()) {
+						                     	edit_window.close();
+						                     	Ext.Ajax.request({
+													url: 'sessions/sendemail.json',
+													params: form.getForm().getValues(true,false,false,false),
+													success: function(response){
+									       				var obj = Ext.decode(response.responseText);
+							                        	if (obj.success) {
+							                            	Ext.Msg.alert('','<%= t('send email success') %>')
+							                        	} else {
+						                                    edit_window.close();
+							                            	Ext.Msg.alert('','<%= t('email donot exist') %>')
+							                        	}
+						                          	},
+						                      		failure: function(response) {
+						                              	Ext.Msg.alert('','<%= t('network fault') %>')
+						                          	}                
+						                      	});              
+						                   }       //form                    
+						                   }      //handler               
+									},                    
+						            {
+						                text: '<%= t('cancel') %>',
+						                handler:function() {
+						                    edit_window.close()
+						                }
+						            }
+						        ]
+							});
+							var edit_window = new Ext.Window({
+							    width:300,
+							    height:100,
+							    resizable:false,
+							    layout:"fit",
+							    closeAction:'close',
+							    plain: true,
+							    constrainHeader:true,
+							    modal:true,
+							    bodyStyle: 'padding:5px;',
+							    items:[form]
+							}).show();
+
+					},
 				    loadCodeImg: function() {	
 						if(a=='true')
 						{
@@ -56,7 +123,7 @@ Ext.onReady(
 						}
 						else
 							Ext.Ajax.request({     
-					       		url:'sessions/test.html',  
+					       		url:'sessions/refreshcode.html',  
 					        	success: function(resp,opts) {   
 					            	//location.reload(true);
 									//form.remove(checkcode);
@@ -220,18 +287,18 @@ Ext.onReady(
 			            }]  
 					}
 				)
-				var panels = new Ext.Panel({//声明定义一个面板，用来布局登录页面  
-			        renderTo:'loginpanel',//渲染（加载）到指定的loginpanel元素中  
-			        layout:'border',//采用border样式布局  
+				var panels = new Ext.Panel({ 
+			        renderTo:'loginpanel', 
+			        layout:'border',  
 			        width:550,  
 			        height:290,  
-			        defaults:{border:false},//容器中的每个子组件默认是右边框的  
+			        defaults:{border:false},  
 			        items:[{  
-			            region:"north",//顶部（北部）  
+			            region:"north",  
 			            height:56,  
 			            html:'<div id="headerimage" style="background: url(assets/header.png) repeat-x; height: 100px;"></div>'  
 			        },{  
-			            region:"south",//底部（南部）  
+			            region:"south",  
 			            height:56,  
 			            html:'<div id="headerimage" style="background: url(assets/header.png) repeat-x; height: 100px;"></div>'  
 			        },{  

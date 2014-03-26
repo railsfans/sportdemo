@@ -1,0 +1,35 @@
+<html>
+<head>
+<style>
+p.ex1
+{
+font:15px arial,sans-serif;
+}
+
+p.ex2
+{
+font:italic bold 12px/30px Georgia,serif;
+}
+</style>
+</head> 
+<body> 
+<p class="ex2">Dear <%= @username %>:<p>
+Note: your must change password in one hour, or this link will lose effective
+<p> 
+ <%= link_to "reset password", url_for(host: '192.168.1.240:3000',
+            controller: 'sessions',
+            action: 'resetpasswd',
+            passwordtoken: @passwordtoken
+) %>
+</p> 
+<p class="ex1">if the link is unwork, you can type this url inside browse</p>
+<p>
+ <%= url_for(host: '192.168.1.240:3000',
+            controller: 'sessions',
+            action: 'resetpasswd',
+            passwordtoken: @passwordtoken
+) %>
+<p> 
+</body> 
+</html>
+ 

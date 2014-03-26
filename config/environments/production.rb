@@ -46,7 +46,7 @@ Sportdemo::Application.configure do
   # config.action_controller.asset_host = "http://assets.example.com"
 
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
-   config.assets.precompile += ['login.js', 'manager.js', 'teacher.js','extjs-default.css','extjs-pink.css','extjs-yellow.css']
+   config.assets.precompile += ['login.js', 'manager.js', 'teacher.js','extjs-default.css','extjs-pink.css','extjs-yellow.css','resetpasswd/jquery-1.9.1.js','resetpasswd/editpassword.css']
 
   # Disable delivery errors, bad email addresses will be ignored
   # config.action_mailer.raise_delivery_errors = false
@@ -57,7 +57,15 @@ Sportdemo::Application.configure do
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation can not be found)
 #  config.i18n.fallbacks = true
-
+	config.action_mailer.smtp_settings = {
+	    :address => "smtp.gmail.com",
+	    :port => "587",
+	    :domain => "gmail.com",
+	    :authentication => "plain",
+	    :user_name => "yangxiangxiao@gmail.com",
+	    :password => "200828362",
+	    :enable_starttls_auto => true
+	 }
   # Send deprecation notices to registered listeners
   config.active_support.deprecation = :notify
 

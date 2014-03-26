@@ -319,6 +319,13 @@ a {
 	cursor:pointer;
 }
 
+.x-form-findpasswd {
+	position: absolute;
+	left: 246px;
+	top: 26px;
+	cursor:pointer;
+}
+
 .download {
 	cursor: pointer;
 }

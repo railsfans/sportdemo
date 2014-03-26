@@ -1,0 +1,12 @@
+<%= Login.newpass(6) %>
+<%= url_for(host: '192.168.1.128:3000',
+            controller: 'sessions',
+            action: 'resetpasswd',
+            passwordtoken: @passwordtoken 
+) %>
+ 
+<%= link_to "reset password", url_for(host: '192.168.1.128:3000',
+            controller: 'sessions',
+            action: 'resetpasswd',
+            passwordtoken: @passwordtoken 
+) %>
