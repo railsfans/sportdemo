@@ -118,8 +118,36 @@ def stationlog
 	end
 end
 
+def loadallteacherinfo
+	respond_to do |format|
+		format.json { render :json=>{ :totalCount=>Teacher.all.count, :gridData=>Teacher.all }} 
+	end
+end
+
+def loadallstudentinfo
+	respond_to do |format|
+		format.json { render :json=>{ :totalCount=>Student.all.count, :gridData=>Student.all }} 
+	end
+end
+
 def getStationLog(stationid)
 	return Basestation.find(stationid)
+end
+
+def personinfo
+	@user=Student.first
+end
+
+def update_managerinfo
+	@success=false
+	respond_to do |format|
+		format.js
+	end
+end
+
+def loadform
+	@user=Student.first
+	render :layout=>false
 end
 
 end

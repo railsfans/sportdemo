@@ -7,7 +7,7 @@ gem 'bson_ext'
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 gem 'capistrano'
 gem 'mysql2'
-
+#gem 'simple_form'
 
 # Gems used only for assets and not required
 # in production environments by default.

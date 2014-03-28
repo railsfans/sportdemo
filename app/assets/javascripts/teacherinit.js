@@ -6,10 +6,10 @@ Ext.onReady(function() {
                 border: false,
                 height: 24,
                 tbar: [{
-                    	text: '<marquee width="400px">welcome to here</marquee>',
+                    	text: '<marquee width="400px">欢迎</marquee>',
                 },  '->',
 				{
-                    text: 'Options',
+                    text: '选项',
                     iconCls: 'options_icon',
                     menu: [{
                         text: 'User Info'
@@ -18,13 +18,11 @@ Ext.onReady(function() {
                     }, {
                         text: 'Switch Theme'
                     }]
-                }, {
-                    text: 'Help'
                 }, '-', {
-                    text: 'Logout',
+                    text: '退出',
                     iconCls: 'logout',
                     handler : function ( b, e ) {
-                      	Ext.Msg.confirm("Messagebox Title", "Are you sure logout?", function(e){if(e == 'yes'){
+                      	Ext.Msg.confirm("", "确定退出?", function(e){if(e == 'yes'){
 						 	Ext.Ajax.request({
                    			url: "http://"+document.location.href.split('/')[2]+'/logout',
                    			success: function(response, opts) {
@@ -62,7 +60,7 @@ Ext.onReady(function() {
                 collapsible: true,
                 split: true,
                 id: 'left',
-                title: 'Navigation',
+                title: '目录',
                 width: 150,
                 layout: 'accordion',
                 items: [{
@@ -75,19 +73,9 @@ Ext.onReady(function() {
                     title: '学期管理',
                     iconCls: 'second',
                     autoScroll: true
-                },{
-                    contentEl: 'datagraph-management',
-                    title:  '运动趋势图',
-                    iconCls: 'three', // see the HEAD section for style used
-                    autoScroll: true
-                }, {
-                    contentEl: 'rank-management',
-                    title: '个人排名',
-                    iconCls: 'four',
-                    autoScroll: true
                 }, {
                     contentEl: 'feedback-management',
-                    title: '运动建议',
+                    title: '个人管理',
                     iconCls: 'five',
                     autoScroll: true
                 }
@@ -101,6 +89,7 @@ Ext.onReady(function() {
                     { xtype: 'button', text: 'Button 1' }
                 ]
                 */ 
+				/*
                 dockedItems: [{
                     xtype: 'toolbar',
                     dock: 'bottom',
@@ -139,7 +128,7 @@ Ext.onReady(function() {
                         'Plain Text'
                     ]
                 }]
-                 
+                 */
             }, {
                 region: 'center',
                 border:true,

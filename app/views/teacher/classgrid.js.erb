@@ -136,6 +136,12 @@ var classgrid=Ext.create('Ext.grid.Panel',{
 					dataIndex: 'sex', 
 					sortable: true, 
 					align: 'center',
+					renderer: function (value, meta, record) {
+						if(value=='male')
+	                    return '<%= t(:male) %>'
+						else
+						return '<%= t(:female) %>'
+	                }
 				},
                 {
 					header: '<%= t('realname') %>', 
@@ -222,6 +228,9 @@ var classgrid=Ext.create('Ext.grid.Panel',{
 								dataIndex: 'motiontime', 
 								sortable: true, 
 								align: 'center',
+								renderer: function (value, meta, record) {
+				                    return value.split('T')[0]+' '+value.split('T')[1].split('+')[0]
+				                }
 							},
                             {
 								header: '<%= t('step') %>', 
@@ -238,7 +247,7 @@ var classgrid=Ext.create('Ext.grid.Panel',{
 								align: 'center',
 							},
                             {
-								header: '<%= t('calories') %>', 
+								header: '<%= t('calorie') %>', 
 								flex: 1, 
 								dataIndex: 'calorie', 
 								sortable: true, 

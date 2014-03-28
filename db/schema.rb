@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140325150820) do
+ActiveRecord::Schema.define(:version => 20140328015825) do
 
   create_table "basestations", :force => true do |t|
     t.string   "name"
@@ -165,6 +165,7 @@ ActiveRecord::Schema.define(:version => 20140325150820) do
     t.boolean  "passwdstatus"
     t.string   "resetpwdtime"
     t.string   "last_logintime"
+    t.string   "headpic"
   end
 
   create_table "targets", :force => true do |t|

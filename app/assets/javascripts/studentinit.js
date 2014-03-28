@@ -170,6 +170,7 @@ Ext.onReady(function() {
                     { xtype: 'button', text: 'Button 1' }
                 ]
                 */ 
+				/*
                 dockedItems: [{
                     xtype: 'toolbar',
                     dock: 'bottom',
@@ -208,7 +209,7 @@ Ext.onReady(function() {
                         'Plain Text'
                     ]
                 }]
-                 
+                 */
             }, {
                 region: 'center',
                 border:true,

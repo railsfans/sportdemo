@@ -13,7 +13,9 @@ Sportdemo::Application.routes.draw do
   match "manager/basestationgrid"=>"manager#basestationgrid"
   match "manager/baidumap"=>"manager#baidumap"
   match "manager/googlemap"=>"manager#googlemap"
-
+  match "manager/teachermanager"=>"manager#teachermanager"
+  match "manager/studentmanager"=>"manager#studentmanager"
+  match "manager/personinfo"=>"manager#personinfo"
   match "sessions/editpassword"=>"sessions#editpassword"
   # The priority is based upon order of creation:
   # first created -> highest priority.

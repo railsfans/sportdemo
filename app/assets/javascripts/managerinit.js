@@ -118,12 +118,12 @@ Ext.onReady(function() {
                     autoScroll: true
                 }, {
                     contentEl: 'rank-management',
-                    title: '个人排名',
+                    title: '用户管理',
                     iconCls: 'four',
                     autoScroll: true
                 }, {
                     contentEl: 'feedback-management',
-                    title: '运动建议',
+                    title: '个人管理',
                     iconCls: 'five',
                     autoScroll: true
                 }
@@ -137,6 +137,7 @@ Ext.onReady(function() {
                     { xtype: 'button', text: 'Button 1' }
                 ]
                 */ 
+				/*
                 dockedItems: [{
                     xtype: 'toolbar',
                     dock: 'bottom',
@@ -175,7 +176,7 @@ Ext.onReady(function() {
                         'Plain Text'
                     ]
                 }]
-                 
+                 */
             }, {
                 region: 'center',
                 border:true,

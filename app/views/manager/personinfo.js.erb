@@ -1,0 +1,29 @@
+Ext.Ajax.defaultHeaders = { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') };
+Ext.onReady(function(){
+	 
+
+	
+	var personinfopanel = new Ext.Panel({
+        id:'my_panel',
+        title: '',
+		layout: 'fit',
+		autoScroll: true,	
+        html: ''
+    });
+	Ext.Ajax.request({     
+       url:'loadform.js',  	
+        success: function(resp,opts) {   
+			console.log(resp.responseText);
+			personinfopanel.update(resp.responseText);              
+		},   
+		failure: function(resp,opts) {   
+	        personinfopanel.update('<%= t('loadform failure') %>');         
+		}     
+	});
+ 	personinfopanel.update("");
+
+	var work_space = Ext.getCmp('center');
+	work_space.removeAll();
+	work_space.add(personinfopanel);
+	work_space.doLayout();
+})

@@ -1,0 +1,330 @@
+<script>
+Ext.Ajax.defaultHeaders = { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') };
+Ext.onReady(function(){
+itemsPerPage = 20;  
+Ext.getCmp('left').items.items[3].expand();
+Ext.regModel('Sex', {
+	fields: [{name: 'sex'},{name: 'value'}]
+});
+var SexStore = Ext.create('Ext.data.Store',{
+	model : 'Sex',
+	data : [
+		{sex:'<%= t(:male) %>',value:'true'},
+		{sex:'<%= t(:female) %>',value:'false'},
+	]
+});
+function student_action_handler(type) {
+	var form = new Ext.form.Panel({
+	width: 500,
+	frame: true,
+	height: 300,
+	defaults: {
+  		anchor: '100%',
+ 		allowBlank: false,
+  		msgTarget: 'side',
+		labelWidth: 60
+    },
+    items: [
+        {xtype:"hidden",name: "id"},   
+        {xtype:"textfield",fieldLabel: '<%= t('name') %>',name: "name"},
+		{
+			xtype : 'combo',
+			listConfig : {
+				emptyText : '<%= t('no match value') %>', 
+				maxHeight : 60 
+			},
+			name:'sex',
+			autoSelect : true,
+			fieldLabel:'<%= t('sex') %>',
+			triggerAction: 'all',
+			store : SexStore,
+			displayField:'sex',
+			valueField:'value',
+			queryMode: 'local',
+			forceSelection : true,
+			typeAhead : true,
+			value:'true'
+		},    
+        {xtype:"textfield",fieldLabel: '<%= t('email') %>',name: "email"},
+        {xtype:"textfield",fieldLabel: '<%= t('phone') %>',name: "phone"},
+		{xtype:"textfield",fieldLabel: '<%= t('teacherid') %>',name: "teacherid"}            
+    ],
+    buttonAlign:"center",       
+    buttons: [
+        {
+            text: '<%= t('save') %>',
+            handler:function() {                   
+                if (form.getForm().isValid()) {
+                    switch (type) {
+                    case "add":
+	                    form.submit({
+	                    url: 'studentinfo_add.json',                       
+	                    waitMsg: '<%= t('waiting') %>',
+	                    success: function(fp, o) {                   
+	              			studentstore.reload();              
+	                		student_window.close();										  
+	                    },
+	                    failure: function(form,action){
+	                    	studentstore.reload();
+	                        Ext.MessageBox.alert("title",'<%= t('enter same student info') %>')
+			   				student_window.close();						
+	                    }
+	                	});
+	                    break;
+                    case "edit": 
+	                    form.submit({
+							url: 'studentinfo_edit.json',
+	                    	waitMsg: '<%= t('uploading') %>',
+	                    	success: function(fp, o) {
+	                        	studentstore.reload();
+	                        	student_window.close();										  
+	                    	},
+	                    	failure: function(form,action){
+		                    	studentstore.reload();
+		                  		Ext.MessageBox.alert("title",'<%= t('enter same student info') %>')
+				   				student_window.close();						
+		                    }
+	                	});
+	                    break;
+                    }     //switch     
+                }       //form                 
+           	}      //handler 
+      	},                    
+        {
+            text: '<%= t('cancel') %>',
+            handler:function() {
+                student_window.close()
+            }
+        }
+    ]
+	});
+	var student_window = new Ext.Window({
+	    width:400,
+	    height:240,
+	    resizable:false,
+	    layout:"fit",
+	    closeAction:'close',
+	    plain: true,
+	    constrainHeader:true,
+	    modal:true,	    bodyStyle: 'padding:5px;',
+	    items:[form]
+	});
+  	var rows = studentgrid.getSelectionModel().getSelection();
+    if (type == "add") {
+		student_window.show();
+        student_window.setTitle('<%= t('add user info') %>');
+    }  
+	else if(type == "edit"){
+		if(rows.length==1){
+    		form.getForm().setValues({
+                id:rows[0].get("id"),
+                email:rows[0].get("email"),
+                phone:rows[0].get("phone"),
+                sex: rows[0].get("sex") ? 'true' : 'false',
+				teacherid: rows[0].get("teacherid"),
+				name: rows[0].get("name"),
+            });
+            student_window.show();
+            student_window.setTitle('<%= t('edit user info data') %>');
+    	}
+  		else if(rows.length>1)
+ 		{
+   			Ext.MessageBox.alert("title",'<%= t('chose one more data') %>')
+		}
+   		else {
+            Ext.MessageBox.alert("title",'<%= t('chose a data') %>')
+    	}
+	}
+	else
+	{
+  		if(rows.length!=0){
+   			var delete_id="";
+    		for(var i=0; i<rows.length; i++){
+           		delete_id+=rows[i].get("id");
+               	if(i!=rows.length-1){
+             		delete_id+=",";
+                }
+      		};
+     		Ext.MessageBox.confirm('<%= t('delete') %>', '<%= t('are you sure delete') %>', function(btn){
+		 		if(btn === 'yes'){
+		  			Ext.Ajax.request({
+			    		url: 'studentinfo_delete',
+			    		params: { id : delete_id },
+			    		success: function(response){
+				       		var obj = Ext.decode(response.responseText);
+		                		if (obj.success) {
+		                 			studentstore.reload();
+		                      	} else {
+		                     		Ext.MessageBox.alert("title",'false')
+		                      	}
+		              		},
+	        			failure: function(response) {
+	                		Ext.MessageBox.alert("title",'network false')
+	               		}                
+                 	});
+		 		}
+		 		else{
+ 
+		   		}
+			});
+		}
+    	else
+   		{
+     		show_tip_message('<%= t('chose a data') %>')
+   		}
+	}
+}
+
+
+var studentstore = Ext.create('Ext.data.Store', {
+    autoLoad: false,
+    fields:['id','name','email','sex','studentid','phone'],
+    pageSize: itemsPerPage,  
+    proxy: {
+        type: 'ajax',
+        url: 'loadallstudentinfo.json',   
+        reader: {
+            type: 'json',
+            root: 'gridData',
+            totalProperty: 'totalCount'
+        }
+    }  
+});
+ 
+studentstore.load({
+    params:{
+        start:0,
+        limit: itemsPerPage,
+    }
+});
+
+var studentgrid=Ext.create('Ext.grid.Panel',{
+	title : '<%= t('student manage') %>', 
+	frame:true,
+	viewConfig: {
+		forceFit : true,
+    		stripeRows: true
+	},
+	store:  studentstore,
+	columns: [ 
+	    {
+	        xtype: 'rownumberer',
+	        width: 60,
+	        sortable: false,
+	        header: '<%= t('list') %>', 
+	        align: 'center'
+	    },
+ 		{
+			header: '<%= t('id') %>', 
+			flex: 1, 
+			dataIndex: 'id', 
+			sortable: true, 
+			align: 'center', 
+			hidden: true
+		},
+        {
+			header: '<%= t('studentid') %>', 
+			flex: 1, 
+			dataIndex: 'teacherid', 
+			sortable: true, 
+			align: 'center',
+		},
+		{
+			header: '<%= t('name') %>', 
+			flex: 1, 
+			dataIndex: 'name', 
+			sortable: true, 
+			align: 'center',
+		},
+		{
+			header: '<%= t('sex') %>', 
+			flex: 1, 
+			dataIndex: 'sex', 
+			sortable: true, 
+			align: 'center',   
+			renderer: function (value, meta, record) {
+				if(value==false)
+				{
+         			return '<%= t(:female) %>';
+				}
+				else
+				{
+					return '<%= t(:male) %>';
+				}
+         	}
+		},
+		{
+			header: '<%= t('email') %>', 
+			flex: 1, 
+			dataIndex: 'email', 
+			sortable: true, 
+			align: 'center'
+		},
+		{
+			header: '<%= t('phone') %>', 
+			flex: 1, 
+			dataIndex: 'phone', 
+			sortable: true, 
+			align: 'center',  
+		} 
+		],
+   		dockedItems: [{
+			xtype: 'pagingtoolbar',
+			store: studentstore,   
+		  	dock: 'bottom',
+		 	displayInfo: true,   
+			items:[
+		    	'-',
+              	{ 
+					text: '<%= t('add') %>', 
+					iconCls:"add", 
+					handler: function() {
+				        student_action_handler("add")
+					}
+				},
+				{ 
+					text: '<%= t('edit') %>', 
+					iconCls:"edit", 
+					handler: function() {
+				        student_action_handler("edit")
+					}
+				},
+				{ 
+					text: '<%= t('delete') %>', 
+					iconCls:"delete", 
+					handler: function() {
+				        student_action_handler("delete")
+					}
+				},
+		        {
+			    	xtype: 'textfield',
+			    	hideLabel: true,
+			    	width: 70,
+			    	id: "keyname",
+			    }, 
+			   	{ 
+					text: '<%= t('search') %>',
+					id:"search_record_button", 
+					iconCls:"search", 
+					handler:function(){
+						record_search("search")
+					} 
+				},
+		        { 
+					text: '<%= t('clear') %>', 
+					id:"clear_record_button", 
+					disabled:true, 
+					handler: function(){
+						record_search("clear")
+					} 
+				}
+			]       
+		}]                
+});
+
+var work_space = Ext.getCmp('center');
+work_space.removeAll();
+work_space.add(studentgrid);
+work_space.doLayout();
+})
+</script>

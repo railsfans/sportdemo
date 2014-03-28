@@ -1,0 +1,12 @@
+<script>
+Ext.Ajax.defaultHeaders = { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') };
+Ext.onReady(function(){
+	
+
+ 
+
+	var work_space = Ext.getCmp('center');
+	work_space.removeAll();
+	work_space.doLayout();
+})
+</script>

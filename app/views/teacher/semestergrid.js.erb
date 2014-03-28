@@ -31,8 +31,8 @@ var rowEditing = Ext.create('Ext.grid.plugin.RowEditing', {
 var stateStore = Ext.create('Ext.data.Store', {
     fields: ['name'],
     data : [
-        {"name":"active"},
-        {"name":"unactive"}
+        {"name":"激活"},
+        {"name":"未激活"}
     ]
 });
 var semestergrid=Ext.create('Ext.grid.Panel',{
@@ -74,7 +74,7 @@ var semestergrid=Ext.create('Ext.grid.Panel',{
             }
 		},
 		{
-			text: 'begintime',
+			text: '<%= t(:begintime) %>',
             dataIndex: 'begintime',
             xtype: 'datecolumn',
             format: 'Y-m-d',
@@ -85,7 +85,7 @@ var semestergrid=Ext.create('Ext.grid.Panel',{
             }
 		},
 		{
-			text: 'endtime',
+			text: '<%= t(:endtime) %>',
             dataIndex: 'endtime',
             xtype: 'datecolumn',
             format: 'Y-m-d',
@@ -96,7 +96,7 @@ var semestergrid=Ext.create('Ext.grid.Panel',{
             }
 		},
 		 {
-        	header: 'State', 
+        	header: '<%= t(:status) %>', 
 			dataIndex: 'status', 
 			flex: 1, 
 			editor: {
@@ -113,6 +113,7 @@ var semestergrid=Ext.create('Ext.grid.Panel',{
         	}
     	}
 	],
+    /*
 	tbar: [{
             text: 'Add Employee',
             iconCls: 'employee-add',
@@ -128,6 +129,7 @@ var semestergrid=Ext.create('Ext.grid.Panel',{
             },
             disabled: true
         }],
+    */
 	plugins: [rowEditing],
 	listeners: {
         edit: function(editor, e) {

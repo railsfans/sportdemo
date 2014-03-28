@@ -346,8 +346,8 @@ var basestationgrid=Ext.create('Ext.grid.Panel',{
 							}		  
 			            },
 			            columns: [
-			                {header: "id", flex: 1, dataIndex: 'id', sortable: true},
-							{header: "logcontent", flex: 1, dataIndex: 'logcontent', sortable: true},
+			                {header: "<%= t(:stationid) %>", flex: 1, dataIndex: 'id', sortable: true},
+							{header: "<%= t(:stationlog) %>", flex: 1, dataIndex: 'logcontent', sortable: true},
 			            ]
 			        });
 					var tabPage = tabpanel.add({ 
