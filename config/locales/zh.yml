@@ -159,3 +159,7 @@ zh:
   vigorous: "剧烈运动时间"
   sec: "秒"
   search result: "查找结果"
+  reconnect count: "系统重连次数"
+  watchreset count: "看门狗重置次数"
+  hardfaultreset count: "硬件重置次数"
+  logupdatetime: "日志更新时间"

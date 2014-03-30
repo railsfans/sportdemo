@@ -196,7 +196,7 @@ function basestation_action_handler(type) {
 
 var basestationstore = Ext.create('Ext.data.Store', {
     autoLoad: false,
-    fields:['id','place','name','code','longitude','latitude','status','ip'],
+    fields:['id','place','name','code','longitude','latitude','status','ip','updatetime'],
     pageSize: itemsPerPage,  
     proxy: {
         type: 'ajax',
@@ -301,6 +301,13 @@ var basestationgrid=Ext.create('Ext.grid.Panel',{
 			align: 'center'
 		},
 		{
+			header: '<%= t('logupdatetime') %>', 
+			flex: 1, 
+			dataIndex: 'updatetime', 
+			sortable: true, 
+			align: 'center'
+		},
+		{
     		text: '<%= t('view stationlog') %>',
 	      	xtype: 'actioncolumn', 
 			iconCls: 'download',
@@ -346,7 +353,7 @@ var basestationgrid=Ext.create('Ext.grid.Panel',{
 							}		  
 			            },
 			            columns: [
-			                {header: "<%= t(:stationid) %>", flex: 1, dataIndex: 'id', sortable: true},
+//			                {header: "<%= t(:stationid) %>", flex: 1, dataIndex: 'id', sortable: true},
 							{header: "<%= t(:stationlog) %>", flex: 1, dataIndex: 'logcontent', sortable: true},
 			            ]
 			        });

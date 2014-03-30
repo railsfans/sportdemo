@@ -67,7 +67,7 @@ def basestation
 	data=Basestation.offset(params[:start].to_i).limit(params[:limit].to_i)
   	totalcount=Basestation.all.count
   	respond_to do |format| 
- 		format.json { render :json=>{:totalCount=>totalcount, :gridData=>data.collect { |list| {:name=>list.name, :place=>list.place, :status=>list.status ? t(:online) : t(:offline), :name=>list.name, :ip=>list.ip, :code=>list.code, :id=>list.id, :longitude=>list.longitude, :latitude=>list.latitude } }}}
+ 		format.json { render :json=>{:totalCount=>totalcount, :gridData=>data.collect { |list| {:name=>list.name, :updatetime=>Time.at(list.updatetime).to_s.sub('T',' ').split('+')[0], :place=>list.place, :status=>list.status ? t(:online) : t(:offline), :name=>list.name, :ip=>list.ip, :code=>list.code, :id=>list.id, :longitude=>list.longitude, :latitude=>list.latitude } }}}
   	end
 end
 
@@ -97,7 +97,7 @@ end
 
 def stationlog
 	@basestation=Basestation.find(params[:stationid])
-	@basestation.update_attributes(:reqlogflag=>'0')
+	@basestation.update_attributes(:reqlogflag=>'0', :updatetime=>Time.now)
 =begin
 	count=1
 	flag=true
@@ -112,9 +112,9 @@ def stationlog
 		flag=false
     end
 =end
-	sleep(3)
+#	sleep(3)
 	respond_to do |format|
-		format.json { render :json=>{:gridData=>getStationLog(params[:stationid]) }}
+		format.json { render :json=>{:gridData=>{:logcontent=>getStationLog(params[:stationid])} }}
 	end
 end
 
@@ -131,7 +131,12 @@ def loadallstudentinfo
 end
 
 def getStationLog(stationid)
-	return Basestation.find(stationid)
+	count=[]
+	Basestation.find(stationid).logcontent.split(',').each do |i|
+		count<<i
+	end
+	log=t('reconnect count')+count[0]+'  '+t('watchreset count')+count[1]+'  '+t('hardfaultreset count')+count[2]
+	return log
 end
 
 def personinfo

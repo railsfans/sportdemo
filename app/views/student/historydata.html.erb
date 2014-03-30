@@ -11,7 +11,8 @@ url='student/historydata.json';
 var itemsPerPage=10;
 var historydatastore = Ext.create('Ext.data.Store', {
     autoLoad: false,
-    fields:['_id','step','calorie','distance','motiontime','user_type', 'user_id'],
+//    fields:['_id','step','calorie','distance','motiontime','user_type', 'user_id'],
+	fields:['_id','light','sedentary','moderate','high','vigorous','motiontime','user_type', 'user_id'],
     pageSize: itemsPerPage,
     proxy: {
         type: 'ajax',
@@ -73,43 +74,43 @@ var historydatagrid=Ext.create('Ext.grid.Panel',{
 			flex: 1, 
 			dataIndex: 'motiontime', 
 			sortable: true, 
-			align: 'center',
+			align: 'center',   
 			renderer: function (value, meta, record) {
 				return value.split('+')[0].replace(/T/g,' ');
 			}
 		},
 		{
-			header: '<%= t(:step) %>', 
+			header: '<%= t(:sedentary) %>', 
 			flex: 1, 
-			dataIndex: 'step', 
+			dataIndex: 'sedentary', 
 			sortable: true, 
 			align: 'center',
 		},
 		{
-			header: '<%= t(:distance) %>', 
+			header: '<%= t(:light) %>', 
 			flex: 1, 
-			dataIndex: 'distance', 
+			dataIndex: 'light', 
 			sortable: true, 
 			align: 'center',
 		},
 		{
-			header: '<%= t(:calorie) %>', 
+			header: '<%= t(:moderate) %>', 
 			flex: 1, 
-			dataIndex: 'calorie', 
+			dataIndex: 'moderate', 
 			sortable: true, 
 			align: 'center',
 		},
 		{
-			header: '<%= t(:intensity) %>', 
+			header: '<%= t(:high) %>', 
 			flex: 1, 
-			dataIndex: 'intensity', 
+			dataIndex: 'high', 
 			sortable: true, 
 			align: 'center',
 		},
 		{
-			header: '<%= t(:point) %>', 
+			header: '<%= t(:vigorous) %>', 
 			flex: 1, 
-			dataIndex: 'point', 
+			dataIndex: 'vigorous', 
 			sortable: true, 
 			align: 'center',
 		}
