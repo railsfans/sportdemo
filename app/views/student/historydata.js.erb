@@ -4,7 +4,8 @@ Ext.onReady(function() {
 var itemsPerPage=10;
 var historydatastore = Ext.create('Ext.data.Store', {
     autoLoad: true,
-    fields:['_id','step','calorie','distance','motiontime','user_type', 'user_id'],
+//    fields:['_id','step','calorie','distance','motiontime','user_type', 'user_id','intensity'],
+	fields:['_id','light','sedentary','moderate','high','vigorous','motiontime','user_type', 'user_id'],
     pageSize: itemsPerPage,
     proxy: {
         type: 'ajax',
@@ -25,7 +26,7 @@ historydatastore.load({
 
     }
 });
-
+/*
 var task = {
    run: function() {
 		historydatagrid.view.loadMask.useMsg = false;
@@ -38,7 +39,7 @@ var task = {
 var runner = new Ext.util.TaskRunner();
  
 runner.start(task);
-
+*/
 var historydatagrid=Ext.create('Ext.grid.Panel',{
 	title : '<%= t(:historydata) %>', 
 	frame:true,
@@ -74,41 +75,42 @@ var historydatagrid=Ext.create('Ext.grid.Panel',{
 			}
 		},
 		{
-			header: '<%= t(:step) %>', 
+			header: '<%= t(:sedentary) %>', 
 			flex: 1, 
-			dataIndex: 'step', 
+			dataIndex: 'sedentary', 
 			sortable: true, 
 			align: 'center',
 		},
 		{
-			header: '<%= t(:distance) %>', 
+			header: '<%= t(:light) %>', 
 			flex: 1, 
-			dataIndex: 'distance', 
+			dataIndex: 'light', 
 			sortable: true, 
 			align: 'center',
 		},
 		{
-			header: '<%= t(:calorie) %>', 
+			header: '<%= t(:moderate) %>', 
 			flex: 1, 
-			dataIndex: 'calorie', 
+			dataIndex: 'moderate', 
 			sortable: true, 
 			align: 'center',
 		},
 		{
-			header: '<%= t(:intensity) %>', 
+			header: '<%= t(:high) %>', 
 			flex: 1, 
-			dataIndex: 'intensity', 
+			dataIndex: 'high', 
 			sortable: true, 
 			align: 'center',
 		},
 		{
-			header: '<%= t(:point) %>', 
+			header: '<%= t(:vigorous) %>', 
 			flex: 1, 
-			dataIndex: 'point', 
+			dataIndex: 'vigorous', 
 			sortable: true, 
 			align: 'center',
 		}
 		],
+/*
 	dockedItems: [{
         xtype: 'pagingtoolbar',
         store: historydatastore,   // same store GridPanel is using
@@ -158,7 +160,8 @@ var historydatagrid=Ext.create('Ext.grid.Panel',{
 					} 
 				}
             ]       
-          }]           
+          }]  
+*/         
 });
 
 var work_space = Ext.getCmp('center');

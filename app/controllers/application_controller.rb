@@ -2,7 +2,7 @@ class ApplicationController < ActionController::Base
   # reset captcha code after each request for security
 before_filter :set_locale, :set_environmentvariable
   	protect_from_forgery
-	rescue_from ActionView::MissingTemplate, :with => :rescue_record_not_found
+		rescue_from ActionView::MissingTemplate, :with => :rescue_record_not_found
 def rescue_record_not_found       
 	flash[:notice]='Invalid phone'
 	logger.error("template missing")
@@ -23,7 +23,7 @@ def rescue_action_in_public(exception)
 	end
 end
 
-protected
+
   
 def checkaction
 	rescue_from AbstractController::ActionNotFound do |exception|
@@ -38,8 +38,13 @@ end
 def setlanguage
 	I18n.locale=params[:language]
 	cookies[:locale]=params[:language]
-	respond_to do |format|
-		format.json { render :json=>{ :success=>true, :currenturl=>$currenturl}}
+	params[:loginpage]=params[:loginpage] || ''
+	if params[:loginpage]=='true'
+		redirect_to login_path
+	else
+		respond_to do |format|
+			format.json { render :json=>{ :success=>true, :currenturl=>$currenturl}}
+		end
 	end
 end
 

@@ -17,6 +17,8 @@ Sportdemo::Application.routes.draw do
   match "manager/studentmanager"=>"manager#studentmanager"
   match "manager/personinfo"=>"manager#personinfo"
   match "sessions/editpassword"=>"sessions#editpassword"
+
+  match "application/setlanguage"=>"application#setlanguage"
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
@@ -70,6 +72,8 @@ Sportdemo::Application.routes.draw do
     resource :session
     match '/login' => "sessions#new", :as => "login" 
     match '/logout' => "sessions#destroy", :as => "logout"
+
+
   # See how all your routes lay out with "rake routes"
 
   # This is a legacy wild controller route that's not recommended for RESTful applications.

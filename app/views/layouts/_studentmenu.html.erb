@@ -2,31 +2,31 @@
 <li id="historydata-management" class="left-menu">
 	<%= link_to student_historydata_path, :id=>'test1' do %>
 		<div><%= image_tag("shortcuts_11.png", :class=>'menu-icon') %></div>
-		<div class="menu-text">运动管理</div>
+		<div class="menu-text"><%= t(:motionmanage) %></div>
 	<% end %>  
 </li>
 <li id="personinfo-management" class="left-menu">
 	<%= link_to student_personinfo_path do %>
 		<div><%= image_tag("shortcuts_11.png", :class=>'menu-icon') %></div>
-		<div class="menu-text">信息管理</div>
+		<div class="menu-text"><%= t(:infomanage) %></div>
 	<% end %>
 </li>
 <li id="datagraph-management" class="left-menu">
 	<%= link_to student_datagraph_path do %>
 		<div><%= image_tag("shortcuts_11.png", :class=>'menu-icon') %></div>
-		<div class="menu-text">趋势图表</div>
+		<div class="menu-text"><%= t(:motiontrend) %></div>
 	<% end %>  
 </li>
 <li id="rank-management" class="left-menu">
 	<%= link_to student_rank_path do %>
 		<div><%= image_tag("shortcuts_11.png", :class=>'menu-icon') %></div>
-		<div class="menu-text">个人排名</div>
+		<div class="menu-text"><%= t(:personalrank) %></div>
 	<% end %>
 </li>
 <li id="feedback-management" class="left-menu">
 	<%= link_to student_feedback_path do %>
 		<div><%= image_tag("shortcuts_11.png", :class=>'menu-icon') %></div>
-		<div class="menu-text">运动建议</div>
+		<div class="menu-text"><%= t(:motionfeedback) %></div>
 	<% end %>
 </li>
 </ul>

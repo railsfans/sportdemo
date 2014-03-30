@@ -32,7 +32,7 @@ historydatastore.load({
 
     }
 });
-
+/*
 var task = {
    run: function() {
         historydatastore.reload()
@@ -43,7 +43,7 @@ var task = {
 var runner = new Ext.util.TaskRunner();
  
 runner.start(task);
-
+*/
 var historydatagrid=Ext.create('Ext.grid.Panel',{
 	title : '<%= t(:historydata) %>', 
 	frame:true,
@@ -74,6 +74,9 @@ var historydatagrid=Ext.create('Ext.grid.Panel',{
 			dataIndex: 'motiontime', 
 			sortable: true, 
 			align: 'center',
+			renderer: function (value, meta, record) {
+				return value.split('+')[0].replace(/T/g,' ');
+			}
 		},
 		{
 			header: '<%= t(:step) %>', 

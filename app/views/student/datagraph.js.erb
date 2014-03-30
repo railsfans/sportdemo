@@ -25,6 +25,7 @@ function search(type)
 		        	chart.series[j].setData(someData,false);
 	              	someData=[]
 	        	}
+				chart.setTitle({text: "<%= t('search result') %>"});
 				chart.xAxis[0].update({
 					tickPositioner: function(min,max) {
             			return this.series[0].xData;
@@ -148,7 +149,9 @@ function requestData()
 		datatype: "json",
 		success: function(data) 
 		{
-			beginDate=Date.UTC(<%=(Time.now-7.day).strftime("%Y").to_i %>,<%= (Time.now-7.day).strftime("m").to_i %>-1, <%= (Time.now-7.day).strftime("%d").to_i %>);
+			var dt=new Date();
+
+			beginDate=dt.getTime()-7*24*3600*1000;
 			someData = [];
             unit=[' <%= t(:stepcount) %>',' <%= t(:km) %>',' <%= t(:kj) %>'];
 		    for( var j=0; j<data.data.length; j++)
@@ -160,7 +163,7 @@ function requestData()
 		       		name: data.items[j],
 		            data: someData,
                     tooltip: {
-            			valueSuffix: unit[j],
+            			valueSuffix: '<%= t(:sec) %>',
 						valueDecimals: 1
         			},
 		    	}); 

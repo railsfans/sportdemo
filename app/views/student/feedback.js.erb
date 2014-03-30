@@ -1,7 +1,8 @@
 Ext.onReady(function() {
 ﻿Ext.Ajax.defaultHeaders = { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') };
 Ext.getCmp('left').items.items[4].expand();
-var tabledata='<div id="picsection"><div class="picsmall"><div class="front">体力活动分析(点击查看)</div><div class="back"><table id="one-column-emphasis"><colgroup><col class="oce-first" /></colgroup><thead><tr><th scope="col">统计项目</th><th scope="col">记录</th></tr></thead><tbody><tr><td>中等运动强度时间</td><td>20.3分钟</td></tr><tr><td>高等运动强度时间</td><td>50.2分钟</td></tr><tr><td>中高等运动强度时间</td><td>25.4分钟</td></tr></tbody></table></div></div>';
+var tabledata='<div id="picsection"><div class="picsmall"><div class="front">体力活动分析(点击查看)</div><div class="back"><table id="one-column-emphasis"><colgroup><col class="oce-first" /></colgroup><thead><tr><th scope="col">统计项目</th><th scope="col">记录</th></tr></thead><tbody><tr><td>中等运动强度时间</td><td>'+'20.3'+'分钟</td></tr><tr><td>高等运动强度时间</td><td>'+'50.2'+'分钟</td></tr><tr><td>中高等运动强度时间</td><td>'+'25.4'+'分钟</td></tr></tbody></table></div></div>';
+
 tabledata+='<div class="piclarge"><div class="front">阳光体育活动达标分析(点击查看)</div><div class="back"><table id="one-column-emphasis"><colgroup><col class="oce-first" /></colgroup><thead><tr><th scope="col">指标</th><th scope="col">结果</th></tr></thead><tbody><tr><td>体力活动得分</td><td>20.3分钟</td></tr><tr><td>阳光体育一小时</td><td>50.2分钟</td></tr><tr><td>中等以上运动强度</td><td>25.4分钟</td></tr><tr><td>大课间有效运动时间</td><td>50.2分钟</td></tr><tr><td>小课间有效运动时间</td><td>25.4分钟</td></tr><tr><td>体育课有效运动时间</td><td>25.4分钟</td></tr><tr><td>课外活动有效运动时间</td><td>25.4分钟</td></tr></tbody></table></div></div></div>';
 tabledata+='<div id="notice"><div class="card"><ul id="sortable"><div class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>需要加强运动</div><div class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span></div><div class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span></div></ul></div></div>'
 var feedback=Ext.create('Ext.panel.Panel', {
@@ -15,16 +16,19 @@ var work_space = Ext.getCmp('center');
 work_space.removeAll();
 work_space.add(feedback);
 work_space.doLayout();
-
+Ext.Ajax.request({     
+       url:'loadfeedback.js',  	
+        success: function(resp,opts) {   
+			console.log(resp.responseText);
+			eval(resp.responseText);               
+		},   
+		failure: function(resp,opts) {   
+	         
+		}     
+});
 })
 $(function(){
 	$("#feedback-management a").removeClass("selected");
 	$("#feedback-management a:first").addClass("selected");
-	$(document.body).on('click', '.piclarge', function() {
-    	document.querySelector('.piclarge').classList.toggle("flip");
-  	});
-	$(document.body).on('click', '.picsmall', function() {
-    	document.querySelector('.picsmall').classList.toggle("flip");
-  	});
 })
 

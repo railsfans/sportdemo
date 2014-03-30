@@ -50,7 +50,15 @@ def changepersoninfo
 		format.json { render :json=>{ :success=>true } }
     end
 end
+
+def loadfeedback
+	respond_to do |format|
+		format.js
+	end
+end
+
 def loaddata 
+=begin
     @data=[]
     @totaldata=[]
     @items=[t(:step), t(:distance), t(:calorie)]
@@ -59,6 +67,25 @@ def loaddata
     	(0..6).each do |i|
     		sum=0
 			sum+=Motiondata.where(:user_type=>'student', :user_id=>current_user.id).where(:motiontime.lt=>Time.now.end_of_day-i.days).where(:motiontime.gte=>Time.now.beginning_of_day-i.days).sum(item) 
+			@data<<sum
+ 		end
+    	@totaldata<<@data
+		@data=[]           
+    end
+	respond_to do |format|
+        format.json { render :json=>{ :data=>@totaldata, :items=>@items} }
+	end
+=end
+	@data=[]
+    @totaldata=[]
+    @items=[t(:sedentary), t(:light), t(:moderate), t(:high), t(:vigorous)]
+	
+    [:sedentary, :light, :moderate, :high, :vigorous].each do |item|
+    	(0..6).each do |i|
+    		sum=0
+			@time_begin=(Time.now.beginning_of_day-7.days+i.days).to_s.split(' ')[0]+' '+(Time.now.beginning_of_day-7.days+i.days).to_s.split(' ')[1]
+			@time_end=(Time.now.end_of_day-7.days+i.days).to_s.split(' ')[0]+' '+(Time.now.end_of_day-7.days+i.days).to_s.split(' ')[1]
+			sum+=Motiondata.where(:user_type=>'student', :user_id=>current_user.id).where(:motiontime.lte=>@time_end).where(:motiontime.gte=>@time_begin).sum(item) 
 			@data<<sum
  		end
     	@totaldata<<@data
@@ -89,6 +116,7 @@ def search
  	end
 	@data=[]
 	@totaldata=[]
+=begin
 	@items=['step', 'distance', 'calorie']
 	if rate!=0
 		[:step, :distance, :calorie].each do |item|
@@ -105,6 +133,33 @@ def search
     		(1..count).each do |i|
     			sum=0
 				sum+=Motiondata.where(:user_type=>'student', :user_id=>current_user.id).where(:motiontime.gte=>Time.new(params[:begintime].split('-')[0].to_i,params[:begintime].split('-')[1].to_i,params[:begintime].split('-')[2].to_i,i-1,0,0)).where(:motiontime.lt=>Time.new(params[:begintime].split('-')[0].to_i,params[:begintime].split('-')[1].to_i,params[:begintime].split('-')[2].to_i,i-1,59,59)).sum(item) 
+				@data<<sum
+ 			end
+    		@totaldata<<@data
+			@data=[]           
+    	end   
+	end
+=end
+	@items=[t(:sedentary), t(:light), t(:moderate), t(:high), t(:vigorous)]
+	if rate!=0
+		[:sedentary, :light, :moderate, :high, :vigorous].each do |item|
+    		(1..count).each do |i|
+    			sum=0
+				@begintime=(Time.new(params[:begintime].split('-')[0].to_i,params[:begintime].split('-')[1].to_i,params[:begintime].split('-')[2].to_i)+(i.day-1.day)*rate).to_s.split(' ')[0]+' '+(Time.new(params[:begintime].split('-')[0].to_i,params[:begintime].split('-')[1].to_i,params[:begintime].split('-')[2].to_i)+(i.day-1.day)*rate).to_s.split(' ')[1]
+				@endtime=(Time.new(params[:begintime].split('-')[0].to_i,params[:begintime].split('-')[1].to_i,params[:begintime].split('-')[2].to_i)+i.day*rate).to_s.split(' ')[0]+' '+(Time.new(params[:begintime].split('-')[0].to_i,params[:begintime].split('-')[1].to_i,params[:begintime].split('-')[2].to_i)+i.day*rate).to_s.split(' ')[1]
+				sum+=Motiondata.where(:user_type=>'student', :user_id=>current_user.id).where(:motiontime.lte=>@endtime).where(:motiontime.gte=>@begintime).sum(item) 
+				@data<<sum
+ 			end
+    		@totaldata<<@data
+			@data=[]           
+    	end
+	else
+    	[:sedentary, :light, :moderate, :high, :vigorous].each do |item|
+    		(1..count).each do |i|
+    			sum=0
+				@begintime=(Time.new(params[:begintime].split('-')[0].to_i,params[:begintime].split('-')[1].to_i,params[:begintime].split('-')[2].to_i,i-1,0,0)).to_s.split(' ')[0]+' '+(Time.new(params[:begintime].split('-')[0].to_i,params[:begintime].split('-')[1].to_i,params[:begintime].split('-')[2].to_i,i-1,0,0)).to_s.split(' ')[1]
+				@endtime=(Time.new(params[:begintime].split('-')[0].to_i,params[:begintime].split('-')[1].to_i,params[:begintime].split('-')[2].to_i,i-1,59,59)).to_s.split(' ')[0]+' '+(Time.new(params[:begintime].split('-')[0].to_i,params[:begintime].split('-')[1].to_i,params[:begintime].split('-')[2].to_i,i-1,59,59)).to_s.split(' ')[1]
+				sum+=Motiondata.where(:user_type=>'student', :user_id=>current_user.id).where(:motiontime.gte=>@begintime).where(:motiontime.lte=>@endtime).sum(item) 
 				@data<<sum
  			end
     		@totaldata<<@data

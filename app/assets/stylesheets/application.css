@@ -329,3 +329,10 @@ a {
 .download {
 	cursor: pointer;
 }
+
+.languageselect {
+	float: right;
+    font-size: 30px;
+	padding-left: 10px;
+	margin-left: 10px;
+}
