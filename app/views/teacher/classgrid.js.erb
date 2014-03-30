@@ -25,6 +25,85 @@ classstore.load({
         limit: itemsPerPage,
     }
 });
+function classdata_action_handler(type)
+{
+	
+      	var form = new Ext.form.Panel({
+	        width: 300,
+	        frame: true,
+	        title: '<%= t('add class') %>',
+	        bodyPadding: '10 10 0',
+	        height: 300,
+	        defaults: {
+	            anchor: '100%',
+	            allowBlank: false,
+	            msgTarget: 'side',
+	            labelWidth: 80
+	        },
+	        items: [
+        		{xtype:"hidden",name: "id"},  
+				{xtype:"textfield",fieldLabel: '<%= t('classname') %>',name: "classname"},  
+				{xtype:"textfield",fieldLabel: '<%= t('count') %>',name: "count"},      
+        	],
+	        buttonAlign:"center",
+	        buttons: [
+	            {
+	            text: '<%= t(:save) %>',
+	            handler: function(){
+	               	var form = this.up('form').getForm();
+	                if(form.isValid()){
+	                    form.submit({
+	                        url: 'teacher/add_class.json',
+	                        waitMsg: '<%= t('on upload') %>',
+	                        success: function(fp, o) {			
+		                       	form.reset(),										                 								edit_window.close()
+                        	}
+                    	});
+                	}
+            	}
+        		},{
+		            text: '<%= t(:reset) %>',
+		            handler: function() {
+		                this.up('form').getForm().reset();
+		            }
+		        }
+        	]
+        });
+	    var edit_window = new Ext.Window({
+	        width:300,
+	        height:180,
+	        resizable:false,
+	        layout:"fit",
+	        closeAction:'close',
+	        plain: true,
+	        constrainHeader:true,
+	        modal:true,
+	        bodyStyle: 'padding:5px;',
+	        items:[form]
+	    });
+		if(type=='edit')
+		{
+			var rows = classgrid.getSelectionModel().getSelection();
+		    if(rows.length==1){
+		        form.getForm().setValues({
+		            id: rows[0].get("id")
+		        });
+		        edit_window.show();
+	        }
+	        else if(rows.length>1)
+	        {
+	        	 
+	        }
+	        else {
+	        	 
+	        } 
+	 	}
+		else if(type='add')
+		{
+			edit_window.show();
+		}
+
+}
 
 var classgrid=Ext.create('Ext.grid.Panel',{
 	title : '<%= t('shclass manage') %>', 
@@ -33,7 +112,7 @@ var classgrid=Ext.create('Ext.grid.Panel',{
 		forceFit : true,
     		stripeRows: true
 		},
-	store:  classstore,
+	store:  classstore,  
 	columns: [
     	 {
             xtype: 'rownumberer',
@@ -69,7 +148,51 @@ var classgrid=Ext.create('Ext.grid.Panel',{
 	    xtype: 'pagingtoolbar',
 	    store: classstore,    
 	    dock: 'bottom',
-	    displayInfo: true,      
+	    displayInfo: true,
+		items:[
+        '-',
+		{ 
+			text: '<%= t(:add) %>', 
+			iconCls:"add", 
+			handler: function() {
+        		classdata_action_handler("add")
+		}},
+		{ 
+			text: '<%= t(:edit) %>', 
+			iconCls:"edit", 
+			handler: function() {
+        		classdata_action_handler("edit")
+		}},
+		{ 
+			text: '<%= t(:delete) %>', 
+			iconCls:"delete", 
+			handler: function() {
+        		classdata_action_handler("delete")
+		}},
+        {
+	    	xtype: 'textfield',
+	    	hideLabel: true,
+	    	width: 70,
+	    	id: "keyname",
+
+		}, 
+			{ 
+			text: '<%= t(:search) %>',
+			id:"search_record_button", 
+			iconCls:"search", 
+			handler:function(){
+				record_search("search")
+			} 
+		},
+    		{ 
+			text: '<%= t(:clear) %>', 
+			id:"clear_record_button", 
+			disabled:true, 
+			handler: function(){
+				record_search("clear")
+			} 
+		}
+    ]             
 	}],
 	listeners: {
   	itemdblclick: function(dataview, index, item, e) {
@@ -176,7 +299,8 @@ var classgrid=Ext.create('Ext.grid.Panel',{
                     	var title=index.data['realname'];
                     		var exercisestore = Ext.create('Ext.data.Store', {
 			    			autoLoad: false,
-			    			fields:['id','distance','calorie','motiontime','step'],
+			    		//	fields:['id','distance','calorie','motiontime','step'],
+							fields:['_id','light','sedentary','moderate','high','vigorous','motiontime','user_type', 'user_id'],
 			    			pageSize: itemsPerPage, // items per page
 						    proxy: {
 						        type: 'ajax',
@@ -207,52 +331,66 @@ var classgrid=Ext.create('Ext.grid.Panel',{
 	        				},
 							store: exercisestore,
 							columns: [
-			 				{
-                            	xtype: 'rownumberer',
-                            	width: 60,
-                            	sortable: false,
-                            	header: '<%= t('list') %>', 
-                            	align: 'center'
-                            },
-                            {
-								header: '<%= t('id') %>', 
+			 				 {
+					            xtype: 'rownumberer',
+					            width: 60,
+					            sortable: false,
+					            header: '<%= t(:list) %>', 
+					            align: 'center'
+					        },
+							{
+								header: 'id', 
 								flex: 1, 
-								dataIndex: 'id', 
+								dataIndex: '_id', 
 								sortable: true, 
 								align: 'center', 
 								hidden: true
 							},
 							{
-								header: '<%= t('exercisetime') %>', 
+								header: '<%= t(:motiontime) %>', 
 								flex: 1, 
 								dataIndex: 'motiontime', 
 								sortable: true, 
-								align: 'center',
+								align: 'center',   
 								renderer: function (value, meta, record) {
-				                    return value.split('T')[0]+' '+value.split('T')[1].split('+')[0]
-				                }
+									return value.split('+')[0].replace(/T/g,' ');
+								}
 							},
-                            {
-								header: '<%= t('step') %>', 
+							{
+								header: '<%= t(:sedentary) %>', 
 								flex: 1, 
-								dataIndex: 'step', 
+								dataIndex: 'sedentary', 
 								sortable: true, 
 								align: 'center',
 							},
 							{
-								header: '<%= t('distance') %>', 
+								header: '<%= t(:light) %>', 
 								flex: 1, 
-								dataIndex: 'distance', 
+								dataIndex: 'light', 
 								sortable: true, 
 								align: 'center',
 							},
-                            {
-								header: '<%= t('calorie') %>', 
+							{
+								header: '<%= t(:moderate) %>', 
 								flex: 1, 
-								dataIndex: 'calorie', 
+								dataIndex: 'moderate', 
 								sortable: true, 
 								align: 'center',
-							} 
+							},
+							{
+								header: '<%= t(:high) %>', 
+								flex: 1, 
+								dataIndex: 'high', 
+								sortable: true, 
+								align: 'center',
+							},
+							{
+								header: '<%= t(:vigorous) %>', 
+								flex: 1, 
+								dataIndex: 'vigorous', 
+								sortable: true, 
+								align: 'center',
+							}
 							],
                     		dockedItems: [{
 						        xtype: 'pagingtoolbar',

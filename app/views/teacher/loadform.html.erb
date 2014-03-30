@@ -1,0 +1,91 @@
+<style>
+fieldset {background:#f2f2e6; padding:10px; border:1px solid #fff; border-color:#fff #666661 #666661 #fff; margin-bottom:36px; width:600px;}
+input, textarea, select {font:12px/12px Arial, Helvetica, sans-serif; padding:0;}
+fieldset.action {background:#9da2a6; border-color:#e5e5e5 #797c80 #797c80 #e5e5e5; margin-top:-20px;}
+legend {background:#bfbf30; color:#fff; font:17px/21px Calibri, Arial, Helvetica, sans-serif; padding:0 10px; margin:-26px 0 0 -11px; font-weight:bold; border:1px solid #fff; border-color:#e5e5c3 #505014 #505014 #e5e5c3;}
+label {font-size:11px; font-weight:bold; color:#666;}
+label.opt {font-weight:normal;}
+dl {clear:both;}
+dt {float:left; text-align:right; width:90px; line-height:25px; margin:0 10px 10px 0;}
+dd {float:left; width:475px; line-height:25px; margin:0 0 10px 0;}
+#footer {font-size:11px;}
+
+#container {width:700px; margin:0 auto; padding-top: 40px;}
+
+.simple_form label {
+  float: left;
+  width: 100px;
+  text-align: right;
+  margin: 2px 10px;
+}
+
+.simple_form div.input {
+  margin-bottom: 10px;
+}
+
+.simple_form div.boolean, .simple_form input[type='submit'] {
+  margin-left: 120px;
+}
+
+.simple_form div.boolean label, .simple_form label.collection_radio {
+  float: none;
+  margin: 0;
+}
+
+.simple_form label.collection_radio_buttons {
+ width: 40px;
+vertical-align:text-top;
+}
+.inline {
+	float: left
+}
+
+.simple_form .error {
+  clear: left;
+  margin-left: 120px;
+  font-size: 12px;
+  color: #D00;
+  display: block;
+}
+
+.simple_form .hint {
+  clear: left;
+  margin-left: 120px;
+  font-size: 12px;
+  color: #555;
+  display: block;
+  font-style: italic;
+}
+
+#clean {
+	clear: both
+}
+</style>
+<div id="container">
+<%= form_for @user, url: {:action => 'update_managerinfo', :controller => 'manager'}, html: {class: "nifty_form"}, :remote=> true do |f| %>
+  <% @user.errors.full_messages.each do |msg| %>
+      <p><%= msg %></p>
+   <% end %>
+	<fieldset>
+	<legend>个人资料</legend>
+		
+		<dl>
+        	<dt><label for="password">姓名:</label></dt>
+            <dd><%= f.text_field :name%></dd>
+        </dl>
+        <dl>
+        	<dt><label for="email">邮箱:</label></dt>
+            <dd><%= f.text_field :email %></dd>
+        </dl>
+		<dl>
+        	<dt><label for="email">电话:</label></dt>
+            <dd><%= f.text_field :phone %></dd>
+        </dl>
+	</fieldset>
+	
+  <fieldset class="action">
+    	<%= f.submit "提交" %>
+    </fieldset>
+  
+<% end %>
+</div>

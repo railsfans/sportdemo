@@ -8,6 +8,7 @@ Sportdemo::Application.routes.draw do
 
   match "teacher/classgrid"=>"teacher#classgrid"
   match "teacher/semestergrid"=>"teacher#semestergrid"
+  match "teacher/personinfo"=>"teacher#personinfo"
 
   match "manager/phonegrid"=>"manager#phonegrid"
   match "manager/basestationgrid"=>"manager#basestationgrid"

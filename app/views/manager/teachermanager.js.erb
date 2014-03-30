@@ -11,6 +11,16 @@ var SexStore = Ext.create('Ext.data.Store',{
 		{sex:'<%= t(:female) %>',value:'false'},
 	]
 });
+Ext.regModel('Role', {
+	fields: [{name: 'role'},{name: 'value'}]
+});
+var RoleStore = Ext.create('Ext.data.Store',{
+	model : 'Role',
+	data : [
+		{role:'<%= t(:teacher) %>',value:'teacher'},
+		{role:'<%= t(:gradeteacher) %>',value:'gradeteacher'},
+	]
+});
 function manager_action_handler(type) {
 	var form = new Ext.form.Panel({
 	width: 500,

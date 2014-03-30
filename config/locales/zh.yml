@@ -163,3 +163,7 @@ zh:
   watchreset count: "看门狗重置次数"
   hardfaultreset count: "硬件重置次数"
   logupdatetime: "日志更新时间"
+  add user info: "添加用户信息"
+  edit user info data: "编辑用户信息"
+  add class: "添加班级"
+  count: "人数"

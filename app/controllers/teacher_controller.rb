@@ -3,6 +3,15 @@ layout "teacher"
 before_filter :authenticate_teacher
 def index
 end
+def personinfo
+	@user=Teacher.first
+end
+
+def loadform
+	@user=Teacher.first
+	render :layout=>false
+end
+
 def classgrid
 	@class=Teacher.where(:login_id=>current_user.id).first.shclasses
 	respond_to do |format|
