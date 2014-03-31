@@ -219,6 +219,24 @@ def updateteacherinfo
 	end
 end
 
+def feedback
+	params[:passwdtoken]=params[:passwdtoken] || ''
+	if !params[:passwdtoken].empty? && !Phonelock.where(:token=>params[:passwdtoken],:status=>true).empty?
+		flag=true
+		Softfeedback.create(:content=>params[:content], :version=>params[:version], :model=>params[:model], :account=>params[:account], :os=>params[:os])
+	else
+		flag=false
+		message="please send passwdtoken wrong"
+	end
+	respond_to do |format|
+		if flag
+			format.json { render :json=>{ :success=>flag }}
+		else
+			format.json { render :json=>{ :success=>flag, :errormessage=>message}}
+		end
+	end
+end
+
   
 def login 
 	user = Login.phone_authenticate(params[:username], params[:password]) 

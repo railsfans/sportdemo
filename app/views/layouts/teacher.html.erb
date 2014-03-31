@@ -8,6 +8,26 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
+<script>
+
+</script>
+<div class="loader"></div>
+<p class="panel-content"> 
+	<div id="toPopup"> 	
+		<div class="close"></div>
+		<span class="ecs_tooltip">Press Esc to close <span class="arrow"></span></span>
+		<div id="popup_content"> <!--your content start-->
+			<p>Step</p>
+			<p>
+			<div id="bar" style=" width: 700px; height: 100px; margin: 0 auto"></div>
+			</p>
+			<p>
+		   <div id="highchartcontainer" style=" width: 700px; height: 300px; margin: 0 auto"></div>
+		   </p>
+		</div> <!--your content end-->
+	</div> <!--toPopup end-->
+	<div id="backgroundPopup"></div>
+</p> 
 <div id="menu">
 	<%= render :partial => "layouts/teachermenu" %>
 </div>

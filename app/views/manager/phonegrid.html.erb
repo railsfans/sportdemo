@@ -16,7 +16,20 @@ function phone_action_handler(type) {
     items: [
         {xtype:"hidden",name: "id"},   
         {xtype:"textfield",fieldLabel: '<%= t('versioncode') %>',name: "versioncode"},  
-        {xtype:"textarea",fieldLabel: '<%= t('softinfo') %>',name: "softinfo"}      
+        {xtype:"textarea",fieldLabel: '<%= t('softinfo') %>',name: "softinfo"},
+		{
+            xtype: 'filefield',
+			 allowBlank: true,
+     //       emptyText: '<%= t('select file') %>',
+            fieldLabel: '<%= t('filelocation') %>',
+            name: 'filelocation',
+            buttonText: '',
+            buttonConfig: {
+                iconCls: 'upload-icon'
+            },
+     //       regex: /(.)+((\.csv)|(\.xls)(\w)?)$/i,
+     //       regexText: '<%= t('wrong file type') %>'
+        }                 
     ],
     buttonAlign:"center",       
     buttons: [
@@ -69,7 +82,7 @@ function phone_action_handler(type) {
 	});
 	var phone_window = new Ext.Window({
 	    width:400,
-	    height:200,
+	    height:280,
 	    resizable:false,
 	    layout:"fit",
 	    closeAction:'close',
@@ -145,7 +158,7 @@ function phone_action_handler(type) {
 
 var phonestore = Ext.create('Ext.data.Store', {
     autoLoad: false,
-    fields:['id','softinfo','updatetime','versioncode'],
+    fields:['id','softinfo','updatetime','versioncode','applocal'],
     pageSize: itemsPerPage,  
     proxy: {
         type: 'ajax',
@@ -217,7 +230,66 @@ var phonegrid=Ext.create('Ext.grid.Panel',{
 			renderer: function (value, meta, record) {
                 return value.replace('T',' ').replace('Z','');
         	}
-		} 
+		},
+		{ header: '<%= t('download app file') %>',  dataIndex: 'applocal' ,flex: 2, align: 'center', renderer: function tohref(value,meta,record){ 
+		 	if(value!=null)
+           		return "<a href='download?filename="+value+"' target="+"_blank >"+value.split('_')[1]+"</a>";
+			else
+				return value  
+        } },
+		{
+    		text: '<%= t('view feedback') %>',
+	      	xtype: 'actioncolumn', 
+			iconCls: 'download',
+			align: 'center',
+			items: [{  
+	   			icon: 'download.png',
+				tooltip: '<%= t('view stationlog') %>',
+				handler: function(grid, rowIndex, colIndex) {
+					var rec = grid.getStore().getAt(rowIndex);
+	          		var models = grid.getStore().getRange();
+	             	var record=models[rowIndex]; 
+					console.log(rec.get('versioncode'));
+					
+			        var feedbackgrid=Ext.create('Ext.grid.Panel',{
+			            title : '<%= t('versioncode') %> '+rec.get('versioncode'),
+			            frame:true,
+			            viewConfig: {
+			                forceFit : true,
+			                stripeRows: true
+			            },
+			            store: { 
+			                autoLoad: true,
+						    fields:['account','content','model','os'], 
+						    proxy: {
+						        type: 'ajax',
+						        url: 'phonefeedback.json',   
+						        reader: {
+						            type: 'json',
+						            root: 'gridData'
+						        },
+								 extraParams: {
+							        version: rec.get('versioncode')
+							    }			
+						    }	  
+			            },
+			            columns: [
+			                {header: "<%= t(:account) %>", flex: 1, dataIndex: 'account', sortable: true},
+							{header: "<%= t(:model) %>", flex: 1, dataIndex: 'model', sortable: true},
+							{header: "<%= t(:os) %>", flex: 1, dataIndex: 'os', sortable: true},
+							{header: "<%= t(:content) %>", flex: 1, dataIndex: 'content', sortable: true},
+			            ]
+			        });
+					var tabPage = tabpanel.add({ 
+			           	title: '<%= t('versioncode') %> '+rec.get('versioncode'),
+				   		items : [feedbackgrid],
+				   		closable : true,
+			         	layout: 'fit'
+					})
+					tabpanel.setActiveTab(tabPage); 
+				}
+			}]
+		}  
 		],
    		dockedItems: [{
 			xtype: 'pagingtoolbar',
@@ -272,10 +344,14 @@ var phonegrid=Ext.create('Ext.grid.Panel',{
 			]       
 		}]                
 });
-
+var tabpanel=Ext.create('Ext.tab.Panel', {
+    width: 400,
+    height: 400,
+    items: [phonegrid]
+});
 var work_space = Ext.getCmp('center');
 work_space.removeAll();
-work_space.add(phonegrid);
+work_space.add(tabpanel);
 work_space.doLayout();
 })
 </script>

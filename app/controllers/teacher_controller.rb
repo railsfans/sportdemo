@@ -3,6 +3,30 @@ layout "teacher"
 before_filter :authenticate_teacher
 def index
 end
+
+def gettreenode
+	@matcharr=[]
+	if params[:name]=='root'
+		@class=Teacher.where(:login_id=>current_user.id).first.shclasses
+		@class.each do |i|
+			@matcharr<<Shgrade.find(i.shgrade_id).name if !@matcharr.include? Shgrade.find(i.shgrade_id).name
+		end
+		@type='grade'
+	else if params[:name].slice(params[:name].length-1,1)!=t(:classname)
+		@class=Teacher.where(:login_id=>current_user.id).first.shclasses
+		@class.each do |i|
+			@matcharr<<i.name
+		end		
+		@type='class'
+	else  
+		@type='student'
+	end
+	end
+	respond_to do |format|	
+		format.json { render :json=>@matcharr.collect { |list| { :name=>list,  :type=>@type }} }
+	end
+end
+
 def personinfo
 	@user=Teacher.first
 end
@@ -12,12 +36,20 @@ def loadform
 	render :layout=>false
 end
 
+def classcalgraph
+	render :layout=>false
+end
+
+def testload
+	 
+end
+
 def classgrid
 	@class=Teacher.where(:login_id=>current_user.id).first.shclasses
 	respond_to do |format|
 		format.js
 		format.html
-		format.json { render :json=>{ :totalCount=>@class.count, :gridData=>@class.collect{ |list| { :id=>list.id, :classname=>list.name, :count=>list.students.count }} }}
+		format.json { render :json=>{ :totalCount=>@class.count, :gridData=>@class.collect{ |list| { :id=>list.id, :classname=>list.name, :count=>list.students.count, :gradename=>Shgrade.find(list.shgrade_id).name, :time=>'pass week' }} }}
 	end
 end
 def studentgrid

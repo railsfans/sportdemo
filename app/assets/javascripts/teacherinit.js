@@ -1,4 +1,84 @@
 Ext.onReady(function() {
+
+	Ext.regModel("TreeInfo", {
+    	fields: ['name', 'id', 'type']
+    });
+	var myStore = new Ext.data.TreeStore({
+		model : 'TreeInfo',
+		nodeParam : 'name', 
+		proxy: {
+            type: 'ajax',
+            url: 'gettreenode.json',
+            reader: 'json'
+        },
+		autoLoad: true,
+        root: {
+            name: 'expand',
+            id: 'root'
+        }
+	});
+
+	function alertMsg(record)
+	{
+        Ext.Ajax.request({
+            url: 'getallclass.js',
+            success: function(response){
+                eval(response.responseText)
+            },
+            failure: function(response){
+                
+            },
+            params: { id : record }
+        });
+	};
+    
+	var tree_panel = Ext.create('Ext.tree.Panel', {
+	    listeners: {
+		    'itemclick': function( grid, record, item, index, e, eOpts) {
+		        if(record.get('type')=='class' ){
+		     //   	alertMsg(record.get('id'));
+					console.log("load class");
+		      }
+		    },
+			itemmouseenter: function (view, rec) {
+    			// console.log(rec.data.name);
+			}
+	    },
+	    renderTo: 'historydata-management',
+		layout: 'fit',
+		tools:[{
+			type:'refresh',
+			tooltip: '刷新当前',
+			handler: function(event, toolEl, panel){
+				myStore.load()
+			}
+		},
+		{
+		    type:'help',
+		 	hidden:true,
+		    tooltip: 'Get Help',
+		    handler: function(event, toolEl, panel){
+		        // show help here
+		    }
+		}
+		],
+	    columns: [{
+  	      	xtype: 'treecolumn', 
+	        text: '年级列表',
+	        dataIndex: 'name',
+	    //    width: 150,
+			flex: 3,
+	        sortable: true
+	    }],
+	    store : myStore,
+	    rootVisible: true,
+	    border: false,
+        autoScroll : true,
+        containerScroll: true,
+        bodyBorder: false,
+        frame: false
+	}); 
+
         Ext.create('Ext.container.Viewport', {
             layout: 'border',
             items: [{
@@ -71,6 +151,11 @@ Ext.onReady(function() {
                 }, {
                     contentEl: 'personinfo-management',
                     title: '学期管理',
+                    iconCls: 'second',
+                    autoScroll: true
+                }, {
+                    contentEl: 'teacher-classcal',
+                    title: '班级统计',
                     iconCls: 'second',
                     autoScroll: true
                 }, {

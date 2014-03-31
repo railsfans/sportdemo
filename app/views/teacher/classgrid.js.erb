@@ -1,9 +1,11 @@
+Ext.onReady(function() {
+
 Ext.Ajax.defaultHeaders = { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') };
 itemsPerPage = 20;  
 
 var classstore = Ext.create('Ext.data.Store', {
 	autoLoad: false,
-    fields:['id','classname','count'],
+    fields:['id','classname','count','gradename','time'],
     pageSize: itemsPerPage, 
     proxy: {
         type: 'ajax',
@@ -41,7 +43,8 @@ function classdata_action_handler(type)
 	            labelWidth: 80
 	        },
 	        items: [
-        		{xtype:"hidden",name: "id"},  
+        		{xtype:"hidden",name: "id"}, 
+				{xtype:"textfield",fieldLabel: '<%= t('gradename') %>',name: "gradename"},   
 				{xtype:"textfield",fieldLabel: '<%= t('classname') %>',name: "classname"},  
 				{xtype:"textfield",fieldLabel: '<%= t('count') %>',name: "count"},      
         	],
@@ -104,7 +107,9 @@ function classdata_action_handler(type)
 		}
 
 }
-
+var cellEditing = Ext.create('Ext.grid.plugin.CellEditing', {
+        clicksToEdit: 1
+    });
 var classgrid=Ext.create('Ext.grid.Panel',{
 	title : '<%= t('shclass manage') %>', 
 	frame:true,
@@ -130,12 +135,66 @@ var classgrid=Ext.create('Ext.grid.Panel',{
 			hidden: true
 		},
 		{
+			header: '<%= t('gradename') %>', 
+			flex: 1, 
+			dataIndex: 'gradename', 
+			sortable: true, 
+			align: 'center',
+		},
+		{
 			header: '<%= t('classname') %>', 
 			flex: 1, 
 			dataIndex: 'classname', 
 			sortable: true, 
 			align: 'center',
-		},
+		},{
+            header: 'time',
+            dataIndex: 'time',
+            width: 130,
+            editor: new Ext.form.field.ComboBox({
+                typeAhead: true,
+                triggerAction: 'all',
+                selectOnTab: true,
+                store: [
+                    ['pass week','pass week'],
+                    ['pass month','pass month'],
+                    ['pass all','pass all']
+                ],
+                lazyRender: true,
+            })
+        },
+//		 { text: 'External Link', xtype: 'templatecolumn', dataIndex: 'time',tpl: '<a href="#" class="topopups">{time}</a>'},
+		{
+    		text: '<%= t('view cal') %>',
+	      	xtype: 'actioncolumn', 
+			iconCls: 'download',
+			align: 'center',
+			items: [{  
+	   			icon: 'download.png',
+				tooltip: '<%= t('view stationlog') %>',
+				handler: function(grid, rowIndex, colIndex) {
+					var rec = grid.getStore().getAt(rowIndex);
+	          		var models = grid.getStore().getRange();
+	             	var record=models[rowIndex]; 
+					console.log(rec.get('id'));
+					Ext.Ajax.request({   
+       					url:'classcalgraph.js',
+       					params:{
+        					id:rec.get('id'),
+							time: rec.get('time')
+        				},
+        				success: function(resp,opts) {
+                             console.log(resp.responseText)
+						 	eval(resp.responseText)
+                     	},
+                     	failure: function(resp,opts) {
+					
+                      	}  
+      
+       				});
+				}
+			}]
+		}, 
 		{
 			header: '<%= t('classstudentcount') %>', 
 			flex: 1, 
@@ -144,6 +203,7 @@ var classgrid=Ext.create('Ext.grid.Panel',{
 			align: 'center',
 		}
 	],
+	plugins: [cellEditing],
 	dockedItems: [{
 	    xtype: 'pagingtoolbar',
 	    store: classstore,    
@@ -427,3 +487,4 @@ var work_space = Ext.getCmp('center');
 work_space.removeAll();
 work_space.add(tabpanel);
 work_space.doLayout();
+})

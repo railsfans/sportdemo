@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140328015825) do
+ActiveRecord::Schema.define(:version => 20140331074412) do
 
   create_table "basestations", :force => true do |t|
     t.string   "name"
@@ -92,6 +92,7 @@ ActiveRecord::Schema.define(:version => 20140328015825) do
     t.text     "softinfo"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
+    t.string   "applocal"
   end
 
   create_table "semesters", :force => true do |t|
@@ -147,6 +148,16 @@ ActiveRecord::Schema.define(:version => 20140328015825) do
   end
 
   add_index "simple_captcha_data", ["key"], :name => "idx_key"
+
+  create_table "softfeedbacks", :force => true do |t|
+    t.string   "os"
+    t.string   "content"
+    t.string   "version"
+    t.string   "model"
+    t.string   "account"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "students", :force => true do |t|
     t.string   "name"

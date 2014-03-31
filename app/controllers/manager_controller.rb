@@ -1,7 +1,7 @@
 class ManagerController < ApplicationController
 layout "manager" 
 before_filter :authenticate_manager
-
+skip_before_filter  :verify_authenticity_token, :only=>[:phone_version_add, :phone_version_edit]
 def phonegrid
 	respond_to do |format|
 		format.js
@@ -18,22 +18,51 @@ def phonesoftlog
   	end
 end
 
-def phone_version_add 
-	Phonesoftlog.create(:versioncode=>params[:versioncode], :updatetime=>Time.now, :softinfo=>params[:softinfo])
+def download
+	file = Dir.pwd+'/public/phoneapp/'+params[:filename]
+	p file
+	if File.file? file
+	    send_file file,  :x_sendfile=>true, :filename => params[:filename].split('_')[1]
+	else
+	  render :text => "the file does not exist"
+	end
+end
+
+def phone_version_add
+	directory = Dir.pwd+'/public/phoneapp'
+	@location=Time.now.strftime("%Y-%m-%d %H:%M:%S").split(' ').join('-')+'_'+params[:filelocation].original_filename
+	path = File.join(directory,@location)
+	File.open(path, "wb") { |f| f.write(params[:filelocation].read)} 
+	Phonesoftlog.create(:versioncode=>params[:versioncode], :updatetime=>Time.now, :softinfo=>params[:softinfo], :applocal=>@location)
+	
    	respond_to do |format| 
-		format.json { render :json=>{:success=>true }}
+		format.json { render :json=>{:success=>true }, :content_type => 'text/html'}
   	end
 end
 
 def phone_version_edit
-  	Phonesoftlog.find(params[:id]).update_attributes(:versioncode=>params[:versioncode], :updatetime=>Time.now, :softinfo=>params[:softinfo])
+	if !params[:filelocation].nil?
+	directory = Dir.pwd+'/public/phoneapp'
+	@location=Time.now.strftime("%Y-%m-%d %H:%M:%S").split(' ').join('-')+'_'+params[:filelocation].original_filename
+	path = File.join(directory,@location)
+	File.open(path, "wb") { |f| f.write(params[:filelocation].read)} 
+	removeoldfilecmd="cd "+directory+"; rm -rf "+Phonesoftlog.find(params[:id]).applocal
+	p removeoldfilecmd
+	system(removeoldfilecmd)
+  		Phonesoftlog.find(params[:id]).update_attributes(:versioncode=>params[:versioncode], :updatetime=>Time.now, :softinfo=>params[:softinfo], :applocal=>@location)
+	else
+		Phonesoftlog.find(params[:id]).update_attributes(:versioncode=>params[:versioncode], :updatetime=>Time.now+8.hours, :softinfo=>params[:softinfo])
+	end
    
 	respond_to do |format| 
-   		format.json { render :json=>{:success=>true }}
+   		format.json { render :json=>{:success=>true }, :content_type => 'text/html'}
   	end
 end
 
 def phone_version_delete
+	removeoldfilecmd="cd "+directory+"; rm -rf "+Phonesoftlog.find(params[:id]).applocal
+	p removeoldfilecmd
+	system(removeoldfilecmd)
   	Phonesoftlog.find(params[:id]).destroy
    
   	respond_to do |format| 
@@ -115,6 +144,13 @@ def stationlog
 #	sleep(3)
 	respond_to do |format|
 		format.json { render :json=>{:gridData=>{:logcontent=>getStationLog(params[:stationid])} }}
+	end
+end
+
+def phonefeedback
+	@feedback=Softfeedback.where(:version=>params[:version])
+	respond_to do |format|
+		format.json { render :json=>@feedback }
 	end
 end
 

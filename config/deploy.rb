@@ -19,6 +19,8 @@ role :web, "192.168.1.240"                          # Your HTTP server, Apache/e
 role :app, "192.168.1.240"                          # This may be the same as your `Web` server
 role :db,  "192.168.1.240", :primary => true # This is where Rails migrations will run
 #role :db,  "your slave db-server here"
+set :shared_children, shared_children + %w{public/phoneapp}
+after "deploy:update_code", "deploy:symlink_shared"
 namespace :deploy do
   task :copy_config_files, :roles => [:app] do
     db_config = "#{shared_path}/database.yml"
@@ -45,6 +47,10 @@ namespace :deploy do
      run "#{try_sudo} touch #{File.join(current_path,'tmp','restart.txt')}"
 #      run  "/opt/nginx/sbin/nginx -s restart"
    end
+	desc "Symlink shared configs and folders on each release."
+      task :symlink_shared do
+        run "ln -nfs #{shared_path}/phoneapp #{release_path}/public/phoneapp"
+      end
  end
 # if you want to clean up old releases on each deploy uncomment this:
 # after "deploy:restart", "deploy:cleanup"
