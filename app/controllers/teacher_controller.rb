@@ -40,6 +40,62 @@ def classcalgraph
 	render :layout=>false
 end
 
+def loaddata 
+	@data=[]
+    @totaldata=[]
+    @items=[t(:sedentary), t(:light), t(:moderate), t(:high), t(:vigorous)]
+	p params[:time]==t('pass alldata')
+	if params[:time]=t('pass week')
+	    [:sedentary, :light, :moderate, :high, :vigorous].each do |item|
+	    	(0..6).each do |i|
+	    		sum=0
+				@time_begin=(Time.now.beginning_of_day-7.days+i.days).to_s.split(' ')[0]+' '+(Time.now.beginning_of_day-7.days+i.days).to_s.split(' ')[1]
+				@time_end=(Time.now.end_of_day-7.days+i.days).to_s.split(' ')[0]+' '+(Time.now.end_of_day-7.days+i.days).to_s.split(' ')[1]
+				Shclass.find(params[:id]).students.each do |stu|
+					sum+=Motiondata.where(:user_type=>'student', :user_id=>stu.id).where(:motiontime.lte=>@time_end).where(:motiontime.gte=>@time_begin).sum(item)
+				end 
+				@data<<sum
+	 		end
+	    	@totaldata<<@data
+			@data=[]           
+	    end
+	else if params[:time]==t('pass month')
+		[:sedentary, :light, :moderate, :high, :vigorous].each do |item|
+	    	(0..9).each do |i|
+	    		sum=0
+				@time_begin=(Time.now.beginning_of_day-30.days+(i*3).days).to_s.split(' ')[0]+' '+(Time.now.beginning_of_day-30.days+(i*3).days).to_s.split(' ')[1]
+				@time_end=(Time.now.end_of_day-30.days+((i+1)*3).days).to_s.split(' ')[0]+' '+(Time.now.end_of_day-30.days+((i+1)*3).days).to_s.split(' ')[1]
+				Shclass.find(params[:id]).students.each do |stu|
+					sum+=Motiondata.where(:user_type=>'student', :user_id=>stu.id).where(:motiontime.lte=>@time_end).where(:motiontime.gte=>@time_begin).sum(item)
+				end 
+				@data<<sum
+	 		end
+	    	@totaldata<<@data
+			@data=[]           
+	    end
+		p @totaldata
+	else if params[:time]==t('pass alldata')
+		@total=0
+		[:sedentary, :light, :moderate, :high, :vigorous].each do |item|
+			sum=0
+			Shclass.find(params[:id]).students.each do |stu|
+				sum+=Motiondata.where(:user_type=>'student', :user_id=>stu.id).sum(item)
+			end 
+			@data<<sum
+			@total+=sum
+		end
+		p @data
+		@data.each do |t|
+#			@totaldata<<(t/total.to_f).round(2)
+		end
+	end
+	end
+	end
+	respond_to do |format|
+        format.json { render :json=>{ :data=>@totaldata, :items=>@items} }
+	end
+end
+
 def testload
 	 
 end
@@ -49,7 +105,7 @@ def classgrid
 	respond_to do |format|
 		format.js
 		format.html
-		format.json { render :json=>{ :totalCount=>@class.count, :gridData=>@class.collect{ |list| { :id=>list.id, :classname=>list.name, :count=>list.students.count, :gradename=>Shgrade.find(list.shgrade_id).name, :time=>'pass week' }} }}
+		format.json { render :json=>{ :totalCount=>@class.count, :gridData=>@class.collect{ |list| { :id=>list.id, :classname=>list.name, :count=>list.students.count, :gradename=>Shgrade.find(list.shgrade_id).name, :time=>t('pass week') }} }}
 	end
 end
 def studentgrid

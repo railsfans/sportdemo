@@ -74,7 +74,7 @@ function classdata_action_handler(type)
         });
 	    var edit_window = new Ext.Window({
 	        width:300,
-	        height:180,
+	        height:240,
 	        resizable:false,
 	        layout:"fit",
 	        closeAction:'close',
@@ -147,61 +147,66 @@ var classgrid=Ext.create('Ext.grid.Panel',{
 			dataIndex: 'classname', 
 			sortable: true, 
 			align: 'center',
-		},{
-            header: 'time',
-            dataIndex: 'time',
-            width: 130,
-            editor: new Ext.form.field.ComboBox({
-                typeAhead: true,
-                triggerAction: 'all',
-                selectOnTab: true,
-                store: [
-                    ['pass week','pass week'],
-                    ['pass month','pass month'],
-                    ['pass all','pass all']
-                ],
-                lazyRender: true,
-            })
-        },
-//		 { text: 'External Link', xtype: 'templatecolumn', dataIndex: 'time',tpl: '<a href="#" class="topopups">{time}</a>'},
-		{
-    		text: '<%= t('view cal') %>',
-	      	xtype: 'actioncolumn', 
-			iconCls: 'download',
-			align: 'center',
-			items: [{  
-	   			icon: 'download.png',
-				tooltip: '<%= t('view stationlog') %>',
-				handler: function(grid, rowIndex, colIndex) {
-					var rec = grid.getStore().getAt(rowIndex);
-	          		var models = grid.getStore().getRange();
-	             	var record=models[rowIndex]; 
-					console.log(rec.get('id'));
-					Ext.Ajax.request({   
-       					url:'classcalgraph.js',
-       					params:{
-        					id:rec.get('id'),
-							time: rec.get('time')
-        				},
-        				success: function(resp,opts) {
-                             console.log(resp.responseText)
-						 	eval(resp.responseText)
-                     	},
-                     	failure: function(resp,opts) {
-					
-                      	}  
-      
-       				});
-				}
-			}]
-		}, 
+		},
 		{
 			header: '<%= t('classstudentcount') %>', 
 			flex: 1, 
 			dataIndex: 'count', 
 			sortable: true, 
 			align: 'center',
-		}
+		},
+		{
+            text:"<%= t('student motiondate view') %>",
+            columns:[
+             	{
+		            header: '<%= t('select time') %>',
+		            dataIndex: 'time',
+		            width: 130,
+		            editor: new Ext.form.field.ComboBox({
+		                typeAhead: true,
+		                triggerAction: 'all',
+		                selectOnTab: true,
+		                store: [
+		                    ['<%= t('pass week') %>','<%= t('pass week') %>'],
+		                    ['<%= t('pass month') %>','<%= t('pass month') %>'],
+		                    ['<%= t('pass alldata') %>','<%= t('pass alldata') %>']
+		                ],
+		                lazyRender: true,
+		            })
+		        },
+		//		 { text: 'External Link', xtype: 'templatecolumn', dataIndex: 'time',tpl: '<a href="#" class="topopups">{time}</a>'},
+				{
+		    		text: '<%= t('view cal') %>',
+			      	xtype: 'actioncolumn', 
+					iconCls: 'download',
+					align: 'center',
+					items: [{  
+			   			icon: 'download.png',
+						tooltip: '<%= t('view stationlog') %>',
+						handler: function(grid, rowIndex, colIndex) {
+							var rec = grid.getStore().getAt(rowIndex);
+			          		var models = grid.getStore().getRange();
+			             	var record=models[rowIndex]; 
+							console.log(rec.get('id'));
+							Ext.Ajax.request({   
+		       					url:'classcalgraph.js',
+		       					params:{
+		        					id:rec.get('id'),
+									time: rec.get('time')
+		        				},
+		        				success: function(resp,opts) {
+								 	eval(resp.responseText)
+		                     	},
+		                     	failure: function(resp,opts) {
+							
+		                      	}  
+		      
+		       				});
+						}
+					}]
+				}
+				]
+            },
 	],
 	plugins: [cellEditing],
 	dockedItems: [{

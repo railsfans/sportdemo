@@ -14,7 +14,8 @@
 #end
 #end
 p "begin create data"
-(1..14).each do |i|
-	Motiondata.create(:step=>(100*rand()).to_i, :distance=>(200*rand()).round(2), :calorie=>(200*rand()).round(2), :motiontime=>Time.now-7.days+i.days+8.hours, :user_type=>'student', :user_id=>1)
+	(1..1).each do |i|
+	#	Motiondata.create(:step=>(100*rand()).to_i, :distance=>(200*rand()).round(2), :calorie=>(200*rand()).round(2), :motiontime=>Time.now-7.days+i.days+8.hours, :user_type=>'student', :user_id=>1)
+		Motiondata.create(:sedentary=>(100*rand()).to_i, :light=>(200*rand()).round(2), :moderate=>(200*rand()).round(2), :high=>(100*rand()).to_i, :vigorous=>(200*rand()).round(2), :motiontime=>Time.now-7.days+i.days+8.hours, :user_type=>'student', :user_id=>1)
+	end
 
-end

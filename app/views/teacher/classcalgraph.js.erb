@@ -1,28 +1,175 @@
+function requestData() 
+{
+	$.ajax({
+		url: 'loaddata.json',
+		datatype: "json",
+		data: { time: '<%= params[:time] %>', id: <%= params[:id] %> } ,
+		success: function(data) 
+		{
+			if(<%= params[:time]==t('pass week') %>)
+			{
+				var dt=new Date();
+				beginDate=dt.getTime()-7*24*3600*1000;
+				someData = [];
+			    for( var j=0; j<data.data.length; j++)
+	       		{
+			   		for (var i = 0; i < 7; i++){
+			         	someData.push([beginDate + (3600 * 1000 * 24 * i), data.data[j][i]]);
+	 					}
+					chart.addSeries({
+			       		name: data.items[j],
+			            data: someData,
+	                    tooltip: {
+	            			valueSuffix: '<%= t(:sec) %>',
+							valueDecimals: 1
+	        			},
+			    	}); 
+	     			someData=[] 
+				}
+			}
+			else if(<%= params[:time]==t('pass month') %>)
+			{
+				alert('test');
+				var dt=new Date();
+				beginDate=dt.getTime()-30*24*3600*1000;
+				someData = [];
+			    for( var j=0; j<data.data.length; j++)
+	       		{
+			   		for (var i = 0; i < 10; i++){
+			         	someData.push([beginDate + (3600 * 1000 * 24 * i * 3), data.data[j][i]]);
+	 					}
+					chart.addSeries({
+			       		name: data.items[j],
+			            data: someData,
+	                    tooltip: {
+	            			valueSuffix: '<%= t(:sec) %>',
+							valueDecimals: 1
+	        			},
+			    	}); 
+	     			someData=[] 
+				}
+				chart.setTitle({text: "<%= t('pass month') %>"});
+				chart.xAxis[0].update({
+					tickPositioner: function(min,max) {
+            			return this.series[0].xData;
+            		},
+           			labels: {
+	                	formatter: function(){ 
+	                   		return Highcharts.dateFormat('%b %d', this.value);
+	                	}
+	                },
+	          		dateTimeLabelFormats: {
+	                    day: '%b %e',
+	                    week: '%b %e',
+	                    month: '%y \'%b',
+		           	},
+	          	});
+    			chart.redraw();       
+			}
+			else
+			{
+				
+				alert('test2');
+				chart.destroy(); 
+				someData=[];
+				item=['<%= t(:sedentary) %>', '<%= t(:light) %>','<%= t(:moderate) %>', '<%= t(:high) %>', '<%= t(:vigorous) %>'];
+			 	for (var i = 0; i < 5; i++){
+					someData.push([item[i], data[i]]);
+	 			}
+				$('#highchartcontainer').highcharts({
+			        chart: {
+			            plotBackgroundColor: null,
+			            plotBorderWidth: null,
+			            plotShadow: false
+			        },
+			        title: {
+			            text: 'Browser market shares at a specific website, 2010'
+			        },
+			        tooltip: {
+			    	    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+			        },
+			        plotOptions: {
+			            pie: {
+			                allowPointSelect: true,
+			                cursor: 'pointer',
+			                dataLabels: {
+			                    enabled: true,
+			                    color: '#000000',
+			                    connectorColor: '#000000',
+			                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+			                }
+			            }
+			        },
+			        series: [{
+			            type: 'pie',
+			            name: 'Browser share',
+			            data: someData
+			        }]
+			    });	
+			}
+	    }, 
+	});
+} 
+var highchartsOptions = Highcharts.setOptions({
+	lang: {
+		loading: 'Aguarde...',
+		months: ['<%= t('January') %>', '<%= t('February') %>', '<%= t('March') %>', '<%= t('April') %>', '<%= t('May') %>', '<%= t('June') %>', '<%= t('July') %>', '<%= t('August') %>', '<%= t('September') %>', '<%= t('October') %>', '<%= t('November') %>', '<%= t('December') %>'],
+		weekdays: ['<%= t('Sunday') %>', '<%= t('Monday') %>', '<%= t('Tuesday') %>', '<%= t('Wednesday') %>', '<%= t('Thursday') %>', '<%= t('Friday') %>', '<%= t('Saturday') %>'],
+		shortMonths: ['<%= t('Jan') %>', '<%= t('Feb') %>', '<%= t('Mar') %>', '<%= t('Apr') %>', '<%= t('May') %>', '<%= t('Jun') %>', '<%= t('Jul') %>', '<%= t('Aug') %>', '<%= t('Sep') %>', '<%= t('Oct') %>', '<%= t('Nov') %>', '<%= t('Dec') %>'],
+        exportButtonTitle: "Exportar",
+        printButtonTitle: "Imprimir",
+        rangeSelectorFrom: "De",
+        rangeSelectorTo: "Até",
+        rangeSelectorZoom: "Periodo",
+        downloadPNG: 'Download imagem PNG',
+        downloadJPEG: 'Download imagem JPEG',
+        downloadPDF: 'Download documento PDF',
+        downloadSVG: 'Download imagem SVG'
+        // resetZoom: "Reset",
+        // resetZoomTitle: "Reset,
+        // thousandsSep: ".",
+        // decimalPoint: ','
+	}
+});
 $(function(){
-				chart1 = new Highcharts.Chart({  
-                     chart : {  
-                            renderTo: 'highchartcontainer',  
-                            type : 'bar'  
-                     },  
-                     title : {  
-                            text : 'Fruit Consumption'  
-                     },  
-                     xAxis : {  
-                            categories: [ 'Apples', 'Bananas', 'Oranges' ]  
-                     },  
-                     yAxis : {  
-                            title : {  
-                                   text: 'Fruit eaten'  
-                            }  
-                     },  
-                     series : [ {  
-                            name : 'Jane',  
-                            data : [1, 0, 4 ]  
-                     }, {  
-                            name : 'John',  
-                            data : [5, 7, 3 ]  
-                     } ]  
-              });
+	chart=new Highcharts.Chart({
+        chart: {
+            renderTo: 'highchartcontainer',
+                type: 'column',
+                events: {
+            		load: requestData
+        		}
+        },
+        title: {
+            text: '<%= t('pass week') %>'
+        },
+        xAxis: {
+            type: 'datetime',
+            dateTimeLabelFormats: {
+            	day: '%A',
+        	},
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: ''
+            }
+        },
+        tooltip: {
+    		shared: false,
+			dateTimeLabelFormats: {
+                day: '%Y %b %e %A'
+                },
+    		
+		},
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [] 
+        });
 })
 jQuery(function($) {
 //	$("a.topopup").click(function() {
