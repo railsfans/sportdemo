@@ -221,12 +221,12 @@ end
 
 def feedback
 	params[:passwdtoken]=params[:passwdtoken] || ''
-	if !params[:passwdtoken].empty? && !Phonelock.where(:token=>params[:passwdtoken],:status=>true).empty?
+	if !params[:passwdtoken].empty? && !Phonelock.where(:token=>params[:passwdtoken],:status=>true).empty? &&  !Phonesoftlog.where(:versioncode=>params[:version]).empty?
 		flag=true
 		Softfeedback.create(:content=>params[:content], :version=>params[:version], :model=>params[:model], :account=>params[:account], :os=>params[:os])
 	else
 		flag=false
-		message="please send passwdtoken wrong"
+		message="please send passwdtoken wrong or version wrong"
 	end
 	respond_to do |format|
 		if flag

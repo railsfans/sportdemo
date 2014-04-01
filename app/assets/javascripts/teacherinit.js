@@ -14,7 +14,8 @@ Ext.onReady(function() {
 		autoLoad: true,
         root: {
             name: 'expand',
-            id: 'root'
+			
+            expanded: true,
         }
 	});
 
@@ -76,7 +77,7 @@ Ext.onReady(function() {
         autoScroll : true,
         containerScroll: true,
         bodyBorder: false,
-        frame: false
+        frame: false,
 	}); 
 
         Ext.create('Ext.container.Viewport', {

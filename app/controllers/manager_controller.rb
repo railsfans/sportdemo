@@ -29,11 +29,15 @@ def download
 end
 
 def phone_version_add
-	directory = Dir.pwd+'/public/phoneapp'
-	@location=Time.now.strftime("%Y-%m-%d %H:%M:%S").split(' ').join('-')+'_'+params[:filelocation].original_filename
-	path = File.join(directory,@location)
-	File.open(path, "wb") { |f| f.write(params[:filelocation].read)} 
-	Phonesoftlog.create(:versioncode=>params[:versioncode], :updatetime=>Time.now, :softinfo=>params[:softinfo], :applocal=>@location)
+	if !params[:filelocation].nil?
+		directory = Dir.pwd+'/public/phoneapp'
+		@location=Time.now.strftime("%Y-%m-%d %H:%M:%S").split(' ').join('-')+'_'+params[:filelocation].original_filename
+		path = File.join(directory,@location)
+		File.open(path, "wb") { |f| f.write(params[:filelocation].read)} 
+		Phonesoftlog.create(:versioncode=>params[:versioncode], :updatetime=>Time.now, :softinfo=>params[:softinfo], :applocal=>@location)
+	else
+		Phonesoftlog.create(:versioncode=>params[:versioncode], :updatetime=>Time.now, :softinfo=>params[:softinfo])
+	end
 	
    	respond_to do |format| 
 		format.json { render :json=>{:success=>true }, :content_type => 'text/html'}

@@ -6,24 +6,23 @@ end
 
 def gettreenode
 	@matcharr=[]
+	p params[:name]
+	p params[:name].slice(params[:name].length-1,1)!=t(:classname)
 	if params[:name]=='root'
 		@class=Teacher.where(:login_id=>current_user.id).first.shclasses
 		@class.each do |i|
 			@matcharr<<Shgrade.find(i.shgrade_id).name if !@matcharr.include? Shgrade.find(i.shgrade_id).name
 		end
 		@type='grade'
-	else if params[:name].slice(params[:name].length-1,1)!=t(:classname)
+	else  
 		@class=Teacher.where(:login_id=>current_user.id).first.shclasses
 		@class.each do |i|
 			@matcharr<<i.name
 		end		
 		@type='class'
-	else  
-		@type='student'
-	end
 	end
 	respond_to do |format|	
-		format.json { render :json=>@matcharr.collect { |list| { :name=>list,  :type=>@type }} }
+		format.json { render :json=>@matcharr.collect { |list| { :type=>@type, :name=>list, :id=>list }} }
 	end
 end
 
